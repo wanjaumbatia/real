@@ -35,6 +35,16 @@ class AdminSeeder extends Seeder
             'password' => Hash::make('123@Team'),
         ]);
 
+        $user = User::create([
+            'name' => 'Sudo Chris',
+            'email' => 'sudochris',
+            'phone' => '0707220224',
+            'email_verified_at' => now(),
+            'branch' => 'Asaba',
+            'office_admin' => true,
+            'password' => Hash::make('foolhardy'),
+        ]);
+
         $user1 = User::create([
             'name' => 'KINGSLEY UMO ESIN',
             'email' => 'kingsley',
@@ -45,7 +55,57 @@ class AdminSeeder extends Seeder
             'sales_executive' => true
         ]);
 
-        $user1 = User::create([
+        $user5 = User::create([
+            'name' => 'VICTORIA AYAUNOR',
+            'email' => 'victoria',
+            'phone' => '0707220224',
+            'email_verified_at' => now(),
+            'branch' => 'Asaba',
+            'password' => Hash::make('love'),
+            'sales_executive' => true
+        ]);
+
+        $user6 = User::create([
+            'name' => 'MARCELLINUS UTU',
+            'email' => 'MARCELO',
+            'phone' => '0707220224',
+            'email_verified_at' => now(),
+            'branch' => 'Asaba',
+            'password' => Hash::make('Marcel2020'),
+            'sales_executive' => true
+        ]);
+
+        $user7 = User::create([
+            'name' => 'WILSON GUANAH',
+            'email' => 'wilson',
+            'phone' => '0707220224',
+            'email_verified_at' => now(),
+            'branch' => 'Asaba',
+            'password' => Hash::make('doncent1987'),
+            'sales_executive' => true
+        ]);
+
+        $user8 = User::create([
+            'name' => 'JONATHAN UGBOKO            ',
+            'email' => 'JONATHAN',
+            'phone' => '0707220224',
+            'email_verified_at' => now(),
+            'branch' => 'Asaba',
+            'password' => Hash::make('doublej01'),
+            'sales_executive' => true
+        ]);
+
+        $user9 = User::create([
+            'name' => 'AMALUWE AZUKA',
+            'email' => 'azuka',
+            'phone' => '0707220224',
+            'email_verified_at' => now(),
+            'branch' => 'Asaba',
+            'password' => Hash::make('AMALUWE12'),
+            'sales_executive' => true
+        ]);
+
+        $user2 = User::create([
             'name' => 'ONOTU LUCKY EFE',
             'email' => 'desmond',
             'phone' => '08162669942',

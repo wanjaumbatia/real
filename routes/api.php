@@ -37,14 +37,16 @@ Route::post('/tokens/create', function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->get("/customers", function (Request $request) {
-    $url = "http://localhost:8090/api/GetMembersByHandler/" . $request->user()->name;
-    $customers = Http::get($url)->json();
+    // $url = "http://localhost:8090/api/GetMembersByHandler/" . $request->user()->name;
+    // $customers = Http::get($url)->json();
+    $customers = Customer::where('handler', $request->user()->name)->get();
     return response([$customers]);
 });
 
 Route::get("/customer/{id}", function (Request $request, string $id) {
-    $url = "http://localhost:8090/api/customer/" . $id;
-    $customer = Http::get($url)->json();
+    // $url = "http://localhost:8090/api/customer/" . $id;
+    // $customer = Http::get($url)->json();
+    $customer = Customer::where('no', $id)->first();
     return response($customer);
 });
 
@@ -90,15 +92,15 @@ Route::get("/savings/{id}", function (Request $request, string $id) {
 });
 
 Route::get("/contributions/{id}", function (Request $request, string $id) {
-    $url = "http://localhost:8090/api/contributions/" . $id;
-    $transactions = Http::get($url)->json();
+    // $url = "http://localhost:8090/api/contributions/" . $id;
+    // $transactions = Http::get($url)->json();
 
     $contributions = Transactions::where('no', $id)->orderBy('created_at', 'DESC')->get();
     return response($contributions);
 });
 
 Route::get("/withdrawals/{id}", function (Request $request, string $id) {
-    
+
     $contributions = Withdrawal::where('no', $id)->orderBy('created_at', 'DESC')->get();
     // $url = "http://localhost:8090/api/withdrawals/" . $id;
     // $transactions = Http::get($url)->json();
@@ -117,9 +119,10 @@ Route::middleware('auth:sanctum')->post("/contribute", function (Request $reques
         'amount' => $amount
     ])->json();
 
-    $url = "http://localhost:8090/api/customer/" . $no;
-    $customer = Http::get($url)->json();
+    // $url = "http://localhost:8090/api/customer/" . $no;
+    // $customer = Http::get($url)->json();
 
+    $customer = Customer::where('no', $no)->first();
     $transaction = Transactions::create([
         'no' => $customer['no'],
         'name' => $customer['name'],
@@ -130,7 +133,7 @@ Route::middleware('auth:sanctum')->post("/contribute", function (Request $reques
         'document_number' => rand(1000000, 9999999)
     ]);
 
-    return response($customer);
+    return response($transaction);
 });
 
 
@@ -169,7 +172,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_request", function (Request
 
     $pending_amount = 0;
 
-    $pending_withdrawal = Withdrawal::where('no', $no)->where('status','pending')->get();
+    $pending_withdrawal = Withdrawal::where('no', $no)->where('status', 'pending')->get();
 
     foreach ($pending_withdrawal as $tt) {
         $pending_amount = $pending_amount + $tt->amount;
@@ -198,8 +201,9 @@ Route::middleware('auth:sanctum')->post("/withdrawal_request", function (Request
 
     $approval = false;
     //check pending withdrawals
-    $url = "http://localhost:8090/api/customer/" . $no;
-    $customer = Http::get($url)->json();
+    // $url = "http://localhost:8090/api/customer/" . $no;
+    // $customer = Http::get($url)->json();
+    $customer = Customer::where('no', $no)->first();
     if ($commission < $withdrawal_amount * 0.03) {
         $approval = true;
     } else {
@@ -213,8 +217,8 @@ Route::middleware('auth:sanctum')->post("/withdrawal_request", function (Request
         'handler' => $customer['handler'],
         'description' => 'Withdrawal for ' . $customer['name'] . "- ₦" . number_format($withdrawal_amount, 0),
         'status' => 'pending',
-        'branch'=>  $branch,
-        'handler'=> $handler,
+        'branch' =>  $branch,
+        'handler' => $handler,
         'document_number' => rand(1000000, 9999999),
         'comission_amount' => $commission,
         'request_approval' => $approval
