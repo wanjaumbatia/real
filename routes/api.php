@@ -112,12 +112,12 @@ Route::middleware('auth:sanctum')->post("/contribute", function (Request $reques
     $no = $request->no;
     $handler = $request->user()->name;
     $branch = $request->user()->branch;
-    $url = "http://localhost:8090/api/new_payment";
+    // $url = "http://localhost:8090/api/new_payment";
 
-    $transaction = Http::post($url, [
-        'no' => $no,
-        'amount' => $amount
-    ])->json();
+    // $transaction = Http::post($url, [
+    //     'no' => $no,
+    //     'amount' => $amount
+    // ])->json();
 
     // $url = "http://localhost:8090/api/customer/" . $no;
     // $customer = Http::get($url)->json();
