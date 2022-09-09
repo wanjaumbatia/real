@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LoanRepayment;
 use App\Models\Transactions;
 use App\Models\User;
 use App\Models\Withdrawal;
@@ -25,6 +26,7 @@ class OfficeController extends Controller
                 $val['sep'] = $sep->name;
                 $transactions = Transactions::where('status', 'pending')->where('handler', $sep->name)->get();
                 $withdrawals = Withdrawal::where('status', 'pending')->where('handler', $sep->name)->get();
+                //$loan_collection = LoanRepayment::where('status', 'pending')->where('handler', $sep->name)->get();
                 $amount = 0;
                 $withdrawal_total = 0;
                 foreach ($transactions as $tt) {
@@ -33,8 +35,13 @@ class OfficeController extends Controller
                 foreach ($withdrawals as $tt) {
                     $withdrawal_total = $withdrawal_total + $tt->amount;
                 }
+                // $loan_tot = 0;
+                // foreach ($loan_collection as $item) {
+                //     $loan_tot = $loan_tot + $item->amount;
+                // }
                 $val['amount'] = $amount;
                 $val['withdrawal'] = $withdrawal_total;
+                //$val['loans'] = $loan_tot;
                 $result[] = $val;
                 $amount = 0;
             }
@@ -110,7 +117,7 @@ class OfficeController extends Controller
     public function recon_page($id)
     {
         $transaction = Withdrawal::where('status', 'pending')->where('id', $id)->first();
-        
+
         return view('office.reconcile_withdrawal', ['transaction' => $transaction, 'handler' => $id]);
     }
 
@@ -122,7 +129,7 @@ class OfficeController extends Controller
             'confirmed_by' => auth()->user()->name
         ]);
         $transaction = Withdrawal::where('status', 'pending')->where('id', $request->id)->first();
-        
+
         return redirect()->route('office.list',);
     }
 

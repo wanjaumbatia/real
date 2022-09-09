@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\FieldTeam;
+use App\Http\Controllers\LoanController;
 use App\Http\Controllers\MembersController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\TargetsController;
@@ -60,6 +61,15 @@ Route::middleware(['auth'])->group(function () {
     
     Route::post('/office/reconcile_withdrawal', [OfficeController::class, 'disburse'])->name('office.disburse');
     Route::get('/office/reconcile_withdrawal/{id}', [OfficeController::class, 'recon_page'])->name('office.recon_page');
+
+    Route::get('/loans/index', [LoanController::class, 'index'])->name('loans.list');
+    Route::get('/office/loan_recon_list/{id}', [LoanController::class, 'loan_recon_list'])->name('office.loan_recon_list');
+});
+
+
+Route::middleware(['auth'])->prefix('/customers')->group(function () {
+    Route::get('/index', [MembersController::class, 'index'])->name('customer.index');
+    Route::get('/show', [MembersController::class, 'show'])->name('customer.show');
 });
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

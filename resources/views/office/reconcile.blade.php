@@ -56,7 +56,7 @@
                             <tr>
                                 <td>{{$item->name}}</td>
                                 <td>₦. {{number_format($item->amount,0)}}</td>
-                                <td>{{date('d-m-Y', strtotime($item->created_at))}}</td>
+                                <td>{{date('d-m-Y h:i:s A', strtotime($item->created_at))}}</td>
                                 <td>{{$item->handler}}</td>
                                 <td>{{$item->branch}}</td>
                             </tr>

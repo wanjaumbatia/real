@@ -13,6 +13,10 @@
                         <div class="col-6 text-end">
                             {{ __('Pending Withdrawals') }} - <span style="font-weight: bold !important;">₦.{{number_format($total_withdrawal,0)}}</span>
                         </div>
+
+                        <!-- <div class="col-4 text-end">
+                            {{ __('Pending Loan Collection') }} - <span style="font-weight: bold !important;">₦.{{number_format(1000,0)}}</span>
+                        </div> -->
                     </div>
                 </div>
                 <div class="card-body">

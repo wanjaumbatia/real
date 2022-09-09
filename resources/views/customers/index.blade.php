@@ -28,8 +28,10 @@
                             <tr>
                                 <th>No</th>
                                 <th>Name</th>
+                                <th>Phone</th>
                                 <th>Branch</th>
                                 <th>Handler</th>
+                                <th>Registered Date</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -38,13 +40,16 @@
                             <tr>
                                 <td>{{$item['no']}}</td>
                                 <td>{{$item['name']}}</td>
+                                <td>{{$item['phone']}}</td>
                                 <td>{{$item['branch']}}</td>
-                                <td>{{$item['handler']}}</td>
-                                <td><a href="/customers/show/{{$item['no']}}" class="btn btn-primary btn-sm">Open</a></td>
+                                <td>{{$item['handler']}}</td>                                
+                                <td>{{date('d-m-Y', strtotime($item['created_by']))}}</td>  
+                                <td><a href="/customers/show/{{$item['id']}}" class="btn btn-primary btn-sm">Open</a></td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
+                    {{$customers->links()}}
                 </div>
             </div>
         </div>

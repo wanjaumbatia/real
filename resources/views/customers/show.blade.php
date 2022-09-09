@@ -11,7 +11,7 @@
                             Customer Details
                         </div>
                         <div class="col-6 text-end">
-                            <a href="/customers/contribution/{{$customer['no']}}" class="btn btn-primary btn-sm">New Payment</a>
+                            <a href="/customers/contribution/{{$customer->id}}" class="btn btn-primary btn-sm">New Payment</a>
                             <a class="btn btn-primary btn-sm">Make Payment</a>
                             <a class="btn btn-primary btn-sm">Request Loan</a>
                         </div>
@@ -38,13 +38,13 @@
                             <div class="col-6">
                                 <div class="form-group">
                                     <label for="name">Customer Number</label>
-                                    <input type="text" class="form-control" disabled value="{{$customer['no']}}" />
+                                    <input type="text" class="form-control" disabled value="{{$customer->no}}" />
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="form-group">
                                     <label for="name">Full Name</label>
-                                    <input type="text" class="form-control" disabled value="{{$customer['name']}}" />
+                                    <input type="text" class="form-control" disabled value="{{$customer->name}}" />
                                 </div>
                             </div>
                         </div>
@@ -53,13 +53,13 @@
                             <col-6 class="col-md-6 col-sm-12">
                                 <div class="form-group mt-2">
                                     <label for="phone">Phone Number</label>
-                                    <input type="text" class="form-control" disabled value="{{$customer['phoneNumber']}}" />
+                                    <input type="text" class="form-control" disabled value="{{$customer->phone}}" />
                                 </div>
                             </col-6>
                             <col-6 class="col-md-6 col-sm-12">
                                 <div class="form-group mt-2">
                                     <label for="town">Town</label>
-                                    <input type="text" class="form-control" disabled value="{{$customer['town']}}" />
+                                    <input type="text" class="form-control" disabled value="{{$customer->town}}" />
                                 </div>
                             </col-6>
                         </div>
@@ -68,20 +68,20 @@
                             <col-6 class="col-md-6 col-sm-12">
                                 <div class="form-group mt-2">
                                     <label for="phone">Handler</label>
-                                    <input type="text" class="form-control" disabled value="{{$customer['handler']}}" />
+                                    <input type="text" class="form-control" disabled value="{{$customer->handler}}" />
                                 </div>
                             </col-6>
                             <col-6 class="col-md-6 col-sm-12">
                                 <div class="form-group mt-2">
                                     <label for="town">Branch</label>
-                                    <input type="text" class="form-control" disabled value="{{$customer['branch']}}" />
+                                    <input type="text" class="form-control" disabled value="{{$customer->branch}}" />
                                 </div>
                             </col-6>
                         </div>
 
                         <div class="form-group mt-2">
                             <label for="gender">Address</label>
-                            <input type="text" class="form-control" disabled value="{{$customer['address']}}" />
+                            <input type="text" class="form-control" disabled value="{{$customer->address}}" />
                         </div>
                     </form>
                 </div>
@@ -92,23 +92,34 @@
                 <div class="card-header">
                     <div class="row d-flex justify-content-between">
                         <div class="col-4">
-                            Account Infomation
+                            Bank Accounts
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <col-md-6>
-                            <div class="form-group">
-                                <label>Regestration Fee</label>
-                                <input class="form-control" value="{{$balances['regFee']}}" disabled />
-                            </div>
-                            <div class="form-group">
-                                <label>Savings</label>
-                                <input class="form-control" value="{{$balances['savings']}}" disabled />
-                            </div>
-                        </col-md-6>
-                    </div>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Bank Name</th>
+                                <th>Bank Account Number</th>
+                                <th>Branch</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($customer->bankaccounts as $item)
+                            <tr>
+                                <td>{{$item['bank_name']}}</td>
+                                <td>{{$item['bank_account']}}</td>
+                                <td>{{$item['bank_branch']}}</td>
+                                <td>{{$item['bank_name']}}</td>
+                            </tr>
+                            @empty
+                            <p>
+                                <td align="center">No record founds!</td>
+                            </p>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

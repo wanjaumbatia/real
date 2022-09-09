@@ -17,18 +17,7 @@ class MembersController extends Controller
      */
     public function index()
     {
-        if (auth()->user()->sales_executive == true) {
-            $url = "http://localhost:8090/api/GetMembersByHandler/" . auth()->user()->name;
-            $customers = Http::get($url)->json();
-        } else {
-            return abort(401);
-        }
-
-        $customeers = Customer::where('posted', 0)->where('handler', auth()->user()->name)->get();
-        if ($customeers != null) {
-            //$customers[] = $customeers;
-        }
-
+        $customers = Customer::paginate(10);
 
         return view('customers.index')->with(['customers' => $customers]);
     }
@@ -50,12 +39,12 @@ class MembersController extends Controller
         $url = "http://localhost:8090/api/customer/" . $request->no;
         $customer = Http::get($url)->json();
         Transactions::create([
-            'no'=>$customer['no'],
-            'name'=>$customer['name'],
-            'amount'=>$request->amount,
-            'handler'=>$customer['handler'],
-            'description'=>$customer['no'],
-            'document_number'=>rand(1000000,9999999)
+            'no' => $customer['no'],
+            'name' => $customer['name'],
+            'amount' => $request->amount,
+            'handler' => $customer['handler'],
+            'description' => $customer['no'],
+            'document_number' => rand(1000000, 9999999)
         ]);
 
         return 'success';
@@ -116,13 +105,8 @@ class MembersController extends Controller
      */
     public function show($id)
     {
-        $url = "http://localhost:8090/api/customer/" . $id;
-        $customer = Http::get($url)->json();
-
-        $bal_url = "http://localhost:8090/api/accNo/" . $id;
-        $balances =  Http::get($bal_url)->json();
-
-        return view('customers.show')->with(['customer' => $customer, "balances" => $balances]);
+        $customer = Customer::find($id);
+        return view('customers.show')->with(['customer'=>$customer]);
     }
 
     /**

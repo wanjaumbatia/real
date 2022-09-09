@@ -74,7 +74,7 @@ class AdminSeeder extends Seeder
             'password' => Hash::make('Marcel2020'),
             'sales_executive' => true
         ]);
-
+        
         $user7 = User::create([
             'name' => 'WILSON GUANAH',
             'email' => 'wilson',
@@ -112,6 +112,26 @@ class AdminSeeder extends Seeder
             'email_verified_at' => now(),
             'branch' => 'Asaba',
             'password' => Hash::make('123@Team'),
+            'sales_executive' => true
+        ]);
+
+        $user18 = User::create([
+            'name' => 'PRECIOUS ONOYIMA',
+            'email' => 'PRECIOUS2',
+            'phone' => '08159943932',
+            'email_verified_at' => now(),
+            'branch' => 'Asaba',
+            'password' => Hash::make('preci4xrist'),
+            'sales_executive' => true
+        ]);
+
+        $user19 = User::create([
+            'name' => 'MICHAEL IHEAKAMADU',
+            'email' => 'miheakamadu',
+            'phone' => '08159943932',
+            'email_verified_at' => now(),
+            'branch' => 'Asaba',
+            'password' => Hash::make('onyedikachi1'),
             'sales_executive' => true
         ]);
 

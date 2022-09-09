@@ -53,6 +53,9 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('customers.list') }}">{{ __('Customers') }}</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('loans.list') }}">{{ __('Loans') }}</a>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
