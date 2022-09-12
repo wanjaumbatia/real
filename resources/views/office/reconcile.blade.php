@@ -54,10 +54,10 @@
                         <tbody>
                             @foreach($transactions as $item)
                             <tr>
-                                <td>{{$item->name}}</td>
+                                <td>{{$item->customer_name}}</td>
                                 <td>₦. {{number_format($item->amount,0)}}</td>
                                 <td>{{date('d-m-Y h:i:s A', strtotime($item->created_at))}}</td>
-                                <td>{{$item->handler}}</td>
+                                <td>{{$item->created_by}}</td>
                                 <td>{{$item->branch}}</td>
                             </tr>
                             @endforeach

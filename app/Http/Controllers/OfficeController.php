@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\Shortage;
+use App\Models\CommissionLines;
 use App\Models\LoanRepayment;
+use App\Models\Payments;
+use App\Models\ShortageLine;
 use App\Models\Transactions;
 use App\Models\User;
 use App\Models\Withdrawal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class OfficeController extends Controller
 {
@@ -24,39 +29,19 @@ class OfficeController extends Controller
             foreach ($seps as $sep) {
                 $val = array();
                 $val['sep'] = $sep->name;
-                $transactions = Transactions::where('status', 'pending')->where('handler', $sep->name)->get();
-                $withdrawals = Withdrawal::where('status', 'pending')->where('handler', $sep->name)->get();
-                //$loan_collection = LoanRepayment::where('status', 'pending')->where('handler', $sep->name)->get();
-                $amount = 0;
-                $withdrawal_total = 0;
-                foreach ($transactions as $tt) {
-                    $amount = $amount + $tt->amount;
-                }
-                foreach ($withdrawals as $tt) {
-                    $withdrawal_total = $withdrawal_total + $tt->amount;
-                }
-                // $loan_tot = 0;
-                // foreach ($loan_collection as $item) {
-                //     $loan_tot = $loan_tot + $item->amount;
-                // }
-                $val['amount'] = $amount;
-                $val['withdrawal'] = $withdrawal_total;
+                $savings = Payments::where('status', 'pending')->where('transaction_type', 'savings')->where('created_by', $sep->name)->sum('debit');
+                $withdrawal = Payments::where('status', 'pending')->where('transaction_type', 'withdrawal')->where('created_by', $sep->name)->sum('credit');
+
+
+                $val['savings'] = $savings;
+                $val['withdrawals'] = $withdrawal;
                 //$val['loans'] = $loan_tot;
                 $result[] = $val;
-                $amount = 0;
-            }
-            $whole = 0;
-            $whole_withdrawal = 0;
-            $all_withdrawals = Withdrawal::where('status', 'pending')->where('branch', auth()->user()->branch)->get();
-            foreach ($all_withdrawals as $item) {
-                $whole_withdrawal = $whole_withdrawal + $item->amount;
-            }
-            $all = Transactions::where('status', 'pending')->where('branch', auth()->user()->branch)->get();
-            foreach ($all as $item) {
-                $whole = $whole + $item->amount;
             }
 
-            return view('office.index')->with(['data' => $result, 'total' => $whole, 'total_withdrawal' => $whole_withdrawal]);
+            $total_savings = Payments::where('status', 'pending')->where('transaction_type', 'savings')->sum('debit');
+            $total_withdrawals = Payments::where('status', 'pending')->where('transaction_type', 'savings')->sum('debit');
+            return view('office.index')->with(['data' => $result, 'total_savings' => $total_savings, 'total_withdrawals' => $total_withdrawals]);
         } else {
             return abort(401);
         }
@@ -67,20 +52,79 @@ class OfficeController extends Controller
         $handler = $request->handler;
         $amount = $request->amount;
         $whole = 0;
-        $transactions = Transactions::where('handler', $handler)->where('status', 'pending')->get();
-        foreach ($transactions as $item) {
-            $whole = $whole + $item->amount;
-        }
+        $transactions = Payments::where('created_by', $handler)->where('transaction_type', 'savings')->where('status', 'pending')->get();
+        $total_transactions = Payments::where('created_by', $handler)->where('transaction_type', 'savings')->where('status', 'pending')->sum('debit');
 
-        if ($whole > $amount) {
-            return back()->withErrors(['You can not reconcile less than the required amount of ₦.' . number_format($whole)]);
-        } else if ($whole < $amount) {
-            return back()->withErrors(['You can not reconcile more than the required amount of ₦.' . number_format($whole)]);
-        } else {
+        if ($total_transactions < $amount) {
+            return back()->withErrors(['You can not reconcile more than the required amount of ₦.' . number_format($total_transactions)]);
+        } else if($total_transactions > $amount){
+            // handle shortages
+            $short = $total_transactions - $amount;
+            $reference = rand(100000000, 999999999);
             foreach ($transactions as $item) {
-                $trans = Transactions::where('id', $item->id)->update([
+                $tt = Payments::where('id', $item->id)->update([
                     'status' => 'confirmed',
-                    'confirmed_by' => auth()->user()->name
+                    'remarks' => 'reconciled by ' . auth()->user()->name,
+                    'reference' => $reference
+                ]);
+                //create commission line
+                $commission = 0.0025 * $item->debit;
+                $comm_line = CommissionLines::create([
+                    'handler' => $request->handler,
+                    'amount' => $commission,
+                    'description' => 'Commission for sales worth ₦' . number_format($item->debit, 2) . ' for payment reference ' . $reference,
+                    'batch_number' => $reference,
+                    'payment_id' => $item->id,
+                    'disbursed' => false,
+                    'branch' => auth()->user()->branch,
+                    'approved' => true,
+                    // 'transaction_type'=>'commission'
+                ]);
+            }
+
+            $shortage_line = ShortageLine::create([
+                'sales_executive'=>$handler,
+                'expected_amount'=>$total_transactions,
+                'give_amount'=>$amount,
+                'short'=>$total_transactions-$amount,
+                'reference'=>$reference,
+                'cleared'=>false,
+                'office_admin'=>auth()->user()->name,
+                'description'=>'Shortage of ₦' . number_format(($total_transactions-$amount), 2) .' from '.$handler.' ',
+                'reported'=>false,
+                'resolved'=>false,
+                'branch'=>auth()->user()->branch,
+                'remarks'=>""
+            ]);
+
+            //send notifications
+            $myEmail = ["wanjaumbatia@gmail.com", 'nwaisemoses@gmail.com', 'davidonyango7872@gmail.com'];
+            Mail::to($myEmail)->send(new Shortage($handler, $short, $total_transactions, 0, auth()->user()->branch, auth()->user()->name ));
+            
+            var_dump( Mail:: failures());
+            return redirect()->route('office.list');
+        } 
+        else {
+            //clear sales executive
+            $reference = rand(100000000, 999999999);
+            foreach ($transactions as $item) {
+                $tt = Payments::where('id', $item->id)->update([
+                    'status' => 'confirmed',
+                    'remarks' => 'reconciled by ' . auth()->user()->name,
+                    'reference' => $reference
+                ]);
+                //create commission line
+                $commission = 0.0025 * $item->debit;
+                $comm_line = CommissionLines::create([
+                    'handler' => $request->handler,
+                    'amount' => $commission,
+                    'description' => 'Commission for sales worth ₦' . number_format($item->debit, 2) . ' for payment reference ' . $reference,
+                    'batch_number' => $reference,
+                    'payment_id' => $item->id,
+                    'disbursed' => false,
+                    'branch' => $handler,
+                    'approved' => true,
+                    // 'transaction_type'=>'commission'
                 ]);
             }
 
@@ -90,7 +134,7 @@ class OfficeController extends Controller
 
     public function reconcile($id)
     {
-        $transactions = Transactions::where('status', 'pending')->where('handler', $id)->get();
+        $transactions = Payments::where('status', 'pending')->where('transaction_type', 'savings')->where('created_by', $id)->get();
         $total = 0;
         foreach ($transactions as $item) {
             $total = $total + $item->amount;
@@ -99,35 +143,50 @@ class OfficeController extends Controller
         return view('office.reconcile', ['transactions' => $transactions, 'handler' => $id, 'total' => $total]);
     }
 
+    public function commissions()
+    {
+        $commissions = CommissionLines::all();
+        $total = CommissionLines::where('branch', auth()->user()->branch)->sum('amount');
+
+        return view('office.commissions')->with(['commissions' => $commissions, 'total' => $total]);
+    }
+
     public function withdrawal_list($id)
     {
         if (auth()->user()->office_admin == false) {
             return abort(401);
         }
 
-        $transactions = Withdrawal::where('status', 'pending')->where('handler', $id)->get();
-        $total = 0;
-        foreach ($transactions as $item) {
-            $total = $total + $item->amount;
-        }
+        $transactions = Payments::where('status', 'pending')->where('transaction_type', 'withdrawal')->where('created_by', $id)->get();
+        $total = Payments::where('status', 'pending')->where('transaction_type', 'withdrawal')->where('created_by', $id)->get('credit');;
 
         return view('office.withdrawal_list', ['transactions' => $transactions, 'handler' => $id, 'total' => $total]);
     }
 
     public function recon_page($id)
     {
-        $transaction = Withdrawal::where('status', 'pending')->where('id', $id)->first();
+        $transaction = Payments::where('status', 'pending')->where('id', $id)->first();
 
-        return view('office.reconcile_withdrawal', ['transaction' => $transaction, 'handler' => $id]);
+        return view('office.reconcile_withdrawal', ['transaction' => $transaction, 'created_by' => $id]);
     }
 
 
     public function disburse(Request $request)
     {
-        $tt = Withdrawal::where('id', $request->id)->update([
+        Payments::where('id',$request->id)->update([
             'status' => 'confirmed',
-            'confirmed_by' => auth()->user()->name
         ]);
+        
+        $tt =Payments::where('id',$request->id)->first();
+
+        $tt = Payments::where('batch_number', $request->batch_number)->update([
+            'status' => 'confirmed',
+        ]);
+
+        $tt = CommissionLines::where('batch_number', $request->batch_number)->update([
+            'approved' => true,
+        ]);
+
         $transaction = Withdrawal::where('status', 'pending')->where('id', $request->id)->first();
 
         return redirect()->route('office.list',);

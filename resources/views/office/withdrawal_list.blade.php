@@ -37,10 +37,10 @@
                         <tbody>
                             @foreach($transactions as $item)
                             <tr>
-                                <td>{{$item->name}}</td>
-                                <td>₦. {{number_format($item->amount,0)}}</td>
+                                <td>{{$item->customer_name}}</td>
+                                <td>₦. {{number_format($item->credit,0)}}</td>
                                 <td>{{date('d-m-Y', strtotime($item->created_at))}}</td>
-                                <td>{{$item->handler}}</td>
+                                <td>{{$item->created_by}}</td>
                                 <td>{{$item->branch}}</td>
                                 @if($item->request_approval==false)
                                 <td><a href="/office/reconcile_withdrawal/{{$item->id}}" class="btn btn-primary btn-sm">Disburse</a></td>

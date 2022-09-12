@@ -33,7 +33,9 @@ class CreatePaymentsTable extends Migration
             $table->boolean('first_approver')->default(false);
             $table->boolean('second_approver')->default(false); 
             $table->boolean('sent_cps')->default(false);
-
+            $table->string('batch_number');
+            $table->string('branch');
+            $table->string('reference')->nullable();                        
             $table->foreign('savings_account_id')
                 ->references('id')
                 ->on('savings_accounts')

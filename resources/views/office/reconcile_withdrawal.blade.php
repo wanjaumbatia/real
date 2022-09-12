@@ -28,7 +28,7 @@
                         <div class="form-group ">
                             <input name="id" hidden value="{{$transaction->id}}" />
                             <label for="amount">Disbument Amount</label>
-                            <input type="text" class="form-control" disabled value="₦.{{number_format($transaction->amount,0)}}" />
+                            <input type="text" class="form-control" disabled value="₦.{{number_format($transaction->credit,0)}}" />
                         </div>
 
                         <div class="form-group">

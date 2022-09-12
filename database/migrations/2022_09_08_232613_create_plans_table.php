@@ -24,6 +24,7 @@ class CreatePlansTable extends Migration
             $table->integer('duration')->default(0);
             $table->double('reimbursement');
             $table->boolean('active')->default(true);
+            $table->double('sep_commission');
             $table->double('penalty');
             $table->string('create_by');
             $table->timestamps();

@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Plans extends Model
+class InterestLine extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name','code','default','charge','allow_multiple','create_by','outward','duration','penalty','reimbursement','active', 'sep_commission'
+        'payment_id', 'customer_name', 'plan','customer_id', 'savings_account_id', 'amount', 'status', 'approved_by', 'branch', 'handler', 'reference'
     ];
 }

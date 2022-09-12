@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Plans extends Model
+class CommissionLines extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name','code','default','charge','allow_multiple','create_by','outward','duration','penalty','reimbursement','active', 'sep_commission'
+        'handler', 'amount', 'description', 'batch_number', 'payment_id', 'disbursed', 'approved', 'approved_by', 'transaction_type', 'branch'
     ];
 }

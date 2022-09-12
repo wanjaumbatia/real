@@ -20,11 +20,11 @@ class CreateSavingsAccountsTable extends Migration
             $table->string('customer');
             $table->unsignedBigInteger('plans_id');
             $table->string('plan');
+            $table->string('name');
             $table->string('branch');
             $table->string('handler');            
             $table->string('created_by');
-            $table->boolean('active')->default(true);
-            
+            $table->boolean('active')->default(true);            
             $table->foreign('plans_id')
                 ->references('id')
                 ->on('plans')

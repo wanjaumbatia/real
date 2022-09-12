@@ -27,5 +27,16 @@ class Payments extends Model
         'first_approver',
         'second_approver',
         'sent_cps',
+        'batch_number',
+        'branch',
+        'reference',
     ];
+
+    public function savings_account(){
+        return $this->hasOne(SavingsAccount::class);
+    }
+
+    public function commision(){
+        return $this->hasOne(CommissionLines::class);
+    }
 }

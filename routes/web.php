@@ -64,6 +64,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/loans/index', [LoanController::class, 'index'])->name('loans.list');
     Route::get('/office/loan_recon_list/{id}', [LoanController::class, 'loan_recon_list'])->name('office.loan_recon_list');
+    Route::get('/office/commissions', [OfficeController::class, 'commissions'])->name('office.commissions');
 });
 
 

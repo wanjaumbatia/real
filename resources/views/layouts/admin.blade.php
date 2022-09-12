@@ -37,11 +37,12 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
-                        @if(Auth::user()->operations_manager==true)
+                        @guest
+
+                        @else
                         <li class="nav-item">
                             <a class="nav-link active" href="{{ route('admin.team.list') }}">{{ __('Users') }}</a>
                         </li>
-                        @endif
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('admin.targets.list') }}">{{ __('Targets') }}</a>
                         </li>
@@ -57,6 +58,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('customers.list') }}">{{ __('Customers') }}</a>
                         </li>
+                        @endguest
                     </ul>
 
                     <!-- Right Side Of Navbar -->
