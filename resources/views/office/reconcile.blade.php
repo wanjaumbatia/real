@@ -32,7 +32,7 @@
 
                         <div class="form-group">
                             <label for="amount">Received Amount</label>
-                            <input type="number" class="form-control" name="amount" />
+                            <input type="number" class="form-control" required name="amount" />
                         </div>
 
                         <div class="form-group">
@@ -47,6 +47,7 @@
                                 <th>Name</th>
                                 <th>Amount</th>
                                 <th>Date</th>
+                                <th>Transaction Type</th>
                                 <th>Sales Executive</th>
                                 <th>Branch</th>
                             </tr>
@@ -57,6 +58,7 @@
                                 <td>{{$item->customer_name}}</td>
                                 <td>₦. {{number_format($item->amount,0)}}</td>
                                 <td>{{date('d-m-Y h:i:s A', strtotime($item->created_at))}}</td>
+                                <td>{{$item->transaction_type}}</td>
                                 <td>{{$item->created_by}}</td>
                                 <td>{{$item->branch}}</td>
                             </tr>

@@ -34,13 +34,13 @@ class PlansSeeder extends Seeder
             'code'=>'GOLD',
             'default'=>false,
             'duration'=>3,
-            'penalty'=>4.5,
+            'penalty'=>0.045,
             'charge'=>0.03,            
             'sep_commission'=>0.18,
             'reimbursement'=>0,
             'allow_multiple'=>true,
             'create_by'=>'Admin',
-            'outward'=>false
+            'outward'=>true
         ]);
 
         $plan_diamond = Plans::Create([
@@ -48,7 +48,7 @@ class PlansSeeder extends Seeder
             'code'=>'DIAMOND',
             'default'=>false,
             'duration'=>6,
-            'penalty'=>4.5,
+            'penalty'=>0.045,
             'charge'=>0.03,
             'sep_commission'=>0.18,
             'reimbursement'=>50,
@@ -62,7 +62,7 @@ class PlansSeeder extends Seeder
             'code'=>'PLATINUM',
             'default'=>false, 
             'duration'=>12,
-            'penalty'=>4.5,
+            'penalty'=>0.045,
             'sep_commission'=>0.18,
             'charge'=>0.03,
             'reimbursement'=>100,

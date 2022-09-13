@@ -16,9 +16,9 @@ class CreateOtpCodesTable extends Migration
         Schema::create('otp_codes', function (Blueprint $table) {
             $table->id();
             $table->string('code');
+            $table->string('refrence')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
-
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')

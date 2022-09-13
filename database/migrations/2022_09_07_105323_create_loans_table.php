@@ -17,18 +17,24 @@ class CreateLoansTable extends Migration
             $table->id();
             $table->string('no');
             $table->string('name');
+            $table->unsignedBigInteger('customer_id');
             $table->dateTime('application_date')->nullable(now());
             $table->decimal('amount');
             $table->decimal('interest_percentage');
             $table->integer('duration');
             $table->decimal('current_savings');
-            $table->string('handler')->nullable();  
+            $table->string('handler')->nullable();
             $table->string('purpose')->nullable();
-            $table->string('status')->default('application'); 
+            $table->string('status')->default('application');
             $table->string('remarks')->nullable();
             $table->boolean('posted')->default(false);
             $table->dateTime('date_posted')->nullable();
             $table->timestamps();
+
+            $table->foreign('customer_id')
+                ->references('id')
+                ->on('customers')
+                ->onDelete('cascade');
         });
     }
 

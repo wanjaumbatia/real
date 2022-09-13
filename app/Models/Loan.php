@@ -21,6 +21,7 @@ class Loan extends Model
         'status',
         'remarks',
         'posted',
-        'date_posted'
+        'date_posted',
+        'customer_id'
     ];
 }

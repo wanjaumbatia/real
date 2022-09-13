@@ -19,7 +19,8 @@ use App\Models\Withdrawal;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
-use Faker\Provider\ar_EG\Payment;;
+use Faker\Provider\ar_EG\Payment;
+use Illuminate\Support\Facades\Log;;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -66,7 +67,8 @@ Route::get("/savings/{id}", function (Request $request, string $id) {
     $confirmed_transaction = Transactions::where('no', $id)->where('status', 'confirmed')->get();
     $withdrawals = Withdrawal::where('no', $id)->where('status', 'confirmed')->get();
 
-    $pending = 0;
+
+
     $confirmed = 0;
     $total_withdrawal = 0;
     foreach ($withdrawals as $item) {
@@ -270,6 +272,16 @@ Route::middleware('auth:sanctum')->post("/loan_request", function (Request $requ
     $confirmed_transaction = Transactions::where('no', $request->no)->where('status', 'confirmed')->get();
     $withdrawals = Withdrawal::where('no', $request->no)->where('status', 'confirmed')->get();
 
+    $account = SavingsAccount::where('customer_id', $customer->id)->first();
+    $balance = Payments::where('savings_account_id', $account->id)->where('plan', 'Regular')->where('status', 'confirmed')->sum('amount');
+
+    if ($balance < ($request->amount * 0.2)) {
+        return response([
+            'success' => false,
+            'message' => 'Loan cannot be processed, minimum saving threshold not met.'
+        ]);
+    }
+
     $pending = 0;
     $confirmed = 0;
     $total_withdrawal = 0;
@@ -323,6 +335,7 @@ Route::middleware('auth:sanctum')->post("/loan_request", function (Request $requ
         'name' => $customer->name,
         'application_date' => now(),
         'amount' => $request->amount,
+        'customer_id' => $customer->id,
         'purpose' => $request->purpose,
         'interest_percentage' => 5.5,
         'duration' => $request->duration,
@@ -503,6 +516,7 @@ Route::middleware('auth:sanctum')->post("/customer", function (Request $request)
         'address' => $request->address,
         'gender' => $request->gender,
         'town' => $request->town,
+        'email' => $request->email,
         'phone' => $request->phone,
         'posted' => false,
         'no' => get_customer_number(),
@@ -559,14 +573,20 @@ Route::middleware('auth:sanctum')->get("/accounts/{id}", function ($id) {
 
     $data = array();
     foreach ($accounts as $acc) {
-        $confirmed_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'confirmed')->sum('amount');
-        $pending_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'pending')->sum('amount');
+        $confirmed_transaction = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'savings')->where('status', 'confirmed')->sum('amount');
+        $pending_transaction = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'savings')->where('status', 'pending')->sum('amount');
+        $pending_withdrawal = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'withdrawal')->where('status', 'pending')->sum('amount');
+        $pending_penalty = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'penalty')->where('status', 'pending')->sum('amount');
+
         $plan = Plans::where('id', $acc->plans_id)->first();
         $saving_accounts = array();
         $saving_accounts['details'] = $acc;
+        $loan = Loan::where('customer_id', $acc->customer_id)->first();
+        $saving_accounts['loan'] = $loan;
         $saving_accounts['plan'] = $plan;
         $saving_accounts['confirmed'] = $confirmed_transaction;
         $saving_accounts['pending'] = $pending_transaction;
+        $saving_accounts['pending_withdrawal'] = ($pending_withdrawal + $pending_penalty) * -1;
 
         $data[] = $saving_accounts;
     }
@@ -575,26 +595,9 @@ Route::middleware('auth:sanctum')->get("/accounts/{id}", function ($id) {
     return response($data);
 });
 
-
-Route::middleware('auth:sanctum')->get("/accounts/{id}", function ($id) {
-    $accounts = SavingsAccount::where('customer_id', $id)->orderBy('id', 'ASC')->where('active', true)->get();
-
-    $data = array();
-    foreach ($accounts as $acc) {
-        $confirmed_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'confirmed')->sum('amount');
-        $pending_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'pending')->sum('amount');
-        $plan = Plans::where('id', $acc->plans_id)->first();
-        $saving_accounts = array();
-        $saving_accounts['details'] = $acc;
-        $saving_accounts['plan'] = $plan;
-        $saving_accounts['confirmed'] = $confirmed_transaction;
-        $saving_accounts['pending'] = $pending_transaction;
-
-        $data[] = $saving_accounts;
-    }
-
-
-    return response($data);
+Route::middleware('auth:sanctum')->get("/loans/{id}", function ($id) {
+    $loan = Loan::where('customer_id', $id)->where('status', 'pending')->get();
+    return response($loan);
 });
 
 Route::middleware('auth:sanctum')->get("/account/{id}", function ($id) {
@@ -602,7 +605,8 @@ Route::middleware('auth:sanctum')->get("/account/{id}", function ($id) {
 
     $data = array();
     $confirmed_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'confirmed')->sum('amount');
-    $pending_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'pending')->sum('amount');
+    $pending_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'pending')->where('transaction_type', 'savings')->sum('amount');
+    $pending_withdrawals = Payments::where('savings_account_id', $acc->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('amount');
     $plan = Plans::where('id', $acc->plans_id)->first();
 
     $to = \Carbon\Carbon::now();
@@ -619,6 +623,7 @@ Route::middleware('auth:sanctum')->get("/account/{id}", function ($id) {
     $saving_accounts['plan'] = $plan;
     $saving_accounts['confirmed'] = $confirmed_transaction;
     $saving_accounts['pending'] = $pending_transaction;
+    $saving_accounts['pending_withdrawal'] = $pending_withdrawals;
     return response($saving_accounts);
 });
 
@@ -643,40 +648,147 @@ Route::middleware('auth:sanctum')->post("/pay", function (Request $request) {
         $customer = Customer::where('id', $acc->customer_id)->first();
         $phone =  $customer->phone;
 
-        $payment = Payments::create([
-            'savings_account_id' => $acc->id,
-            'plan' => $acc->plan,
-            'customer_id' => $acc->customer_id,
-            'customer_name' => $acc->customer,
-            'transaction_type' => 'savings',
-            'status' => 'pending',
-            'remarks' => 'Collection from ' . $acc->customer . ' of ₦' . number_format($item['amount'], 2),
-            'debit' => $item['amount'],
-            'credit' => 0,
-            'amount' => $item['amount'],
-            'requires_approval' => false,
-            'approved' => false,
-            'posted' => false,
-            'created_by' => $request->user()->name,
-            'branch' => $request->user()->branch,
-            'batch_number' => $batch_number,
-            'reference' => $reference
-        ]);
+        if ($acc->plan == "Regular") {
+            $regfee = Payments::where('customer_id', $acc->customer_id)->where('transaction_type', 'registration')->sum('amount');
+            if ($regfee < 1000) {
+                $payment = Payments::create([
+                    'savings_account_id' => $acc->id,
+                    'plan' => $acc->plan,
+                    'customer_id' => $acc->customer_id,
+                    'customer_name' => $acc->customer,
+                    'transaction_type' => 'savings',
+                    'status' => 'pending',
+                    'remarks' => 'Collection from ' . $acc->customer . ' of ₦' . number_format($item['amount'], 2),
+                    'debit' => $item['amount'] - 1000,
+                    'credit' => 0,
+                    'amount' => $item['amount'] - 1000,
+                    'requires_approval' => false,
+                    'approved' => false,
+                    'posted' => false,
+                    'created_by' => $request->user()->name,
+                    'branch' => $request->user()->branch,
+                    'batch_number' => $batch_number,
+                    'reference' => $reference
+                ]);
 
-        $sep_commision = 0.0025 * $item['amount'];
-        $comm_line = CommissionLines::create([
-            'handler' => $acc->handler,
-            'amount' => $sep_commision,
-            'description' => 'Commission for sales of ₦' . number_format($item['amount'], 2) . ' for ' . $acc->customer,
-            'batch_number' => $batch_number,
-            'payment_id' => $payment->id,
-            'disbursed' => false,
-            'branch' => $request->user()->branch,
-            'transaction_type' => 'savings',
-            'approved' => false,
-            // 'transaction_type'=>'commission'
-        ]);
-        $total = $total + $item['amount'];
+                $payment = Payments::create([
+                    'savings_account_id' => $acc->id,
+                    'plan' => $acc->plan,
+                    'customer_id' => $acc->customer_id,
+                    'customer_name' => $acc->customer,
+                    'transaction_type' => 'registration',
+                    'status' => 'pending',
+                    'remarks' => 'Registration Fee from ' . $acc->customer . ' of ₦' . number_format($item['amount'], 2),
+                    'debit' => 1000,
+                    'credit' => 0,
+                    'amount' => 1000,
+                    'requires_approval' => false,
+                    'approved' => false,
+                    'posted' => false,
+                    'created_by' => $request->user()->name,
+                    'branch' => $request->user()->branch,
+                    'batch_number' => $batch_number,
+                    'reference' => $reference
+                ]);
+
+                $sep_commision = 0.0025 * $item['amount'];
+                $comm_line = CommissionLines::create([
+                    'handler' => $acc->handler,
+                    'amount' => $sep_commision,
+                    'description' => 'Commission for sales of ₦' . number_format($item['amount'], 2) . ' for ' . $acc->customer,
+                    'batch_number' => $batch_number,
+                    'payment_id' => $payment->id,
+                    'disbursed' => false,
+                    'branch' => $request->user()->branch,
+                    'transaction_type' => 'savings',
+                    'approved' => false,
+                    // 'transaction_type'=>'commission'
+                ]);
+                $comm_line = CommissionLines::create([
+                    'handler' => $acc->handler,
+                    'amount' => 250,
+                    'description' => 'Registration Fee for sales of ₦' . number_format($item['amount'], 2) . ' for ' . $acc->customer,
+                    'batch_number' => $batch_number,
+                    'payment_id' => $payment->id,
+                    'disbursed' => false,
+                    'branch' => $request->user()->branch,
+                    'transaction_type' => 'registration',
+                    'approved' => false,
+                    // 'transaction_type'=>'commission'
+                ]);
+                $total = $total + $item['amount'];
+            } else {
+                $payment = Payments::create([
+                    'savings_account_id' => $acc->id,
+                    'plan' => $acc->plan,
+                    'customer_id' => $acc->customer_id,
+                    'customer_name' => $acc->customer,
+                    'transaction_type' => 'savings',
+                    'status' => 'pending',
+                    'remarks' => 'Collection from ' . $acc->customer . ' of ₦' . number_format($item['amount'], 2),
+                    'debit' => $item['amount'],
+                    'credit' => 0,
+                    'amount' => $item['amount'],
+                    'requires_approval' => false,
+                    'approved' => false,
+                    'posted' => false,
+                    'created_by' => $request->user()->name,
+                    'branch' => $request->user()->branch,
+                    'batch_number' => $batch_number,
+                    'reference' => $reference
+                ]);
+
+                $sep_commision = 0.0025 * $item['amount'];
+                $comm_line = CommissionLines::create([
+                    'handler' => $acc->handler,
+                    'amount' => $sep_commision,
+                    'description' => 'Commission for sales of ₦' . number_format($item['amount'], 2) . ' for ' . $acc->customer,
+                    'batch_number' => $batch_number,
+                    'payment_id' => $payment->id,
+                    'disbursed' => false,
+                    'branch' => $request->user()->branch,
+                    'transaction_type' => 'savings',
+                    'approved' => false,
+                    // 'transaction_type'=>'commission'
+                ]);
+                $total = $total + $item['amount'];
+            }
+        } else {
+            $payment = Payments::create([
+                'savings_account_id' => $acc->id,
+                'plan' => $acc->plan,
+                'customer_id' => $acc->customer_id,
+                'customer_name' => $acc->customer,
+                'transaction_type' => 'savings',
+                'status' => 'pending',
+                'remarks' => 'Collection from ' . $acc->customer . ' of ₦' . number_format($item['amount'], 2),
+                'debit' => $item['amount'],
+                'credit' => 0,
+                'amount' => $item['amount'],
+                'requires_approval' => false,
+                'approved' => false,
+                'posted' => false,
+                'created_by' => $request->user()->name,
+                'branch' => $request->user()->branch,
+                'batch_number' => $batch_number,
+                'reference' => $reference
+            ]);
+
+            $sep_commision = 0.0025 * $item['amount'];
+            $comm_line = CommissionLines::create([
+                'handler' => $acc->handler,
+                'amount' => $sep_commision,
+                'description' => 'Commission for sales of ₦' . number_format($item['amount'], 2) . ' for ' . $acc->customer,
+                'batch_number' => $batch_number,
+                'payment_id' => $payment->id,
+                'disbursed' => false,
+                'branch' => $request->user()->branch,
+                'transaction_type' => 'savings',
+                'approved' => false,
+                // 'transaction_type'=>'commission'
+            ]);
+            $total = $total + $item['amount'];
+        }
     }
 
     $cust = Customer::where('id', $customer_id)->first();
@@ -750,20 +862,19 @@ Route::get("/create_account", function (Request $request) {
     return response("Success");
 });
 
-Route::middleware('auth:sanctum')->get("/request_otp/{phone}", function (Request $request, $phone) {
-    $otp = rand(000000, 999999);
+Route::middleware('auth:sanctum')->post("/verify_withdrawal", function (Request $request) {
+    $payments = Payments::where('batch_number', $request->otp)->get();
+    $reference = rand(100000000, 999999999);
+    foreach ($payments as $item) {
+        $tt = Payments::where('id', $item->id)->update([
+            'status' => 'pending',
+            'batch_number' => $reference
+        ]);
+    }
 
-    $res = OtpCode::create([
-        'code' => $otp,
-        'user_id' => $request->user()->id
-    ]);
-
-    $msg = 'Your one time password is ' . $otp;
-
-    $resp = sendSMS($phone, $msg);
-
-    return response($resp);
+    return response($payments);
 });
+
 
 Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $request) {
 
@@ -771,26 +882,22 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
     $account = SavingsAccount::where('id', $request->id)->first();
     $balance = Payments::where('savings_account_id', $account->id)->where('status', 'confirmed')->sum('amount');
 
+    $customer = Customer::where('id', $account->customer_id)->first();
+
     $plan = Plans::where('id', $account->plans_id)->first();
 
     $total_credit = $request->amount + $request->commission;
+    $otp = rand(000000, 999999);
 
-    if ($balance < $total_credit) {
-        return response([
-            "success" => false,
-            "message" => "You do not have enough balance in this account to withdraw ₦" . number_format($request->amount) . "."
-        ]);
-    }
 
     if ($plan->outward == true) {
         //check when account was created
         $to = \Carbon\Carbon::now();
-
         $from = $account->created_at;
 
         $diff_in_months = $to->diffInMonths($from);
 
-        if ($diff_in_months > $plan->duration) {
+        if ($diff_in_months >= $plan->duration) {
 
             $pending_withdrawal = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('credit');
 
@@ -800,6 +907,8 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                     "message" => "Unable to process this withdrawal since customer has a pending withdrawal, this amount exceed the remaining balance."
                 ]);
             }
+
+
 
             $plan = Plans::where('name', $account->plan)->first();
 
@@ -816,7 +925,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                 'customer_id' => $account->customer_id,
                 'customer_name' => $account->customer,
                 'transaction_type' => 'withdrawal',
-                'status' => 'pending',
+                'status' => 'open',
                 'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
                 'debit' => 0,
                 'credit' => $request->amount,
@@ -826,7 +935,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                 'posted' => false,
                 'created_by' => $request->user()->name,
                 'branch' => $request->user()->branch,
-                'batch_number' => $batch_number
+                'batch_number' => $otp
             ]);
 
             //create interest line
@@ -836,7 +945,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                 'customer_id' => $account->customer_id,
                 'customer_name' => $account->customer,
                 'transaction_type' => 'interest',
-                'status' => 'pending',
+                'status' => 'open',
                 'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($interest, 2) . " On " . $account->plan . " account.",
                 'debit' => 0,
                 'credit' => $interest,
@@ -846,23 +955,23 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                 'posted' => false,
                 'created_by' => $request->user()->name,
                 'branch' => $request->user()->branch,
-                'batch_number' => $batch_number
+                'batch_number' => $otp
             ]);
 
-            $sep_commision = $interest * $plan->sep_commission;
-            //create sales agent line
-            $comm_line = CommissionLines::create([
-                'handler' => $account->handler,
-                'amount' => $sep_commision,
-                'description' => 'Interest for withdrawal of ₦' . number_format($request->amount, 2) . ' with interest of ₦' . number_format($interest, 2) . ' for ' . $account->customer,
-                'batch_number' => $batch_number,
-                'transaction_type' => 'withdrawal',
-                'payment_id' => $charge->id,
-                'disbursed' => false,
-                'branch' => $request->user()->branch,
-                'approved' => false,
-                // 'transaction_type'=>'commission'
-            ]);
+            // $sep_commision = $interest * $plan->sep_commission;
+            // //create sales agent line
+            // $comm_line = CommissionLines::create([
+            //     'handler' => $account->handler,
+            //     'amount' => $sep_commision,
+            //     'description' => 'Interest for withdrawal of ₦' . number_format($request->amount, 2) . ' with interest of ₦' . number_format($interest, 2) . ' for ' . $account->customer,
+            //     'batch_number' => $batch_number,
+            //     'transaction_type' => 'withdrawal',
+            //     'payment_id' => $charge->id,
+            //     'disbursed' => false,
+            //     'branch' => $request->user()->branch,
+            //     'approved' => false,
+            //     // 'transaction_type'=>'commission'
+            // ]);
         } else {
 
             //check pending withdrawal
@@ -880,21 +989,18 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
             $expected_commision = $request->amount * $plan->charge;
 
             $approval = false;
-
-
-
             $interest = $request->amount *  $plan->penalty;
             $batch_number = rand(100000000, 999999999);
 
             //get total
             $totals = $request->amount + $interest;
+            $acceptable = $balance - $interest;
             if ($balance < $totals) {
                 return response([
                     "success" => false,
-                    "message" => "You do not have enough balance in this account to withdraw ₦" . number_format($request->amount) . "."
+                    "message" => "You do not have enough balance in this account ttto withdraw ₦" . number_format($request->amount) . ". You can withdraw up to ₦" . number_format($acceptable, 2) . "."
                 ]);
             }
-
             //create withdrawal line
             $withdrawal = Payments::create([
                 'savings_account_id' => $account->id,
@@ -902,7 +1008,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                 'customer_id' => $account->customer_id,
                 'customer_name' => $account->customer,
                 'transaction_type' => 'withdrawal',
-                'status' => 'pending',
+                'status' => 'open',
                 'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
                 'debit' => 0,
                 'credit' => $request->amount,
@@ -912,7 +1018,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                 'posted' => false,
                 'created_by' => $request->user()->name,
                 'branch' => $request->user()->branch,
-                'batch_number' => $batch_number
+                'batch_number' => $otp
             ]);
 
             //create charge line
@@ -921,9 +1027,9 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                 'plan' => $account->plan,
                 'customer_id' => $account->customer_id,
                 'customer_name' => $account->customer,
-                'transaction_type' => 'interest',
-                'status' => 'pending',
-                'remarks' => 'Interest for ' . $account->customer . ' of ₦' . number_format($interest, 2) . " On " . $account->plan . " account.",
+                'transaction_type' => 'penalty',
+                'status' => 'open',
+                'remarks' => 'Penalty for ' . $account->customer . ' of ₦' . number_format($interest, 2) . " On " . $account->plan . " account.",
                 'debit' => 0,
                 'credit' => $interest,
                 'amount' => $interest * -1,
@@ -932,34 +1038,52 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                 'posted' => false,
                 'created_by' => $request->user()->name,
                 'branch' => $request->user()->branch,
-                'batch_number' => $batch_number
+                'batch_number' => $otp
             ]);
 
 
             $sep_commision = $request->amount * $plan->penalty * $plan->sep_commission;
             //create sales agent line
-            $comm_line = CommissionLines::create([
-                'handler' => $account->handler,
-                'amount' => $sep_commision,
-                'description' => 'Commission for withdrawal of ₦' . number_format($request->amount, 2) . ' charged at ₦' . number_format($request->commission, 2) . ' for ' . $account->customer,
-                'batch_number' => $batch_number,
-                'payment_id' => $withdrawal->id,
-                'transaction_type' => 'withdrawal',
-                'disbursed' => false,
-                'branch' => $request->user()->branch,
-                'approved' => false,
-                // 'transaction_type'=>'commission'
+            // $comm_line = CommissionLines::create([
+            //     'handler' => $account->handler,
+            //     'amount' => $sep_commision,
+            //     'description' => 'Commission for withdrawal of ₦' . number_format($request->amount, 2) . ' charged at ₦' . number_format($request->commission, 2) . ' for ' . $account->customer,
+            //     'batch_number' => $batch_number,
+            //     'payment_id' => $withdrawal->id,
+            //     'transaction_type' => 'withdrawal',
+            //     'disbursed' => false,
+            //     'branch' => $request->user()->branch,
+            //     'approved' => false,
+            //     // 'transaction_type'=>'commission'
+            // ]);
+
+            $cust = Customer::where('id', $request->no)->first();
+
+            $res = OtpCode::create([
+                'code' => $otp,
+                'user_id' => $request->user()->id
             ]);
 
-            //here..
-            return response($comm_line);
+            $msg = 'Your one time password is ' . $otp;
+
+            $resp = sendSMS($customer->phone, $msg);
+            return response([
+                'success' => true,
+                "code" => $otp
+            ]);
         }
     } else {
-
+        if ($balance < $total_credit) {
+            return response([
+                "success" => false,
+                "message" => "You do not have enough balance in this account to withdraw ₦" . number_format($request->amount) . "."
+            ]);
+        }
         //check pending withdrawal
         $pending_withdrawal = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('credit');
+        $pending_charge = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'charge')->sum('credit');
 
-        if ($balance < $total_credit + $pending_withdrawal) {
+        if ($balance < ($total_credit + $pending_withdrawal + $pending_charge)) {
             return response([
                 "success" => false,
                 "message" => "Unable to process this withdrawal since customer has a pending withdrawal, this amount exceed the remaining balance."
@@ -989,7 +1113,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
             'customer_id' => $account->customer_id,
             'customer_name' => $account->customer,
             'transaction_type' => 'withdrawal',
-            'status' => 'pending',
+            'status' => 'open',
             'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
             'debit' => 0,
             'credit' => $request->amount,
@@ -999,7 +1123,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
             'posted' => false,
             'created_by' => $request->user()->name,
             'branch' => $request->user()->branch,
-            'batch_number' => $batch_number
+            'batch_number' => $otp
         ]);
 
         //create charge line
@@ -1009,7 +1133,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
             'customer_id' => $account->customer_id,
             'customer_name' => $account->customer,
             'transaction_type' => 'charge',
-            'status' => 'pending',
+            'status' => 'open',
             'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->commission, 2) . " On " . $account->plan . " account.",
             'debit' => 0,
             'credit' => $request->commission,
@@ -1019,7 +1143,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
             'posted' => false,
             'created_by' => $request->user()->name,
             'branch' => $request->user()->branch,
-            'batch_number' => $batch_number
+            'batch_number' => $otp
         ]);
 
 
@@ -1039,26 +1163,40 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
         ]);
     }
 
-
     $cust = Customer::where('id', $request->no)->first();
+    $res = OtpCode::create([
+        'code' => $otp,
+        'user_id' => $request->user()->id
+    ]);
+
+    $msg = 'Your one time password is ' . $otp;
+
+    $resp = sendSMS($customer->phone, $msg);
+
     //$phone = $cust->phone;
-    //$msg = "Dear " . $cust->name . ". Your withdrawal of ₦" . number_format($request->amount, 0) . " has been received and will be processed. Thank you for saving with us.";
+    //te$msg = "Dear " . $cust->name . ". Your withdrawal of ₦" . number_format($request->amount, 0) . " has been received and will be processed. Thank you for saving with us.";
     //$res = sendSMS($phone, $msg);
 
     return response([
-        "success" => true
+        "success" => true,
+        "code" => $otp
     ]);
 });
 
 Route::middleware("auth:sanctum")->post("/create_account", function (Request $request) {
+
     $customer = Customer::where('id', $request->no)->first();
     $plan = Plans::where('id', $request->plan_id)->first();
 
+    $name = $request->name;
+    if ($name == null) {
+        $name = $plan->name . ".";
+    }
     $account = SavingsAccount::create([
         'customer_id' => $customer->id,
         'customer_number' => $customer->no,
         'plans_id' => $plan->id,
-        'name' => $request->name,
+        'name' => $name,
         'created_by' => "Admin",
         'active' => true,
         'branch' => $customer->branch,
@@ -1098,9 +1236,10 @@ Route::middleware("auth:sanctum")->get("/account_balance/{id}", function ($id) {
 });
 
 Route::middleware("auth:sanctum")->get("/regular/{id}", function ($id) {
+
     $acc = SavingsAccount::where('customer_id', $id)->where('name', 'Regular')->first();
 
-    $confirmed_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'confirmed')->sum('amount');
+    $confirmed_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'confirmed')->where('transaction_type', 'savings')->sum('amount');
 
     $saving_accounts = array();
     $saving_accounts['confirmed'] = $confirmed_transaction;
@@ -1112,30 +1251,64 @@ Route::middleware("auth:sanctum")->get("/dashboard", function (Request $request)
     Carbon::setWeekEndsAt(Carbon::SUNDAY);
     $resp = array();
     //get total months 
-    $todays_sales = Payments::where('transaction_type', 'savings')->where('created_by', $request->user()->name)->whereDate('created_at', Carbon::today())->sum('amount');
-    $weekly_sales = Payments::where('transaction_type', 'savings')->where('created_by', $request->user()->name)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('amount');
-    $monthly_sales = Payments::where('transaction_type', 'savings')->where('created_by', $request->user()->name)->whereMonth('created_at', Carbon::now()->month)->sum('amount');
-    $pending_collections = Payments::where('status', 'confirmed')->sum('amount');
+    $todays_sales = Payments::where('status', 'confirmed')->where(function ($q) {
+            $q->where('transaction_type', 'savings')
+                ->orWhere('transaction_type', 'registration');
+        })->where('created_by', $request->user()->name)->whereDate('created_at', Carbon::today())->sum('amount');
+    $weekly_sales = Payments::where('status', 'confirmed')->where(function ($q) {
+            $q->where('transaction_type', 'savings')
+                ->orWhere('transaction_type', 'registration');
+        })->where('created_by', $request->user()->name)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('amount');
+    $monthly_sales = Payments::where('status', 'confirmed')->where(function ($q) {
+            $q->where('transaction_type', 'savings')
+                ->orWhere('transaction_type', 'registration');
+        })->where('created_by', $request->user()->name)->whereMonth('created_at', Carbon::now()->month)->sum('amount');
+    $pending_collections = Payments::where('status', 'pending')->where(function ($q) {
+        $q->where('transaction_type', 'savings')
+            ->orWhere('transaction_type', 'registration');
+    })->sum('amount');
+
+    $todays_withdrawals = Payments::where('status', 'confirmed')->where('transaction_type', 'withdrawal')->where('created_by', $request->user()->name)->whereDate('created_at', Carbon::today())->sum('amount');
+    $weekly_withdrawals = Payments::where('status', 'confirmed')->where('transaction_type', 'withdrawal')->where('created_by', $request->user()->name)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('amount');
+    $monthly_withdrawals = Payments::where('status', 'confirmed')->where('transaction_type', 'withdrawal')->where('created_by', $request->user()->name)->whereMonth('created_at', Carbon::now()->month)->sum('amount');
+    $pending_withdrawals = Payments::where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('amount');
+
 
     $pending_withdrawals = Payments::where('transaction_type', 'withdrawal')->where('created_by', $request->user()->name)->whereDate('created_at', Carbon::today())->sum('amount');
 
     $shortage_allowance = CommissionLines::where('handler', $request->user()->name)
-        ->where('transaction_type', 'savings')->sum('amount');
+        ->where('transaction_type', 'savings')->where('approved', true)->sum('amount');
     $withdrawal_allowance = CommissionLines::where('handler', $request->user()->name)
-        ->where('transaction_type', 'withdrawal')->sum('amount');
+        ->where('transaction_type', 'withdrawal')->where('approved', true)->sum('amount');
     $reg_commissions = CommissionLines::where('handler', $request->user()->name)
         ->where('transaction_type', 'registration')->sum('amount');
 
-    $resp['today_sales'] = '₦' . number_format($todays_sales, 2);
-    $resp['weekly_sales'] = '₦' . number_format($weekly_sales, 2);
-    $resp['monthly_sales'] = '₦' . number_format($monthly_sales, 2);
-    $resp['monthly_withdrawals'] = '₦' . number_format($monthly_sales, 2);
-    $resp['pending_collections'] = '₦' . number_format($pending_collections, 2);
-    $resp['savings_commission'] =  '₦' . number_format($shortage_allowance, 2);
-    $resp['savings_commission'] =  '₦' . number_format($shortage_allowance, 2);
-    $resp['withdrawal_commission'] =  '₦' . number_format($withdrawal_allowance, 2);
-    $resp['loan_commision'] = '₦' . number_format(0, 2);
-    $resp['registration_commissions'] =  '₦' . number_format($reg_commissions, 2);
+    $pending_ = CommissionLines::where('handler', $request->user()->name)
+        ->where('transaction_type', 'registration')->sum('amount');
+
+    $a_c = Customer::where('handler', $request->user()->name)->get();
+    $active_customers = Payments::distinct()->get(['customer_id']);
+
+    $total_customers = Customer::where('handler', $request->user()->name)->count();
+    $new_customers = Customer::where('handler', $request->user()->name)->whereMonth('created_at', Carbon::now()->month)->count();
+    $resp['total_customers'] = $total_customers;
+    $resp['new_customers'] = $new_customers;
+    $resp['active_customers'] = count($active_customers);
+    $resp['today_sales'] = number_format($todays_sales, 0);
+    $resp['weekly_sales'] = number_format($weekly_sales, 0);
+    $resp['monthly_sales'] = number_format($monthly_sales, 0);
+    $resp['monthly_withdrawals'] = number_format($monthly_sales, 0);
+    $resp['pending_collections'] = number_format($pending_collections, 0);
+    $resp['today_withdrawal'] = number_format(($todays_withdrawals * -1), 0);
+    $resp['weekly_withdrawal'] = number_format(($weekly_withdrawals * -1), 0);
+    $resp['monthly_withdrawals'] = number_format(($monthly_withdrawals * -1), 0);
+    $resp['pending_withdrawal'] = number_format(($pending_withdrawals * -1), 0);
+
+    $resp['savings_commission'] = number_format($shortage_allowance, 0);
+    $resp['withdrawal_commission'] = number_format($withdrawal_allowance, 0);
+    $resp['loan_commision'] = number_format(0, 0);
+    $resp['registration_commissions'] = number_format($reg_commissions, 0);
+    $resp['user'] =  $request->user();
 
     return response($resp);
 });
@@ -1149,7 +1322,7 @@ function get_customer_number()
 
 function sendSMS($phone, $message)
 {
-    $url = 'http://pro.strongsmsportal.com/api/?username=neodream&password=Prayer12&message=' . $message . '&sender=Reliance&mobiles=2348108656298';
+    $url = 'http://pro.strongsmsportal.com/api/?username=neodream&password=Prayer12&message=' . $message . '&sender=Reliance&mobiles=234' . formatNumber($phone);
 
     $response =  Http::get($url)->json();
 
@@ -1158,4 +1331,5 @@ function sendSMS($phone, $message)
 
 function formatNumber($phone)
 {
+    return ltrim($phone, $phone[0]);
 }
