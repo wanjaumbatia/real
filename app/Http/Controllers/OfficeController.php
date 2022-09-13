@@ -150,7 +150,7 @@ class OfficeController extends Controller
             $total_regfee = $total_regfee + $item->amount;
         }
 
-        return view('office.reconcile', ['transactions' => $transactions, 'handler' => $id, 'total' => $total ]);
+        return view('office.reconcile', ['transactions' => $transactions, 'handler' => $id, 'total' => $total]);
     }
 
     public function commissions()
@@ -189,9 +189,10 @@ class OfficeController extends Controller
 
         $tt = Payments::where('id', $request->id)->first();
 
-        $tt = Payments::where('batch_number', $request->batch_number)->update([
+        $tt1 = Payments::where('batch_number', $tt->batch_number)->update([
             'status' => 'confirmed',
         ]);
+       
 
         $tt = CommissionLines::where('batch_number', $request->batch_number)->update([
             'approved' => true,
