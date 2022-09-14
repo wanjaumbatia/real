@@ -573,7 +573,7 @@ Route::middleware('auth:sanctum')->get("/accounts/{id}", function ($id) {
 
     $data = array();
     foreach ($accounts as $acc) {
-        $confirmed_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'confirmed')->sum('amount');
+        $confirmed_transaction = Payments::where('savings_account_id', $acc->id)->where('transactions_type','savings')->where('status', 'confirmed')->sum('amount');
         $pending_transaction = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'savings')->where('status', 'pending')->sum('amount');
         $pending_withdrawal = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'withdrawal')->where('status', 'pending')->sum('amount');
         $pending_penalty = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'penalty')->where('status', 'pending')->sum('amount');
