@@ -604,7 +604,7 @@ Route::middleware('auth:sanctum')->get("/account/{id}", function ($id) {
     $acc = SavingsAccount::where('id', $id)->first();
 
     $data = array();
-    $confirmed_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'confirmed')->sum('amount');
+    $confirmed_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'confirmed')->sum('amount') - Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'registration')->where('status', 'confirmed')->sum('amount');
     $pending_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'pending')->where('transaction_type', 'savings')->sum('amount');
     $pending_withdrawals = Payments::where('savings_account_id', $acc->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('amount');
     $plan = Plans::where('id', $acc->plans_id)->first();
@@ -1263,7 +1263,7 @@ Route::middleware("auth:sanctum")->get("/dashboard", function (Request $request)
             $q->where('transaction_type', 'savings')
                 ->orWhere('transaction_type', 'registration');
         })->where('created_by', $request->user()->name)->whereMonth('created_at', Carbon::now()->month)->sum('amount');
-    $pending_collections = Payments::where('status', 'pending')->where(function ($q) {
+    $pending_collections = Payments::where('status', 'pending')->where('created_at',$request->user()->name)->where(function ($q) {
         $q->where('transaction_type', 'savings')
             ->orWhere('transaction_type', 'registration');
     })->sum('amount');
