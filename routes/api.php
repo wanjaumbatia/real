@@ -380,7 +380,7 @@ Route::middleware('auth:sanctum')->get('/running_loans', function (Request $requ
     return response($loans);
 });
 
-Route::middleware('auth:sanctum')->get('/dashboard', function (Request $request) {
+Route::middleware('auth:sanctum')->get('/dashboard12', function (Request $request) {
     //withdrawal 
     $pending_savings = Transactions::where('handler', $request->user()->name)->where('status', 'pending')->get();
     $confirmed_savings = Transactions::where('handler', $request->user()->name)->where('status', 'confirmed')->get();
@@ -1277,7 +1277,7 @@ Route::middleware("auth:sanctum")->get("/dashboard", function (Request $request)
     $pending_withdrawals = Payments::where('transaction_type', 'withdrawal')->where('created_by', $request->user()->name)->whereDate('created_at', Carbon::today())->sum('amount');
 
     $shortage_allowance = CommissionLines::where('handler', $request->user()->name)
-        ->where('transaction_type', 'savings')->where('approved', true)->sum('amount');
+        ->where('transaction_type', 'savings')->sum('amount');
     $withdrawal_allowance = CommissionLines::where('handler', $request->user()->name)
         ->where('transaction_type', 'withdrawal')->where('approved', true)->sum('amount');
     $reg_commissions = CommissionLines::where('handler', $request->user()->name)
@@ -1304,10 +1304,10 @@ Route::middleware("auth:sanctum")->get("/dashboard", function (Request $request)
     $resp['monthly_withdrawals'] = number_format(($monthly_withdrawals * -1), 0);
     $resp['pending_withdrawal'] = number_format(($pending_withdrawals * -1), 0);
 
-    $resp['savings_commission'] = number_format($shortage_allowance, 0);
-    $resp['withdrawal_commission'] = number_format($withdrawal_allowance, 0);
-    $resp['loan_commision'] = number_format(0, 0);
-    $resp['registration_commissions'] = number_format($reg_commissions, 0);
+    $resp['savings_commission'] = number_format($shortage_allowance, 2);
+    $resp['withdrawal_commission'] = number_format($withdrawal_allowance, 2);
+    $resp['loan_commision'] = number_format(0, 2);
+    $resp['registration_commissions'] = number_format($reg_commissions, 2);
     $resp['user'] =  $request->user();
 
     return response($resp);
