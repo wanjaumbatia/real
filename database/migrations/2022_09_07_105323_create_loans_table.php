@@ -19,7 +19,7 @@ class CreateLoansTable extends Migration
             $table->string('name');
             $table->unsignedBigInteger('customer_id');
             $table->dateTime('application_date')->nullable(now());
-            $table->decimal('amount');
+            $table->double('amount');
             $table->decimal('interest_percentage');
             $table->integer('duration');
             $table->decimal('current_savings');

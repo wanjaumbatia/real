@@ -67,21 +67,21 @@ class OfficeController extends Controller
                 $tt = Payments::where('id', $item->id)->update([
                     'status' => 'confirmed',
                     'remarks' => 'reconciled by ' . auth()->user()->name,
-                    'reference' => $reference
                 ]);
+
                 //create commission line
-                $commission = 0.0025 * $item->debit;
-                $comm_line = CommissionLines::create([
-                    'handler' => $request->handler,
-                    'amount' => $commission,
-                    'description' => 'Commission for sales worth ₦' . number_format($item->debit, 2) . ' for payment reference ' . $reference,
-                    'batch_number' => $reference,
-                    'payment_id' => $item->id,
-                    'disbursed' => false,
-                    'branch' => auth()->user()->branch,
-                    'approved' => true,
-                    // 'transaction_type'=>'commission'
-                ]);
+                // $commission = 0.0025 * $item->debit;
+                // $comm_line = CommissionLines::create([
+                //     'handler' => $request->handler,
+                //     'amount' => $commission,
+                //     'description' => 'Commission for sales worth ₦' . number_format($item->debit, 2) . ' for payment reference ' . $reference,
+                //     'batch_number' => $reference,
+                //     'payment_id' => $item->id,
+                //     'disbursed' => false,
+                //     'branch' => auth()->user()->branch,
+                //     'approved' => true,
+                //     // 'transaction_type'=>'commission'
+                // ]);
             }
 
             $shortage_line = ShortageLine::create([
@@ -115,17 +115,9 @@ class OfficeController extends Controller
                     'reference' => $reference
                 ]);
                 //create commission line
-                $commission = 0.0025 * $item->debit;
-                $comm_line = CommissionLines::create([
-                    'handler' => $request->handler,
-                    'amount' => $commission,
-                    'description' => 'Commission for sales worth ₦' . number_format($item->debit, 2) . ' for payment reference ' . $reference,
-                    'batch_number' => $reference,
-                    'payment_id' => $item->id,
-                    'disbursed' => false,
-                    'branch' => $handler,
+                $comm = CommissionLines::where('batch_number', $item->batch_number)->update([
                     'approved' => true,
-                    // 'transaction_type'=>'commission'
+                    'approved_by' => auth()->user()->name
                 ]);
             }
 
@@ -192,7 +184,7 @@ class OfficeController extends Controller
         $tt1 = Payments::where('batch_number', $tt->batch_number)->update([
             'status' => 'confirmed',
         ]);
-       
+
 
         $tt = CommissionLines::where('batch_number', $request->batch_number)->update([
             'approved' => true,

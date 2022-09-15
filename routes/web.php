@@ -73,4 +73,5 @@ Route::middleware(['auth'])->prefix('/customers')->group(function () {
     Route::get('/show', [MembersController::class, 'show'])->name('customer.show');
 });
 
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
