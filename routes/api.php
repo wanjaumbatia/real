@@ -363,7 +363,7 @@ Route::middleware('auth:sanctum')->post("/loan_repayment", function (Request $re
 
     $loan = Loan::where('id', $loan_no)->first();
 
-    if ($loan!=null) {
+    if ($loan != null) {
         $repayment = LoanRepayment::create([
             'no' => $loan->no,
             'loan_number' => $loan->id,
@@ -669,13 +669,16 @@ Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
 
 
     $loan = Loan::where('customer_id', $customer->id)->first();
-    $loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
-    $loan_balance = $loan->amount - $loan_repayment;
-    $loan['balance'] = $loan_balance;
-    $principle = $loan->amount/$loan->duration;
-    $interest = $loan->amount*((float)$loan->interest_percentage/100);
+    if ($loan != null) {
+        $loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
+        $loan_balance = $loan->amount - $loan_repayment;
+        $loan['balance'] = $loan_balance;
 
-    $loan['repayment'] = number_format($principle + $interest, 2);
+        $principle = $loan->amount / $loan->duration;
+        $interest = $loan->amount * ((float)$loan->interest_percentage / 100);
+
+        $loan['repayment'] = number_format($principle + $interest, 2);
+    }
     $result = array();
     $result['customer'] = $customer;
     $result['accounts'] = $data;
@@ -737,7 +740,7 @@ Route::middleware('auth:sanctum')->post("/pay", function (Request $request) {
             ]);
             $total = $total + $item['amount'];
             // if ($regfee < 1000) {
-                
+
             //     $payment = Payments::create([
             //         'savings_account_id' => $acc->id,
             //         'plan' => $acc->plan,
@@ -805,9 +808,9 @@ Route::middleware('auth:sanctum')->post("/pay", function (Request $request) {
             //     ]);
             //     $total = $total + $item['amount'];
             // } else {
-               
+
             // }
-            
+
         } else {
             $payment = Payments::create([
                 'savings_account_id' => $acc->id,
