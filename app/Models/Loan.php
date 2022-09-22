@@ -21,6 +21,7 @@ class Loan extends Model
         'status',
         'remarks',
         'posted',
+        'paid',
         'date_posted',
         'customer_id'
     ];

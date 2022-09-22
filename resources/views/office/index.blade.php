@@ -32,6 +32,9 @@
                                 <th>Sales Executive</th>
                                 <th>Collection</th>
                                 <th>Withdrawal</th>
+                                <th>unconfirmedPay On Field</th>
+                                <th>Pay On Field</th>
+                                <th>Expected Amount</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -39,7 +42,7 @@
                             <tr>
                                 <td>{{$sep['sep']}}</td>
                                 @if($sep['savings']>0)
-                                <td><a href="/office/reconcile/{{$sep['sep']}}" class="text-danger" style="text-decoration: none;">₦ {{number_format($sep['savings'],0)}}</span></td>
+                                <td><a href="#" class="text-danger" style="text-decoration: none;">₦ {{number_format($sep['savings'],0)}}</span></td>
                                 @else
                                 <td><a class="text-success">0</span></td>
                                 @endif
@@ -47,12 +50,27 @@
                                 <td><a href="/office/withdrawal_list/{{$sep['sep']}}" class="text-danger" style="text-decoration: none;">₦ {{number_format($sep['withdrawals'],0)}}</span></td>
                                 @else
                                 <td><a class="text-success">0</span></td>
+                                @endif 
+                                @if($sep['unconfirmed_pof']>0)
+                                <td><a href="/office/pof/{{$sep['sep']}}" class="text-danger" style="text-decoration: none;">₦ {{number_format($sep['unconfirmed_pof'],0)}}</span></td>
+                                @else
+                                <td><a class="text-success"></span>0</td>
                                 @endif
+                                @if($sep['pof']>0)
+                                <td><a href="#" class="text-danger" style="text-decoration: none;">₦ {{number_format($sep['pof'],0)}}</span></td>
+                                @else
+                                <td><a class="text-success"></span>0</td>
+                                @endif
+                                @if($sep['expected']>0)
+                                <td><a href="/office/reconcile/{{$sep['sep']}}" class="text-danger" style="text-decoration: none;">₦ {{number_format($sep['expected'],0)}}</span></td>
+                                @else
+                                <td><a class="text-success"></span>0</td>
+                                @endif
+                                
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
-
                 </div>
             </div>
         </div>

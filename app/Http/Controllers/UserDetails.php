@@ -2,15 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\LoanImport;
+use App\Imports\UsersImport;
 use App\Models\Branch;
 use App\Models\User;
 use App\Models\UserDetails as ModelsUserDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Role;
 
 class UserDetails extends Controller
 {
+
+    public function uploadUsers(Request $request)
+    {
+        Excel::import(new UsersImport, $request->file);
+
+        return redirect()->route('home')->with('success', 'User Imported Successfully');
+    }
+
+    public function uploadLoans(Request $request)
+    {
+        Excel::import(new LoanImport, $request->file);
+
+        return redirect()->route('home')->with('success', 'Loans Imported Successfully');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +35,7 @@ class UserDetails extends Controller
      */
     public function index()
     {
-        if (auth()->user()->admin==true) {
+        if (auth()->user()->admin == true) {
             $users = User::paginate(10);
             return view('admin.fieldteam.index')->with(['data' => $users]);
         } else {

@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name("home");
 
 Auth::routes();
 
@@ -65,6 +65,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/loans/index', [LoanController::class, 'index'])->name('loans.list');
     Route::get('/office/loan_recon_list/{id}', [LoanController::class, 'loan_recon_list'])->name('office.loan_recon_list');
     Route::get('/office/commissions', [OfficeController::class, 'commissions'])->name('office.commissions');
+    Route::get('/office/pof/{id}', [OfficeController::class, 'pay_on_field'])->name('office.pof');
+    Route::post('/import', [UserDetails::class, 'uploadUsers'])->name('import');
+    Route::post('/import_loans', [UserDetails::class, 'uploadLoans'])->name('import_loans');
+    Route::post('/import_customers', [MembersController::class, 'uploadCustomers'])->name('import_customers');
+    Route::get('/create_account', [OfficeController::class, 'import_accounts'])->name('import_accounts');
+    Route::get('/repayment', [OfficeController::class, 'save_loan_repayment'])->name('repayment');
+    Route::get('/branch_formation', [OfficeController::class, 'branch_creation'])->name('branch_formation');
 });
 
 

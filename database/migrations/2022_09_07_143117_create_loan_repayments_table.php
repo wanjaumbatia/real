@@ -18,7 +18,7 @@ class CreateLoanRepaymentsTable extends Migration
             $table->integer('loan_number');
             $table->string('no');
             $table->string('name');
-            $table->decimal('amount');
+            $table->double('amount');
             $table->string('handler');
             $table->string('branch');
             $table->string('description')->nullable();

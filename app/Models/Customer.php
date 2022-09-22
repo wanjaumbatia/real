@@ -11,7 +11,7 @@ class Customer extends Model
 
     protected $fillable = [
         'name','address','gender','town','phone','posted','no','email',
-        'dob', 'handler','address','branch','bank','bankacc','business', 'created_by'
+        'dob', 'username', 'handler','address','branch','bank','bankacc','business', 'created_by'
     ];
 
     public function bankaccounts(){

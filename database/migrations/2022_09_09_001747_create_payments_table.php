@@ -28,14 +28,16 @@ class CreatePaymentsTable extends Migration
             $table->boolean('requires_approval')->default(false);
             $table->boolean('approved')->default(false);            
             $table->boolean('posted')->default(true);
-            $table->string('created_by');
+            $table->string('created_by')->nullable();
             $table->boolean('cps')->default(false);
             $table->boolean('first_approver')->default(false);
             $table->boolean('second_approver')->default(false); 
             $table->boolean('sent_cps')->default(false);
             $table->string('batch_number');
-            $table->string('branch');
-            $table->string('reference')->nullable();                        
+            $table->string('branch')->nullable();
+            $table->string('reference')->nullable(); 
+            $table->boolean('reconciled')->default(false);    
+                                   
             $table->foreign('savings_account_id')
                 ->references('id')
                 ->on('savings_accounts')

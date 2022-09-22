@@ -10,7 +10,7 @@ class SavingsAccount extends Model
     use HasFactory;
 
     protected $fillable = [
-        'customer_id','plans_id','created_by','name','active', 'branch', 'handler','plan','customer','customer_number'
+        'customer_id','plans_id','created_by','name','active', 'branch', 'pledge', 'handler','plan','customer','customer_number'
     ];
    
     public function customer(){

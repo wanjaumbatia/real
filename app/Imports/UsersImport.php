@@ -16,14 +16,15 @@ class UsersImport implements ToModel, WithHeadingRow
      */
     public function model(array $row)
     {
+        
         return new User([
             'name' => $row['name'],
-            'email' => $row['email'],
             'phone' => $row['phone'],
+            'email' => $row['email'],
             'email_verified_at' => now(),
+            'password' => Hash::make($row['password']),
             'branch' => $row['branch'],
-            'password' => Hash::make('password'),
-            'sales_executive' => true
+            'office_admin' => true
         ]);
         
     }

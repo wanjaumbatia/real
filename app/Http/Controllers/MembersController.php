@@ -2,14 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\CustomerImport;
 use App\Models\Customer;
 use App\Models\Transactions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MembersController extends Controller
 {
+
+    public function uploadCustomers(Request $request)
+    {
+        Excel::import(new CustomerImport, $request->file);
+
+        return redirect()->route('home')->with('success', 'Customers Imported Successfully');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -106,7 +115,7 @@ class MembersController extends Controller
     public function show($id)
     {
         $customer = Customer::find($id);
-        return view('customers.show')->with(['customer'=>$customer]);
+        return view('customers.show')->with(['customer' => $customer]);
     }
 
     /**

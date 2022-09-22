@@ -17,17 +17,18 @@ class CreateCustomersTable extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->string('no')->nullable();
-            $table->string('name');
-            $table->string('phone');
+            $table->string('name')->nullable();
+            $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('town')->nullable();
             $table->string('gender')->nullable();
-            $table->string('address');
-            $table->string('handler');    
+            $table->text('address')->nullable();
+            $table->text('username')->nullable();
+            $table->string('handler')->nullable();    
             $table->string('dob')->nullable();    
-            $table->string('business')->nullable(Carbon::now());
+            $table->string('business')->nullable();
             $table->boolean('posted')->default(false);
-            $table->string('branch');
+            $table->string('branch')->nullable();
             $table->string('created_by');
             $table->timestamps();
         });

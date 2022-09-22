@@ -18,6 +18,7 @@ class Payments extends Model
         'remarks',
         'debit',
         'credit',
+        'reconciled',
         'amount',
         'requires_approval',
         'approved',
