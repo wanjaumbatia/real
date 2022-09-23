@@ -592,11 +592,12 @@ Route::middleware('auth:sanctum')->get("/accounts/{id}", function ($id) {
         $saving_accounts = array();
         $saving_accounts['details'] = $acc;
         $loan = Loan::where('customer_id', $acc->customer_id)->first();
-        $loan_repayment = LoanRepayment::where('loan_number', $loan->id)->sum('amount');
-        $loan_balance = $loan->amount - $loan_repayment;
-
-        $loan['balance'] = $loan_balance;
-        $saving_accounts['loan'] = $loan;
+        if ($loan != null) {
+            $loan_repayment = LoanRepayment::where('loan_number', $loan->id)->sum('amount');
+            $loan_balance = $loan->amount - $loan_repayment;
+            $loan['balance'] = $loan_balance;
+            $saving_accounts['loan'] = $loan;
+        }
         $saving_accounts['plan'] = $plan;
         $saving_accounts['confirmed'] = $confirmed_transaction;
         $saving_accounts['pending'] = $pending_transaction;
@@ -673,7 +674,6 @@ Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
         $loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
         $loan_balance = $loan->amount - $loan_repayment;
         $loan['balance'] = $loan_balance;
-
         $principle = $loan->amount / $loan->duration;
         $interest = $loan->amount * ((float)$loan->interest_percentage / 100);
 

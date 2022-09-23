@@ -15,8 +15,10 @@ use App\Models\ShortageLine;
 use App\Models\Transactions;
 use App\Models\User;
 use App\Models\Withdrawal;
+use Faker\Provider\ar_EG\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
@@ -30,6 +32,9 @@ class OfficeController extends Controller
      */
     public function index()
     {
+        $savings = DB::select(DB::raw("select sum(debit) as amount, created_by from payments where branch = '".auth()->user()->branch."' and transaction_type='savings' group by created_by order by created_by asc;"));
+        $seps = DB::select(DB::raw("select sum(debit) as amount, created_by from payments where branch = '".auth()->user()->branch."' and transaction_type='' group by created_by order by created_by asc;"));
+        // dd($seps);
         if (auth()->user()->office_admin = true) {
             $seps = User::where('sales_executive', true)->where('branch', auth()->user()->branch)->get();
             $result = array();

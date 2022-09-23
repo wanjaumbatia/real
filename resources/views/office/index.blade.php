@@ -32,7 +32,7 @@
                                 <th>Sales Executive</th>
                                 <th>Collection</th>
                                 <th>Withdrawal</th>
-                                <th>unconfirmedPay On Field</th>
+                                <th>UnconfirmedPay On Field</th>
                                 <th>Pay On Field</th>
                                 <th>Expected Amount</th>
                             </tr>
