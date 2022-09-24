@@ -142,7 +142,10 @@ class OfficeController extends Controller
             ]);
 
             //send notifications
-            $myEmail = ["wanjaumbatia@gmail.com", 'davidonyango7872@gmail.com'];
+            $myEmail = [
+                "wanjaumbatia@gmail.com", 
+                'davidonyango7872@gmail.com',
+            ];
             Mail::to($myEmail)->send(new Shortage($handler, $short, ($total_transactions + $total_regfee - $pof + $total_loans), 0, auth()->user()->branch, auth()->user()->name));
 
             var_dump(Mail::failures());

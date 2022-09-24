@@ -1,8 +1,5 @@
 @component('mail::message')
-    An account belonging to {{$handler}} who is a sales executive from {{$branch}} has just been reconciled by {{$user}} with a shortage of {{$short}}.
-    Expected amount was {{$expected}} on {{now()}}
-@component('mail::button', ['url'=>'www.google.com'])
-    View Report
-@endcomponent
-
+This is to inform you that {{$handler}} of {{$branch}} has posted a shortage of {{$short}}.
+on {{now()}} against the company policy.
+Therefore (handler)’s account is herby suspended till reconciliation.
 @endcomponent
