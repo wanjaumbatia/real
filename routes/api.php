@@ -50,7 +50,7 @@ Route::post('/tokens/create', function (Request $request) {
 
     //check if user has shortage
     $shortage = ShortageLine::where('sales_executive', $user->name)
-    ->where('cleared', false)->get();
+        ->where('cleared', false)->get();
 
     // if(count($shortage)>0){
     //     return response([
@@ -276,14 +276,14 @@ Route::post("/withdraw", function (Request $request) {
 
 Route::middleware('auth:sanctum')->get("/running_loans/{id}", function (Request $request, $id) {
     $data = array();
-    
+
     $loan = Loan::where('id', $id)->where('status', 'running')->first();
     $data['loan'] = $loan;
     $loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
     $loan_balance = $loan->amount - $loan_repayment - $loan->paid;
     $data['balance'] = $loan_balance;
     //calculate interest
-    $thirty_days_ago = Carbon::now()->subDays(30);    
+    $thirty_days_ago = Carbon::now()->subDays(30);
     $principle = $loan->amount / $loan->duration;
     $interest = $loan->amount * ((float)$loan->interest_percentage / 100);
     $total_repayment = $principle + $interest;
@@ -619,14 +619,14 @@ Route::middleware('auth:sanctum')->get("/accounts/{id}", function ($id) {
         $saving_accounts = array();
         $saving_accounts['details'] = $acc;
         $loan = Loan::where('customer_id', $acc->customer_id)->first();
-       
+
         if ($loan != null) {
             $loan_repayment = LoanRepayment::where('loan_number', $loan->id)->sum('amount');
             $loan_balance = $loan->amount - $loan_repayment;
             $loan['balance'] = $loan_balance;
             $saving_accounts['loan'] = $loan;
         }
-    
+
         $saving_accounts['plan'] = $plan;
         $saving_accounts['confirmed'] = $confirmed_transaction;
         $saving_accounts['pending'] = $pending_transaction;
@@ -671,25 +671,41 @@ Route::middleware('auth:sanctum')->get("/account/{id}", function ($id) {
     return response($saving_accounts);
 });
 
-Route::middleware('auth:sanctum')->post("/verify_number/{id}", function ($id, Request $request){
+Route::middleware('auth:sanctum')->post("/verify_number/{id}", function ($id, Request $request) {
     $customer = Customer::where('id', $id)->first();
 
-    if($customer->phone == $request->phone){
-        return response([
-            'success'=>true,
-            'message'=>'Verified Successfully'
+    if ($customer->phone == $request->phone) {
+        $customer = Customer::where('id', $id)->update([
+            'phone_verified' => true,
         ]);
-    }else{
+        return response([
+            'success' => true,
+            'message' => 'Verified Successfully'
+        ]);
+    } else {
         //send otp
 
         $otp = rand(000000, 999999);
+
         return response([
-            'success'=>false,
-            'message'=>'need verification',
-            'otp'=> $otp
+            'success' => false,
+            'message' => 'need verification',
+            'otp' => $otp
         ]);
     }
 });
+
+Route::middleware('auth:sanctum')->post("/update_customer", function (Request $request){
+    $customer = Customer::where('id', $request->id)->update([
+        'phone_verified' => true,
+    ]);
+
+    return response([
+        "success"=> true,
+        "message" => "Verified Successfully"
+    ]);
+});
+
 
 Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
     $customer = Customer::where('id', $id)->first();
@@ -709,18 +725,18 @@ Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
         $saving_accounts['details'] = $acc;
         $saving_accounts['plan'] = $plan;
         $saving_accounts['confirmed'] = $confirmed_transaction;
-        
+
         $saving_accounts['pending_withdrawal'] = ($pending_withdrawal + $pending_penalty) * -1;
-        if($acc->name="Regular"){
-        $loan = Loan::where('customer_id', $customer->id)->first();
-        if ($loan != null) {
-            $pend_loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'pending')->sum('amount');
-            $pending_transaction = $pending_transaction + $pend_loan_repayment;
+        if ($acc->name = "Regular") {
+            $loan = Loan::where('customer_id', $customer->id)->first();
+            if ($loan != null) {
+                $pend_loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'pending')->sum('amount');
+                $pending_transaction = $pending_transaction + $pend_loan_repayment;
+            }
         }
-    }
         $saving_accounts['pending'] = $pending_transaction;
         $data[] = $saving_accounts;
-       
+
         $total_balance = $total_balance + $confirmed_transaction;
     }
 
