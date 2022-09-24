@@ -727,7 +727,7 @@ Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
         $saving_accounts['plan'] = $plan;
         $saving_accounts['confirmed'] = $confirmed_transaction;
 
-        $saving_accounts['pending_withdrawal'] = ($pending_withdrawal + $pending_penalty) * -1;
+        $saving_accounts['pending_withdrawal'] = number_format(($pending_withdrawal + $pending_penalty) * -1, 0);
         if ($acc->name = "Regular") {
             $loan = Loan::where('customer_id', $customer->id)->first();
             if ($loan != null) {
@@ -735,7 +735,7 @@ Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
                 $pending_transaction = $pending_transaction + $pend_loan_repayment;
             }
         }
-        $saving_accounts['pending'] = $pending_transaction;
+        $saving_accounts['pending'] = number_format($pending_transaction,2);
         $data[] = $saving_accounts;
 
         $total_balance = $total_balance + $confirmed_transaction;
