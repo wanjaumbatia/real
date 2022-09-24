@@ -275,8 +275,21 @@ Route::post("/withdraw", function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->get("/running_loans/{id}", function (Request $request, $id) {
-    $pending_loan = Loan::where('no', $id)->where('status', 'running')->first();
-    return response($pending_loan);
+    $data = array();
+    
+    $loan = Loan::where('id', $id)->where('status', 'running')->first();
+    $data['loan'] = $loan;
+    $loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
+    $loan_balance = $loan->amount - $loan_repayment - $loan->paid;
+    $data['balance'] = $loan_balance;
+    //calculate interest
+    $thirty_days_ago = Carbon::now()->subDays(30);    
+    $principle = $loan->amount / $loan->duration;
+    $interest = $loan->amount * ((float)$loan->interest_percentage / 100);
+    $total_repayment = $principle + $interest;
+    $data['expected_repayment'] = number_format($total_repayment, 2);
+
+    return response($data);
 });
 
 Route::middleware('auth:sanctum')->get("/pending_loans/{id}", function (Request $request, $id) {
@@ -606,12 +619,14 @@ Route::middleware('auth:sanctum')->get("/accounts/{id}", function ($id) {
         $saving_accounts = array();
         $saving_accounts['details'] = $acc;
         $loan = Loan::where('customer_id', $acc->customer_id)->first();
+       
         if ($loan != null) {
             $loan_repayment = LoanRepayment::where('loan_number', $loan->id)->sum('amount');
             $loan_balance = $loan->amount - $loan_repayment;
             $loan['balance'] = $loan_balance;
             $saving_accounts['loan'] = $loan;
         }
+    
         $saving_accounts['plan'] = $plan;
         $saving_accounts['confirmed'] = $confirmed_transaction;
         $saving_accounts['pending'] = $pending_transaction;
@@ -656,6 +671,25 @@ Route::middleware('auth:sanctum')->get("/account/{id}", function ($id) {
     return response($saving_accounts);
 });
 
+Route::middleware('auth:sanctum')->post("/verify_number/{id}", function ($id, Request $request){
+    $customer = Customer::where('id', $id)->first();
+
+    if($customer->phone == $request->phone){
+        return response([
+            'success'=>true,
+            'message'=>'Verified Successfully'
+        ]);
+    }else{
+        //send otp
+
+        $otp = rand(000000, 999999);
+        return response([
+            'success'=>false,
+            'message'=>'need verification',
+            'otp'=> $otp
+        ]);
+    }
+});
 
 Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
     $customer = Customer::where('id', $id)->first();
@@ -675,10 +709,18 @@ Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
         $saving_accounts['details'] = $acc;
         $saving_accounts['plan'] = $plan;
         $saving_accounts['confirmed'] = $confirmed_transaction;
-        $saving_accounts['pending'] = $pending_transaction;
+        
         $saving_accounts['pending_withdrawal'] = ($pending_withdrawal + $pending_penalty) * -1;
+        if($acc->name="Regular"){
+        $loan = Loan::where('customer_id', $customer->id)->first();
+        if ($loan != null) {
+            $pend_loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'pending')->sum('amount');
+            $pending_transaction = $pending_transaction + $pend_loan_repayment;
+        }
+    }
+        $saving_accounts['pending'] = $pending_transaction;
         $data[] = $saving_accounts;
-
+       
         $total_balance = $total_balance + $confirmed_transaction;
     }
 
@@ -686,12 +728,14 @@ Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
     $loan = Loan::where('customer_id', $customer->id)->first();
     if ($loan != null) {
         $loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
-        $loan_balance = $loan->amount - $loan_repayment;
+        $loan_balance = $loan->amount - $loan_repayment - $loan->paid;
         $loan['balance'] = $loan_balance;
         $principle = $loan->amount / $loan->duration;
         $interest = $loan->amount * ((float)$loan->interest_percentage / 100);
-
-        $loan['repayment'] = number_format($principle + $interest, 2);
+        $loan['montly_paid'] = $loan_repayment;
+        $loan['repayment'] = number_format($principle + $interest, 2); // plus 
+        $pending_loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'pending')->sum('amount');
+        $loan['pending_loan_repayment'] = $pending_loan_repayment;
     }
     $result = array();
     $result['customer'] = $customer;
@@ -1362,7 +1406,7 @@ Route::middleware("auth:sanctum")->get("/dashboard", function (Request $request)
     $todays_withdrawals = Payments::where('status', 'confirmed')->where('transaction_type', 'withdrawal')->where('created_by', $request->user()->name)->whereDate('created_at', Carbon::today())->sum('amount');
     $weekly_withdrawals = Payments::where('status', 'confirmed')->where('transaction_type', 'withdrawal')->where('created_by', $request->user()->name)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('amount');
     $monthly_withdrawals = Payments::where('status', 'confirmed')->where('transaction_type', 'withdrawal')->where('created_by', $request->user()->name)->whereMonth('created_at', Carbon::now()->month)->sum('amount');
-    $pending_withdrawals = Payments::where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('amount');
+    $pending_withdrawals = Payments::where('status', 'pending')->where('transaction_type', 'withdrawal')->where('created_by', $request->user()->name)->sum('amount');
 
 
     //$pending_withdrawals = Payments::where('transaction_type', 'withdrawal')->where('created_by', $request->user()->name)->whereDate('created_at', Carbon::today())->sum('amount');
@@ -1412,7 +1456,7 @@ function get_customer_number()
 
 function sendSMS($phone, $message)
 {
-    $phone = "+2348108656298";
+    $phone = "08108656298";
     $url = 'http://pro.strongsmsportal.com/api/?username=neodream&password=Prayer12&message=' . $message . '&sender=Reliance&mobiles=234' . formatNumber($phone);
 
     $response =  Http::get($url)->json();

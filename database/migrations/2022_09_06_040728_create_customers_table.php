@@ -27,6 +27,7 @@ class CreateCustomersTable extends Migration
             $table->string('handler')->nullable();    
             $table->string('dob')->nullable();    
             $table->string('business')->nullable();
+            $table->boolean('phone_verified')->default(false);
             $table->boolean('posted')->default(false);
             $table->string('branch')->nullable();
             $table->string('created_by');
