@@ -684,9 +684,9 @@ Route::middleware('auth:sanctum')->post("/verify_number/{id}", function ($id, Re
         ]);
     } else {
         //send otp
-
         $otp = rand(000000, 999999);
-
+        $msg = 'hello '.$customer->name.' Welcome to REAL cooperative APP. REALdoe your unique No. '.$customer->no.' the OTP to validate your account '.$otp.' for enquires call 09021417778.';
+        sendSMS($request->phone, $msg);
         return response([
             'success' => false,
             'message' => 'need verification',
@@ -698,8 +698,9 @@ Route::middleware('auth:sanctum')->post("/verify_number/{id}", function ($id, Re
 Route::middleware('auth:sanctum')->post("/update_customer", function (Request $request){
     $customer = Customer::where('id', $request->id)->update([
         'phone_verified' => true,
+        'phone' => $request->phone 
     ]);
-
+    
     return response([
         "success"=> true,
         "message" => "Verified Successfully"
