@@ -32,10 +32,10 @@
                             @foreach($data as $item)
                             <tr>
                                 <td>{{$item->name}}</td>
-                                <td>₦ {{$item->savings}}</td>
-                                <td>₦ {{$item->withdrawals}}</td>
-                                <td>₦ {{$item->unconfirmed_pof}}</td>
-                                <td>₦ {{$item->pof}}</td>
+                                <td>₦ {{number_format($item->savings, 0)}}</td>
+                                <td>₦ {{number_format($item->withdrawals, 0)}}</td>
+                                <td>₦ {{number_format($item->unconfirmed_pof, 0)}}</td>
+                                <td>₦ {{number_format($item->pof, 0)}}</td>
                                 @if($item->savings>0)
                                 <td><a href="/office/reconcile/{{$item->name}}" class="text-danger" style="text-decoration: none;">₦ {{number_format($item->savings,0)}}</span></td>
                                 @else
