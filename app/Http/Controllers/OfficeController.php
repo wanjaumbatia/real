@@ -39,7 +39,7 @@ class OfficeController extends Controller
             IFNULL((select sum(credit) from payments where status = 'pending' and transaction_type='withdrawal' and remarks='POF' and created_by=u.name),0) as unconfirmed_pof,
             IFNULL((select sum(credit) from payments where status = 'confirmed' and transaction_type='withdrawal' and remarks='POF' and created_by=u.name),0) as pof,
             IFNULL((select sum(amount) from loan_repayments where status = 'pending' and handler=u.name), 0) as loan_collection
-            from users u where sales_executive='1' and branch='"+auth()->user()->branch+"';");
+            from users u where sales_executive='1' and branch='".auth()->user()->branch."';");
         
         // if (auth()->user()->office_admin = true) {
         //     $seps = User::where('sales_executive', true)->where('branch', auth()->user()->branch)->get('name');
