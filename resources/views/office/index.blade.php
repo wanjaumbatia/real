@@ -33,7 +33,7 @@
                             <tr>
                                 <td>{{$item->name}}</td>
                                 <td>₦ {{number_format($item->savings, 0)}}</td>
-                                <td>₦ <a href="/office/reconcile/{{$item->name}}" class="text-danger" style="text-decoration: none;">{{number_format($item->withdrawals, 0)}}</a></td>
+                                <td>₦ <a href="/office/withdrawal_list/{{$item->name}}" class="text-danger" style="text-decoration: none;">{{number_format($item->withdrawals, 0)}}</a></td>
                                 <td>₦ {{number_format($item->unconfirmed_pof, 0)}}</td>
                                 <td>₦ {{number_format($item->pof, 0)}}</td>
                                 @if($item->savings>0)
