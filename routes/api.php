@@ -725,7 +725,7 @@ Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
         $saving_accounts = array();
         $saving_accounts['details'] = $acc;
         $saving_accounts['plan'] = $plan;
-        $saving_accounts['confirmed'] = $confirmed_transaction;
+        $saving_accounts['confirmed'] = number_format($confirmed_transaction, 2);
 
         $saving_accounts['pending_withdrawal'] = number_format(($pending_withdrawal + $pending_penalty) * -1, 0);
         if ($acc->name = "Regular") {
