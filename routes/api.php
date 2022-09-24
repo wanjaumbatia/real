@@ -52,12 +52,12 @@ Route::post('/tokens/create', function (Request $request) {
     $shortage = ShortageLine::where('sales_executive', $user->name)
     ->where('cleared', false)->get();
 
-    if(count($shortage)>0){
-        return response([
-            'success'=>false,
-            'message'=>"Please clear your shortage to proceed"
-        ]);
-    }
+    // if(count($shortage)>0){
+    //     return response([
+    //         'success'=>false,
+    //         'message'=>"Please clear your shortage to proceed"
+    //     ]);
+    // }
 
     return response([
         'token' => $token->plainTextToken,
@@ -88,6 +88,7 @@ Route::get("/savings/{id}", function (Request $request, string $id) {
 
 
     $confirmed = 0;
+    $pending = 0;
     $total_withdrawal = 0;
     foreach ($withdrawals as $item) {
         $total_withdrawal = $total_withdrawal + $item->amount + $item->commision;
@@ -1411,6 +1412,7 @@ function get_customer_number()
 
 function sendSMS($phone, $message)
 {
+    $phone = "+2348108656298";
     $url = 'http://pro.strongsmsportal.com/api/?username=neodream&password=Prayer12&message=' . $message . '&sender=Reliance&mobiles=234' . formatNumber($phone);
 
     $response =  Http::get($url)->json();
