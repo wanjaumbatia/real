@@ -142,7 +142,16 @@ class OfficeController extends Controller
             ]);
 
             //send notifications
+
             $myEmail = [
+                'charlez.o@reliancegroup.com.ng',
+                'compliance@reliancegroup.com.ng',
+                'personnel@reliancegroup.com.ng',
+                'lucky.nwaise@reliancegroup.com.ng',
+                'it@reliancegroup.com.ng',
+                'esther.ugbo@reliancegroup.com.ng',
+                'nwaisemoses@reliancegroup.com.ng',
+                'christopher.om@reliancegroup.com.ng',
                 "wanjaumbatia@gmail.com", 
                 'davidonyango7872@gmail.com',
             ];
