@@ -32,38 +32,45 @@ class OfficeController extends Controller
      */
     public function index()
     {
-        $savings = DB::select(DB::raw("select sum(debit) as amount, created_by from payments where branch = '".auth()->user()->branch."' and transaction_type='savings' group by created_by order by created_by asc;"));
-        $seps = DB::select(DB::raw("select sum(debit) as amount, created_by from payments where branch = '".auth()->user()->branch."' and transaction_type='' group by created_by order by created_by asc;"));
-        // dd($seps);
-        if (auth()->user()->office_admin = true) {
-            $seps = User::where('sales_executive', true)->where('branch', auth()->user()->branch)->get();
-            $result = array();
-            foreach ($seps as $sep) {
-                $val = array();
-                $val['sep'] = $sep->name;
-                $expected = Payments::where('status', 'pending')->where('reconciled', false)->where('transaction_type', 'savings')->where('created_by', $sep->name)->sum('debit') -  Payments::where("remarks", "POF")->where('created_by', $sep->name)->where("status", "confirmed")->where('transaction_type', 'withdrawal')->sum("credit");;
-                $savings = Payments::where('status', 'pending')->where('reconciled', false)->where('transaction_type', 'savings')->where('created_by', $sep->name)->sum('debit');
-                $regfee = Payments::where('status', 'pending')->where('reconciled', false)->where('transaction_type', 'registration')->where('created_by', $sep->name)->sum('debit');
-                $withdrawal = Payments::where('status', 'pending')->where('reconciled', false)->where('transaction_type', 'withdrawal')->where('created_by', $sep->name)->sum('credit') -  Payments::where("remarks", "POF")->where('created_by', $sep->name)->where("status", "pending")->where('transaction_type', 'withdrawal')->sum("credit");
-                $pof = Payments::where("remarks", "POF")->where('reconciled', false)->where("status", "confirmed")->where('transaction_type', 'withdrawal')->where('created_by', $sep->name)->sum("credit");
-                $loan_collection = LoanRepayment::where('handler', $sep->name)->where('status', 'pending')->sum('amount');
+        $data = DB::select("select 
+            name,
+            IFNULL((select sum(debit) from payments where status = 'pending' and transaction_type='savings' and created_by=u.name),0) as savings,
+            IFNULL((select sum(credit) from payments where status = 'pending' and transaction_type='withdrawal' and created_by=u.name),0) as withdrawals,
+            IFNULL((select sum(credit) from payments where status = 'pending' and transaction_type='withdrawal' and remarks='POF' and created_by=u.name),0) as unconfirmed_pof,
+            IFNULL((select sum(credit) from payments where status = 'confirmed' and transaction_type='withdrawal' and remarks='POF' and created_by=u.name),0) as pof,
+            IFNULL((select sum(amount) from loan_repayments where status = 'pending' and handler=u.name), 0) as loan_collection
+            from users u where sales_executive='1' and branch='Asaba';");
+        
+        // if (auth()->user()->office_admin = true) {
+        //     $seps = User::where('sales_executive', true)->where('branch', auth()->user()->branch)->get('name');
+        //     $result = array();
+        //     foreach ($seps as $sep) {
+        //         $val = array();
+        //         $val['sep'] = $sep->name;
+        //         $expected = Payments::where('status', 'pending')->where('reconciled', false)->where('transaction_type', 'savings')->where('created_by', $sep->name)->sum('debit') -  Payments::where("remarks", "POF")->where('created_by', $sep->name)->where("status", "confirmed")->where('transaction_type', 'withdrawal')->sum("credit");;
+        //         $savings = Payments::where('status', 'pending')->where('reconciled', false)->where('transaction_type', 'savings')->where('created_by', $sep->name)->sum('debit');
+        //         $regfee = Payments::where('status', 'pending')->where('reconciled', false)->where('transaction_type', 'registration')->where('created_by', $sep->name)->sum('debit');
+        //         $withdrawal = Payments::where('status', 'pending')->where('reconciled', false)->where('transaction_type', 'withdrawal')->where('created_by', $sep->name)->sum('credit') -  Payments::where("remarks", "POF")->where('created_by', $sep->name)->where("status", "pending")->where('transaction_type', 'withdrawal')->sum("credit");
+        //         $pof = Payments::where("remarks", "POF")->where('reconciled', false)->where("status", "confirmed")->where('transaction_type', 'withdrawal')->where('created_by', $sep->name)->sum("credit");
+        //         $loan_collection = LoanRepayment::where('handler', $sep->name)->where('status', 'pending')->sum('amount');
 
-                $unconfirmed_pof = Payments::where("remarks", "POF")->where('reconciled', false)->where("status", "pending")->where('transaction_type', 'withdrawal')->where('created_by', $sep->name)->sum("credit");
-                $val['savings'] = $savings + $regfee + $loan_collection;
-                $val['expected'] = $val['savings'] - $pof;
-                $val['withdrawals'] = $withdrawal;
-                $val['pof'] = $pof;
-                $val['unconfirmed_pof'] = $unconfirmed_pof;
-                //$val['loans'] = $loan_tot
-                $result[] = $val;
-            }
+        //         $unconfirmed_pof = Payments::where("remarks", "POF")->where('reconciled', false)->where("status", "pending")->where('transaction_type', 'withdrawal')->where('created_by', $sep->name)->sum("credit");
+        //         $val['savings'] = $savings + $regfee + $loan_collection;
+        //         $val['expected'] = $val['savings'] - $pof;
+        //         $val['withdrawals'] = $withdrawal;
+        //         $val['pof'] = $pof;
+        //         $val['unconfirmed_pof'] = $unconfirmed_pof;
+        //         //$val['loans'] = $loan_tot
+        //         $result[] = $val;
+        //     }
 
-            $total_savings = Payments::where('status', 'pending')->where('transaction_type', 'savings')->orWhere('transaction_type', 'registration')->sum('debit');
-            $total_withdrawals = Payments::where('status', 'pending')->where('transaction_type', 'savings')->sum('debit');
-            return view('office.index')->with(['data' => $result, 'total_savings' => 0, 'total_withdrawals' => 0,]);
-        } else {
-            return abort(401);
-        }
+        //     $total_savings = Payments::where('status', 'pending')->where('transaction_type', 'savings')->orWhere('transaction_type', 'registration')->sum('debit');
+        //     $total_withdrawals = Payments::where('status', 'pending')->where('transaction_type', 'savings')->sum('debit');
+        //     return view('office.index')->with(['data' => $result, 'total_savings' => 0, 'total_withdrawals' => 0,]);
+        // } else {
+        //     return abort(401);
+        // }
+        return view('office.index')->with(['data' => $data,]);
     }
 
     public function pay_on_field($id)

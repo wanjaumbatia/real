@@ -1,5 +1,6 @@
 <?php
 
+use App\Mail\Shortage;
 use App\Models\BankAccounts;
 use App\Models\CommissionLines;
 use App\Models\Customer;
@@ -10,6 +11,7 @@ use App\Models\PaymentLocation;
 use App\Models\Payments;
 use App\Models\Plans;
 use App\Models\SavingsAccount;
+use App\Models\ShortageLine;
 use App\Models\Transactions;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -45,6 +47,17 @@ Route::post('/tokens/create', function (Request $request) {
     }
 
     $token = $user->createToken("token");
+
+    //check if user has shortage
+    $shortage = ShortageLine::where('sales_executive', $user->name)
+    ->where('cleared', false)->get();
+
+    // if(count($shortage)==0){
+    //     return response([
+    //         'success'=>false,
+    //         'message'=>"Please clear your shortage to proceed"
+    //     ]);
+    // }
 
     return response([
         'token' => $token->plainTextToken,

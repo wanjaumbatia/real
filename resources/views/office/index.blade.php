@@ -7,16 +7,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="row">
-                        <div class="col-6">
-                            {{ __('Expected Collection') }} - <span style="font-weight: bold !important;">₦.{{number_format($total_savings,0)}}</span>
-                        </div>
-                        <div class="col-6 text-end">
-                            {{ __('Pending Withdrawals') }} - <span style="font-weight: bold !important;">₦.{{number_format($total_withdrawals,0)}}</span>
-                        </div>
 
-                        <!-- <div class="col-4 text-end">
-                            {{ __('Pending Loan Collection') }} - <span style="font-weight: bold !important;">₦.{{number_format(1000,0)}}</span>
-                        </div> -->
                     </div>
                 </div>
                 <div class="card-body">
@@ -38,35 +29,18 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($data as $sep)
+                            @foreach($data as $item)
                             <tr>
-                                <td>{{$sep['sep']}}</td>
-                                @if($sep['savings']>0)
-                                <td><a href="#" class="text-danger" style="text-decoration: none;">₦ {{number_format($sep['savings'],0)}}</span></td>
-                                @else
-                                <td><a class="text-success">0</span></td>
-                                @endif
-                                @if($sep['withdrawals']>0)
-                                <td><a href="/office/withdrawal_list/{{$sep['sep']}}" class="text-danger" style="text-decoration: none;">₦ {{number_format($sep['withdrawals'],0)}}</span></td>
-                                @else
-                                <td><a class="text-success">0</span></td>
-                                @endif 
-                                @if($sep['unconfirmed_pof']>0)
-                                <td><a href="/office/pof/{{$sep['sep']}}" class="text-danger" style="text-decoration: none;">₦ {{number_format($sep['unconfirmed_pof'],0)}}</span></td>
+                                <td>{{$item->name}}</td>
+                                <td>₦ {{$item->savings}}</td>
+                                <td>₦ {{$item->withdrawals}}</td>
+                                <td>₦ {{$item->unconfirmed_pof}}</td>
+                                <td>₦ {{$item->pof}}</td>
+                                @if($item->savings>0)
+                                <td><a href="/office/reconcile/{{$item->name}}" class="text-danger" style="text-decoration: none;">₦ {{number_format($item->savings,0)}}</span></td>
                                 @else
                                 <td><a class="text-success"></span>0</td>
                                 @endif
-                                @if($sep['pof']>0)
-                                <td><a href="#" class="text-danger" style="text-decoration: none;">₦ {{number_format($sep['pof'],0)}}</span></td>
-                                @else
-                                <td><a class="text-success"></span>0</td>
-                                @endif
-                                @if($sep['expected']>0)
-                                <td><a href="/office/reconcile/{{$sep['sep']}}" class="text-danger" style="text-decoration: none;">₦ {{number_format($sep['expected'],0)}}</span></td>
-                                @else
-                                <td><a class="text-success"></span>0</td>
-                                @endif
-                                
                             </tr>
                             @endforeach
                         </tbody>

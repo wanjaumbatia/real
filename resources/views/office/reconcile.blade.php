@@ -134,7 +134,7 @@
                                             @foreach($loans as $item)
                                             <tr>
                                                 <td>{{$item->name}}</td>
-                                                <td>₦. {{number_format($item->amount,0)}}</td>
+                                                <td>₦ {{number_format($item->amount,0)}}</td>
                                                 <td>{{date('d-m-Y h:i:s A', strtotime($item->created_at))}}</td>
                                                 <td>{{$item->handler}}</td>
                                                 <td>{{$item->branch}}</td>
