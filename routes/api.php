@@ -746,10 +746,11 @@ Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
     if ($loan != null) {
         $loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
         $loan_balance = $loan->amount - $loan_repayment - $loan->paid;
-        $loan['balance'] = $loan_balance;
+        $loan['balance'] = $loan_balance ;
         $principle = $loan->amount / $loan->duration;
         $interest = $loan->amount * ((float)$loan->interest_percentage / 100);
-        $loan['montly_paid'] = $loan_repayment;
+        $loan['monthly_paid'] = $loan_repayment;
+        $loan['monthly_balance'] = number_format($principle + $interest - $loan_repayment, 2);
         $loan['repayment'] = number_format($principle + $interest, 2); // plus 
         $pending_loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'pending')->sum('amount');
         $loan['pending_loan_repayment'] = $pending_loan_repayment;
