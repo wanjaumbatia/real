@@ -749,7 +749,7 @@ Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
         $principle = $loan->amount / $loan->duration;
         $interest = $loan->amount * ((float)$loan->interest_percentage / 100);
         $loan['monthly_paid'] = $loan_repayment;
-        $loan['balance'] = $loan_balance + $interest;
+        $loan['balance'] = number_format($loan_balance + $interest, 2);
         $loan['monthly_balance'] = number_format($principle + $interest - $loan_repayment, 2);
         $loan['repayment'] = number_format($principle + $interest, 2); // plus 
         $pending_loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'pending')->sum('amount');
@@ -926,9 +926,11 @@ Route::middleware('auth:sanctum')->post("/pay", function (Request $request) {
     }
 
     $cust = Customer::where('id', $customer_id)->first();
+    $balance = 10000; 
 
-    $msg = "Dear " . $cust->name . ". Your payment of NGN " . number_format($total, 0) . " has been received. Thank you for saving with us.";
-    //$res = sendSMS($phone, $msg);
+    //$msg = "Dear " . $cust->name . ". Your payment of NGN " . number_format($total, 0) . " has been received. Thank you for saving with us.";
+    $msg = "Thanks for your patronage we rec'vd ".number_format($total, 0) ." your bal is ".number_format($balance, 0)." for inquires call 09021417778";
+    $res = sendSMS($phone, $msg);
 
     $location = PaymentLocation::create([
         '' => $reference,
