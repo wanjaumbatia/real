@@ -33,11 +33,11 @@
                             <tr>
                                 <td>{{$item->name}}</td>
                                 @if($item->savings>0)
-                                <td><a href="" class="text-danger" style="text-decoration: none;">₦ {{number_format($item->savings + $item->loan_collection, 0)}}</span></td>
+                                <td><a  class="text-danger" style="text-decoration: none;">₦ {{number_format($item->savings + $item->loan_collection, 0)}}</span></td>
                                 @else
                                 <td><a class="text-success"></span>0</td>
                                 @endif
-                                @if($item->savings>0)
+                                @if($item->withdrawals>0)
                                 <td><a href="/office/withdrawal_list/{{$item->name}}" class="text-danger" style="text-decoration: none;">₦ {{number_format($item->withdrawals - $item->unconfirmed_pof, 0)}}</a></span></td>
                                 @else
                                 <td><a class="text-success"></span>0</td>
@@ -49,7 +49,7 @@
                                 @endif
 
                                 @if($item->pof>0)
-                                <td><a href="" class="text-danger" style="text-decoration: none;">₦ {{number_format($item->pof,0)}}</span></td>
+                                <td><a class="text-danger" style="text-decoration: none;">₦ {{number_format($item->pof,0)}}</span></td>
                                 @else
                                 <td><a class="text-success"></span>0</td>
                                 @endif
