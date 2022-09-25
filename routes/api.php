@@ -696,6 +696,16 @@ Route::middleware('auth:sanctum')->post("/verify_number/{id}", function ($id, Re
 });
 
 Route::middleware('auth:sanctum')->post("/update_customer", function (Request $request) {
+    //check if phone number is in syste,
+    //check dublicate number
+    $phone_check = Customer::where('phone', $request->phone)->get();
+
+    if (count($phone_check) > 0) {
+        return response([
+            'success' => false,
+            'message' => 'Phone number is already in use by another customer'
+        ]);
+    }
     $customer = Customer::where('id', $request->id)->update([
         'phone_verified' => true,
         'phone' => $request->phone
@@ -725,7 +735,7 @@ function get_total_balance($id)
         $saving_accounts['confirmed'] = number_format($confirmed_transaction, 2);
 
         $saving_accounts['pending_withdrawal'] = number_format(($pending_withdrawal + $pending_penalty) * -1, 2);
-        
+
         $saving_accounts['pending'] = number_format($pending_transaction, 2);
         $data[] = $saving_accounts;
         Log::warning($confirmed_transaction);
