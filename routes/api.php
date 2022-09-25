@@ -1513,7 +1513,6 @@ function get_customer_number()
 
 function sendSMS($phone, $message)
 {
-    $phone = "08108656298";
     $url = 'http://pro.strongsmsportal.com/api/?username=neodream&password=Prayer12&message=' . $message . '&sender=Reliance&mobiles=234' . formatNumber($phone);
 
     $response =  Http::get($url)->json();

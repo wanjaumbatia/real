@@ -25,6 +25,12 @@ use Throwable;
 
 class OfficeController extends Controller
 {
+
+    public function __construct(){
+        ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', '5000');
+        ini_set('request_terminate_time', '5000');
+    }
     /**
      * Display a listing of the resource.
      *
