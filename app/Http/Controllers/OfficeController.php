@@ -39,7 +39,7 @@ class OfficeController extends Controller
             IFNULL((select sum(credit) from payments where status = 'pending' and transaction_type='withdrawal' and remarks='POF' and created_by=u.name),0) as unconfirmed_pof,
             IFNULL((select sum(credit) from payments where status = 'confirmed' and transaction_type='withdrawal' and remarks='POF' and created_by=u.name),0) as pof,
             IFNULL((select sum(amount) from loan_repayments where status = 'pending' and handler=u.name), 0) as loan_collection
-            from users u where sales_executive='1' and branch='" . auth()->user()->branch . "';");
+            from users u where sales_executive='1' and branch='" . auth()->user()->branch . "' order by savings desc;");
 
         $total_expected = 0;
         foreach ($data as $item) {
@@ -507,7 +507,7 @@ class OfficeController extends Controller
 
         $transaction = Withdrawal::where('status', 'pending')->where('id', $request->id)->first();
 
-        return redirect()->route('office.list',);
+        return redirect()->route('office.withdrawal_list',);
     }
 
 
