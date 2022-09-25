@@ -23,7 +23,7 @@
                                 <th>Sales Executive</th>
                                 <th>Collection</th>
                                 <th>Withdrawal</th>
-                                <th>UnconfirmedPay On Field</th>
+                                <th>Unconfirmed POF</th>
                                 <th>Pay On Field</th>
                                 <th>Expected Amount</th>
                             </tr>
@@ -32,12 +32,29 @@
                             @foreach($data as $item)
                             <tr>
                                 <td>{{$item->name}}</td>
-                                <td>₦ {{number_format($item->savings, 0)}}</td>
-                                <td>₦ <a href="/office/withdrawal_list/{{$item->name}}" class="text-danger" style="text-decoration: none;">{{number_format($item->withdrawals, 0)}}</a></td>
-                                <td>₦ {{number_format($item->unconfirmed_pof, 0)}}</td>
-                                <td>₦ {{number_format($item->pof, 0)}}</td>
                                 @if($item->savings>0)
-                                <td><a href="/office/reconcile/{{$item->name}}" class="text-danger" style="text-decoration: none;">₦ {{number_format($item->savings,0)}}</span></td>
+                                <td><a href="" class="text-danger" style="text-decoration: none;">₦ {{number_format($item->savings + $item->loan_collection, 0)}}</span></td>
+                                @else
+                                <td><a class="text-success"></span>0</td>
+                                @endif
+                                @if($item->savings>0)
+                                <td><a href="/office/withdrawal_list/{{$item->name}}" class="text-danger" style="text-decoration: none;">₦ {{number_format($item->withdrawals - $item->unconfirmed_pof, 0)}}</a></span></td>
+                                @else
+                                <td><a class="text-success"></span>0</td>
+                                @endif
+                                @if($item->unconfirmed_pof>0)
+                                <td><a href="/office/pof/{{$item->name}}" class="text-danger" style="text-decoration: none;">₦ {{number_format($item->unconfirmed_pof,0)}}</span></td>
+                                @else
+                                <td><a class="text-success"></span>0</td>
+                                @endif
+
+                                @if($item->pof>0)
+                                <td><a href="" class="text-danger" style="text-decoration: none;">₦ {{number_format($item->pof,0)}}</span></td>
+                                @else
+                                <td><a class="text-success"></span>0</td>
+                                @endif
+                                @if($item->savings>0)
+                                <td><a href="/office/reconcile/{{$item->name}}" class="text-danger" style="text-decoration: none;">₦ {{number_format($item->savings+$item->loan_collection,0)}}</span></td>
                                 @else
                                 <td><a class="text-success"></span>0</td>
                                 @endif
