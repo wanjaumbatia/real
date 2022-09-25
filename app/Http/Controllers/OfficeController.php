@@ -513,7 +513,7 @@ class OfficeController extends Controller
 
         $transaction = Withdrawal::where('status', 'pending')->where('id', $request->id)->first();
 
-        return redirect()->route('office.index');
+        return redirect()->route('office.list');
     }
 
 
