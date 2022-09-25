@@ -683,7 +683,7 @@ Route::middleware('auth:sanctum')->post("/verify_number/{id}", function ($id, Re
     } else {
         //send otp
         $otp = rand(000000, 999999);
-        $msg = 'Hello ' . $customer->name . ' Welcome to REAL cooperative APP. REALdoe your unique No. ' . $customer->no . ' the OTP to validate your account ' . $otp . ' for enquires call 09021417778.';
+        $msg = 'Hello ' . $customer->name . ' Welcome to REAL cooperative APP. Use ' . $otp . ' as OTP to validate your account  for enquires call 09021417778.';
         sendSMS($request->phone, $msg);
         return response([
             'success' => false,
