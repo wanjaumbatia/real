@@ -307,8 +307,6 @@ Route::middleware('auth:sanctum')->post("/loan_request", function (Request $requ
     $confirmed_transaction = Transactions::where('no', $request->no)->where('status', 'confirmed')->get();
     $withdrawals = Withdrawal::where('no', $request->no)->where('status', 'confirmed')->get();
 
-
-
     if ($balance < ($request->amount * 0.2)) {
         return response([
             'success' => false,
