@@ -6,8 +6,8 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <div class="row">
-                        Total Expected = {{number_format($total_expected, 2)}}
+                    <div class="row font-weight-bold">
+                        Total Expected: ₦ {{number_format($total_expected, 2)}}
                     </div>
                 </div>
                 <div class="card-body">
