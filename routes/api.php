@@ -52,10 +52,10 @@ Route::post('/tokens/create', function (Request $request) {
     $shortage = ShortageLine::where('sales_executive', $user->name)
         ->where('cleared', false)->get();
 
-    if(count($shortage)>0){
+    if (count($shortage) > 0) {
         return response([
-            'success'=>false,
-            'message'=>"Please clear your shortage to proceed"
+            'success' => false,
+            'message' => "Please clear your shortage to proceed"
         ]);
     }
 
@@ -685,7 +685,7 @@ Route::middleware('auth:sanctum')->post("/verify_number/{id}", function ($id, Re
     } else {
         //send otp
         $otp = rand(000000, 999999);
-        $msg = 'hello '.$customer->name.' Welcome to REAL cooperative APP. REALdoe your unique No. '.$customer->no.' the OTP to validate your account '.$otp.' for enquires call 09021417778.';
+        $msg = 'hello ' . $customer->name . ' Welcome to REAL cooperative APP. REALdoe your unique No. ' . $customer->no . ' the OTP to validate your account ' . $otp . ' for enquires call 09021417778.';
         sendSMS($request->phone, $msg);
         return response([
             'success' => false,
@@ -695,17 +695,44 @@ Route::middleware('auth:sanctum')->post("/verify_number/{id}", function ($id, Re
     }
 });
 
-Route::middleware('auth:sanctum')->post("/update_customer", function (Request $request){
+Route::middleware('auth:sanctum')->post("/update_customer", function (Request $request) {
     $customer = Customer::where('id', $request->id)->update([
         'phone_verified' => true,
-        'phone' => $request->phone 
+        'phone' => $request->phone
     ]);
-    
+
     return response([
-        "success"=> true,
+        "success" => true,
         "message" => "Verified Successfully"
     ]);
 });
+
+function get_total_balance($id)
+{
+    $accounts = SavingsAccount::where('customer_id', $id)->orderBy('id', 'ASC')->where('active', true)->get();
+
+    $data = array();
+    $total_balance = 0;
+    foreach ($accounts as $acc) {
+        $confirmed_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'confirmed')->sum('amount') - Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'registration')->where('status', 'confirmed')->sum('amount');
+        $pending_transaction = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'savings')->where('status', 'pending')->sum('amount');
+        $pending_withdrawal = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'withdrawal')->where('status', 'pending')->sum('amount');
+        $pending_penalty = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'penalty')->where('status', 'pending')->sum('amount');
+        $plan = Plans::where('id', $acc->plans_id)->first();
+        $saving_accounts = array();
+        $saving_accounts['details'] = $acc;
+        $saving_accounts['plan'] = $plan;
+        $saving_accounts['confirmed'] = number_format($confirmed_transaction, 2);
+
+        $saving_accounts['pending_withdrawal'] = number_format(($pending_withdrawal + $pending_penalty) * -1, 2);
+        
+        $saving_accounts['pending'] = number_format($pending_transaction, 2);
+        $data[] = $saving_accounts;
+        Log::warning($confirmed_transaction);
+        $total_balance = $total_balance + $confirmed_transaction;
+    }
+    return $total_balance;
+}
 
 
 Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
@@ -735,7 +762,7 @@ Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
                 $pending_transaction = $pending_transaction + $pend_loan_repayment;
             }
         }
-        $saving_accounts['pending'] = number_format($pending_transaction,2);
+        $saving_accounts['pending'] = number_format($pending_transaction, 2);
         $data[] = $saving_accounts;
         Log::warning($confirmed_transaction);
         $total_balance = $total_balance + $confirmed_transaction;
@@ -926,10 +953,10 @@ Route::middleware('auth:sanctum')->post("/pay", function (Request $request) {
     }
 
     $cust = Customer::where('id', $customer_id)->first();
-    $balance = 10000; 
+    $balance = get_total_balance($customer_id);
 
     //$msg = "Dear " . $cust->name . ". Your payment of NGN " . number_format($total, 0) . " has been received. Thank you for saving with us.";
-    $msg = "Thanks for your patronage we rec'vd ".number_format($total, 0) ." your bal is ".number_format($balance, 0)." for inquires call 09021417778";
+    $msg = "Thanks for your patronage we rec'vd " . number_format($total, 0) . " your bal is " . number_format($balance, 0) . " for inquires call 09021417778";
     $res = sendSMS($phone, $msg);
 
     $location = PaymentLocation::create([
@@ -1215,7 +1242,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                 'user_id' => $request->user()->id
             ]);
 
-            $msg = 'Dear Customer, use ' . $otp . ' as OTP to withdraw '. number_format($request->amount, 0);
+            $msg = 'Dear Customer, use ' . $otp . ' as OTP to withdraw ' . number_format($request->amount, 0);
 
             $resp = sendSMS($customer->phone, $msg);
             return response([
@@ -1320,7 +1347,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
         'user_id' => $request->user()->id
     ]);
 
-    $msg = 'Dear Customer, use ' . $otp . ' as OTP to withdraw '. number_format($request->amount, 0);
+    $msg = 'Dear Customer, use ' . $otp . ' as OTP to withdraw ' . number_format($request->amount, 0);
 
     $resp = sendSMS($customer->phone, $msg);
 
