@@ -22,6 +22,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('branch')->nullable();
             $table->boolean('active')->default(true);
+            $table->string('email_address')->nullable();
             $table->boolean('sales_executive')->default(false);
             $table->boolean('branch_manager')->default(false);
             $table->boolean('office_admin')->default(false);

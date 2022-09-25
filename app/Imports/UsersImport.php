@@ -24,6 +24,7 @@ class UsersImport implements ToModel, WithHeadingRow
             'email_verified_at' => now(),
             'password' => Hash::make($row['password']),
             'branch' => $row['branch'],
+            'email_address'=>$row['email_address'],
             'office_admin' => true
         ]);
         
