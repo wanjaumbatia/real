@@ -1215,7 +1215,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                 'user_id' => $request->user()->id
             ]);
 
-            $msg = 'Your Withdrawal reYour Otp is ' . $otp;
+            $msg = 'Dear Customer, use ' . $otp . ' as OTP to withdraw '. number_format($request->amount, 0);
 
             $resp = sendSMS($customer->phone, $msg);
             return response([
@@ -1320,7 +1320,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
         'user_id' => $request->user()->id
     ]);
 
-    $msg = 'Your one time password is ' . $otp;
+    $msg = 'Dear Customer, use ' . $otp . ' as OTP to withdraw '. number_format($request->amount, 0);
 
     $resp = sendSMS($customer->phone, $msg);
 
