@@ -683,7 +683,7 @@ Route::middleware('auth:sanctum')->post("/verify_number/{id}", function ($id, Re
     } else {
         //send otp
         $otp = rand(000000, 999999);
-        $msg = 'Hello ' . $customer->name . ' Welcome to REAL cooperative APP. Use ' . $otp . ' as OTP to validate your account  for enquires call 09021417778.';
+        $msg = 'Hello ' . $customer->name . ' Welcome to REAL cooperative APP. Use ' . $otp . ' as your REALdoe verification code. For enquires call 09021417778.';
         sendSMS($request->phone, $msg);
         return response([
             'success' => false,
@@ -1250,7 +1250,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                 'user_id' => $request->user()->id
             ]);
 
-            $msg = 'Dear Customer, use ' . $otp . ' as OTP to withdraw ' . number_format($request->amount, 0);
+            $msg = 'Dear Customer, use ' . $otp . ' as OTP to withdraw ' . number_format($request->amount, 0).'';
 
             $resp = sendSMS($customer->phone, $msg);
             return response([
@@ -1299,7 +1299,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
             'customer_id' => $account->customer_id,
             'customer_name' => $account->customer,
             'transaction_type' => 'withdrawal',
-            'status' => 'open',
+            'status' => 'pending',
             'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
             'debit' => 0,
             'credit' => $request->amount,
