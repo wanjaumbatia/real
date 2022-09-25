@@ -685,7 +685,7 @@ Route::middleware('auth:sanctum')->post("/verify_number/{id}", function ($id, Re
     } else {
         //send otp
         $otp = rand(000000, 999999);
-        $msg = 'hello ' . $customer->name . ' Welcome to REAL cooperative APP. REALdoe your unique No. ' . $customer->no . ' the OTP to validate your account ' . $otp . ' for enquires call 09021417778.';
+        $msg = 'Hello ' . $customer->name . ' Welcome to REAL cooperative APP. REALdoe your unique No. ' . $customer->no . ' the OTP to validate your account ' . $otp . ' for enquires call 09021417778.';
         sendSMS($request->phone, $msg);
         return response([
             'success' => false,
@@ -698,14 +698,14 @@ Route::middleware('auth:sanctum')->post("/verify_number/{id}", function ($id, Re
 Route::middleware('auth:sanctum')->post("/update_customer", function (Request $request) {
     //check if phone number is in syste,
     //check dublicate number
-    $phone_check = Customer::where('phone', $request->phone)->get();
+    // $phone_check = Customer::where('phone', $request->phone)->get();
 
-    if (count($phone_check) > 0) {
-        return response([
-            'success' => false,
-            'message' => 'Phone number is already in use by another customer'
-        ]);
-    }
+    // if (count($phone_check) > 0) {
+    //     return response([
+    //         'success' => false,
+    //         'message' => 'Phone number is already in use by another customer'
+    //     ]);
+    // }
     $customer = Customer::where('id', $request->id)->update([
         'phone_verified' => true,
         'phone' => $request->phone
