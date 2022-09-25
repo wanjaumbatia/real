@@ -1113,7 +1113,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                 'customer_id' => $account->customer_id,
                 'customer_name' => $account->customer,
                 'transaction_type' => 'withdrawal',
-                'status' => 'open',
+                'status' => 'pending',
                 'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
                 'debit' => 0,
                 'credit' => $request->amount,

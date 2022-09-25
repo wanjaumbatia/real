@@ -7,7 +7,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="row">
-                        Total Expected = {{number_format(total_expected, 2)}}
+                        Total Expected = {{number_format($total_expected, 2)}}
                     </div>
                 </div>
                 <div class="card-body">
