@@ -52,12 +52,12 @@ Route::post('/tokens/create', function (Request $request) {
     $shortage = ShortageLine::where('sales_executive', $user->name)
         ->where('cleared', false)->get();
 
-    // if(count($shortage)>0){
-    //     return response([
-    //         'success'=>false,
-    //         'message'=>"Please clear your shortage to proceed"
-    //     ]);
-    // }
+    if(count($shortage)>0){
+        return response([
+            'success'=>false,
+            'message'=>"Please clear your shortage to proceed"
+        ]);
+    }
 
     return response([
         'token' => $token->plainTextToken,
