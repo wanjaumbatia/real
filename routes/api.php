@@ -742,9 +742,8 @@ Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
         $saving_accounts['details'] = $acc;
         $saving_accounts['plan'] = $plan;
         $saving_accounts['confirmed'] = number_format($confirmed_transaction, 2);
-
         $saving_accounts['pending_withdrawal'] = number_format(($pending_withdrawal + $pending_penalty) * -1, 2);
-        if ($acc->name = "Regular") {
+        if ($acc->plan == "Regular") {
             $loan = Loan::where('customer_id', $customer->id)->first();
             if ($loan != null) {
                 $pend_loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'pending')->sum('amount');
@@ -753,10 +752,8 @@ Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
         }
         $saving_accounts['pending'] = number_format($pending_transaction, 2);
         $data[] = $saving_accounts;
-        Log::warning($confirmed_transaction);
         $total_balance = $total_balance + $confirmed_transaction;
     }
-
 
     $loan = Loan::where('customer_id', $customer->id)->first();
     if ($loan != null) {
@@ -771,6 +768,7 @@ Route::middleware('auth:sanctum')->get("/customers/{id}", function ($id) {
         $pending_loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'pending')->sum('amount');
         $loan['pending_loan_repayment'] = $pending_loan_repayment;
     }
+
     $result = array();
     $result['customer'] = $customer;
     $result['accounts'] = $data;

@@ -23,7 +23,7 @@ class CreateLoansTable extends Migration
             $table->double('paid')->nullable();
             $table->decimal('interest_percentage');
             $table->integer('duration');
-            $table->decimal('current_savings');
+            $table->double('current_savings');
             $table->string('handler')->nullable();
             $table->string('purpose')->nullable();
             $table->string('status')->default('application');
