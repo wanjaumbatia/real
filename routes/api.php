@@ -380,6 +380,7 @@ Route::middleware('auth:sanctum')->post("/loan_repayment", function (Request $re
         ]);
     }
 
+    "Thanks for your patronage we rec'vd " . number_format($request->amount, 0) . " as loan repayment. for inquires call 09021417778";
     return response([
         'success' => true
     ]);
