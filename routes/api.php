@@ -660,11 +660,12 @@ Route::middleware('auth:sanctum')->post("/verify_number/{id}", function ($id, Re
     } else {
         //send otp
         $otp = rand(000000, 999999);
-        $msg = 'Hello ' . $customer->name . ' Welcome to REAL cooperative APP. Use ' . $otp . ' as your REALdoe verification code. For enquires call 09021417778.';
+        $msg = 'Hello ' . $customer->name . ' Welcome to REAL cooperative APP. Use ' . $otp . ' as your REALdoe verification. For enquires call 09021417778.';
         // $res = OtpCode::create([
         //     'code' => $otp,
         //     'user_id' => $request->user()->id
         // ]);
+        Log::warning($msg);
         sendSMS($request->phone, $msg);
         return response([
             'success' => false,
@@ -1473,9 +1474,12 @@ function get_customer_number()
 
 function sendSMS($phone, $message)
 {
+    Log::warning('sending');
     $url = 'http://pro.strongsmsportal.com/api/?username=neodream&password=Prayer12&message=' . $message . '&sender=Reliance&mobiles=234' . formatNumber($phone);
 
     $response =  Http::get($url)->json();
+
+    Log::info($response);
 
     return $response;
 }
