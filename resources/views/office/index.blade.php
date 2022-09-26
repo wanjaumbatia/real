@@ -32,8 +32,8 @@
                             @foreach($data as $item)
                             <tr>
                                 <td>{{$item->name}}</td>
-                                @if($item->savings>0)
-                                <td><a  class="text-danger" style="text-decoration: none;">₦ {{number_format($item->savings + $item->loan_collection, 0)}}</span></td>
+                                @if(($item->savings+$item->loan_collection)>0)
+                                <td><a  class="text-danger" style="text-decoration: none;">₦ {{number_format(($item->savings + $item->loan_collection), 0)}}</span></td>
                                 @else
                                 <td><a class="text-success"></span>0</td>
                                 @endif
@@ -53,7 +53,7 @@
                                 @else
                                 <td><a class="text-success"></span>0</td>
                                 @endif
-                                @if($item->savings>0)
+                                @if(($item->savings+$item->loan_collection)>0)
                                 <td><a href="/office/reconcile/{{$item->name}}" class="text-danger" style="text-decoration: none;">₦ {{number_format($item->savings+$item->loan_collection - $item->pof,0)}}</span></td>
                                 @else
                                 <td><a class="text-success"></span>0</td>
