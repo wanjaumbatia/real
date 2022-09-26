@@ -300,8 +300,8 @@ Route::middleware('auth:sanctum')->get("/pending_loans/{id}", function (Request 
 
 Route::middleware('auth:sanctum')->post("/loan_request", function (Request $request) {
     $customer = Customer::where('no', $request->no)->first();
-    $account = SavingsAccount::where('customer_id', $customer->id)->first();
-    $balance = Payments::where('customer_id', $customer->id)->where('status', 'confirmed')->sum('amount');
+    
+    $balance = get_total_balance($customer->id);
 
     $pending_transaction = Transactions::where('no', $request->no)->where('status', 'pending')->get();
     $confirmed_transaction = Transactions::where('no', $request->no)->where('status', 'confirmed')->get();
