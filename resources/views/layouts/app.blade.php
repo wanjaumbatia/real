@@ -42,22 +42,7 @@
                     <ul class="navbar-nav me-auto">
                         @guest
                         @else
-                        @if(Auth::user()->admin == true)
-                        <li class="nav-item">
-                            <a class="nav-link active" href="{{ route('admin.team.list') }}">{{ __('Users') }}</a>
-                        </li>
-                        @endif
-                        @if(Auth::user()->operations_manager == true)
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('admin.targets.list') }}">{{ __('Targets') }}</a>
-                        </li>
-                        @endif
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('contributions.list') }}">{{ __('Contributions') }}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('withdrawals.list') }}">{{ __('Withdrawals') }}</a>
-                        </li>
+
                         @if(Auth::user()->office_admin == true)
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('office.list') }}">{{ __('Reconciliation') }}</a>
