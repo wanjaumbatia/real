@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth'])->get('/', [HomeController::class, 'index'])->name("home");
+Route::middleware(['auth'])->get('/', [OfficeController::class, 'index'])->name("home");
 
 Auth::routes();
 
@@ -91,4 +91,4 @@ Route::middleware(['auth'])->prefix('/customers')->group(function () {
 });
 
 
-Route::get('/home', [OfficeController::class, 'index'])->name('home');
+// Route::get('/home', [OfficeController::class, 'index'])->name('home');
