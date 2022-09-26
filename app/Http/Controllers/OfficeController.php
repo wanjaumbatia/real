@@ -231,6 +231,7 @@ class OfficeController extends Controller
         $seps = User::where('sales_executive', true)->get();
         foreach ($seps as $item) {
             $customers = Customer::where('handler', $item->name)->get();
+            
             foreach ($customers as $customer) {
                 Customer::where('id', $customer->id)->update([
                     'branch' => $item->branch,

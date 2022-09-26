@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\FieldTeam;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\IosController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\MembersController;
 use App\Http\Controllers\OfficeController;
@@ -22,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth'])->get('/', [OfficeController::class, 'index'])->name("home");
+Route::middleware(['auth'])->get('/', [HomeController::class, 'index'])->name("home");
 
 Auth::routes();
 
@@ -39,6 +41,16 @@ Route::middleware(['auth'])->name('admin.')->prefix('admin')->group(function () 
 
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/ios/customers', [IosController::class, 'index'])->name('ios.customers');
+    Route::get('/ios/customer/{id}', [IosController::class, 'customer'])->name('ios.customer');
+    Route::post('/ios/create_plan', [IosController::class, 'create_plan'])->name('create_plan');
+    Route::get('/ios/payment/{id}', [IosController::class, 'make_payment'])->name('ios.payment');
+    Route::get('/ios/withdrawal/{id}', [IosController::class, 'make_withdrawal'])->name('ios.withdrawal');
+    Route::post('/ios/pay', [IosController::class, 'pay'])->name('pay');
+    Route::post('/ios/withdraw', [IosController::class, 'withdraw'])->name('ios.withdraw');
+
+
+
     Route::get('/contributions', [TransactionsController::class, 'index'])->name('contributions.list');
     Route::get('/contributions/create', [TransactionsController::class, 'create'])->name('contributions.create');
 
