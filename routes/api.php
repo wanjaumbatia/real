@@ -595,7 +595,7 @@ Route::middleware('auth:sanctum')->post("/customer", function (Request $request)
     //send sms
     $phone = $customer->phone;
     $msg = "Dear " . $customer->name . ". Your registration to Reliance Economic Advancement LTD has been approved. Your unique customer number is " . $customer->no . ".";
-    $res = sendSMS($phone, $msg);
+    //$res = sendSMS($phone, $msg);
 
     return response([
         'success' => true,
@@ -684,7 +684,11 @@ Route::middleware('auth:sanctum')->post("/verify_number/{id}", function ($id, Re
         //send otp
         $otp = rand(000000, 999999);
         $msg = 'Hello ' . $customer->name . ' Welcome to REAL cooperative APP. Use ' . $otp . ' as your REALdoe verification code. For enquires call 09021417778.';
-        sendSMS($request->phone, $msg);
+        $res = OtpCode::create([
+            'code' => $otp,
+            'user_id' => $request->user()->id
+        ]);
+        //sendSMS($request->phone, $msg);
         return response([
             'success' => false,
             'message' => 'need verification',
@@ -964,8 +968,8 @@ Route::middleware('auth:sanctum')->post("/pay", function (Request $request) {
     $balance = get_total_balance($customer_id);
 
     //$msg = "Dear " . $cust->name . ". Your payment of NGN " . number_format($total, 0) . " has been received. Thank you for saving with us.";
-    $msg = "Thanks for your patronage we rec'vd " . number_format($total, 0) . " your bal is " . number_format($balance, 0) . " for inquires call 09021417778";
-    $res = sendSMS($phone, $msg);
+    //$msg = "Thanks for your patronage we rec'vd " . number_format($total, 0) . " your bal is " . number_format($balance, 0) . " for inquires call 09021417778";
+    //$res = sendSMS($phone, $msg);
 
     $location = PaymentLocation::create([
         '' => $reference,
@@ -1252,7 +1256,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
 
             $msg = 'Dear Customer, use ' . $otp . ' as OTP to withdraw ' . number_format($request->amount, 0).'';
 
-            $resp = sendSMS($customer->phone, $msg);
+            //$resp = sendSMS($customer->phone, $msg);
             return response([
                 'success' => true,
                 "code" => $otp
@@ -1357,7 +1361,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
 
     $msg = 'Dear Customer, use ' . $otp . ' as OTP to withdraw ' . number_format($request->amount, 0);
 
-    $resp = sendSMS($customer->phone, $msg);
+    //$resp = sendSMS($customer->phone, $msg);
 
     //$phone = $cust->phone;
     //te$msg = "Dear " . $cust->name . ". Your withdrawal of ₦" . number_format($request->amount, 0) . " has been received and will be processed. Thank you for saving with us.";
