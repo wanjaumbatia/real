@@ -299,14 +299,11 @@ Route::middleware('auth:sanctum')->get("/pending_loans/{id}", function (Request 
 
 
 Route::middleware('auth:sanctum')->post("/loan_request", function (Request $request) {
-    $customer = Customer::where('no', $request->no)->first();
+    $customer = Customer::where('id', $request->no)->first();
     
     $balance = get_total_balance($customer->id);
     
-    $pending_transaction = Transactions::where('no', $request->no)->where('status', 'pending')->get();
-    $confirmed_transaction = Transactions::where('no', $request->no)->where('status', 'confirmed')->get();
-    $withdrawals = Withdrawal::where('no', $request->no)->where('status', 'confirmed')->get();
-
+    
     $limit = $request->amount * 0.2;
     if ($balance < $limit) {
         return response([
@@ -315,28 +312,7 @@ Route::middleware('auth:sanctum')->post("/loan_request", function (Request $requ
         ]);
     }
 
-    $pending = 0;
-    $confirmed = 0;
-    $total_withdrawal = 0;
-    foreach ($withdrawals as $item) {
-        $total_withdrawal = $total_withdrawal + $item->amount + $item->commision;
-    }
-
-    foreach ($pending_transaction as $tt) {
-        $pending = $pending + $tt->amount;
-    }
-    foreach ($confirmed_transaction as $tt) {
-        $confirmed = $confirmed + $tt->amount;
-    }
-
-    if ($confirmed > 1000) {
-        $savings = $confirmed - 1000 - $total_withdrawal;
-        $regfee = 1000;
-    } else {
-        $savings = 0;
-        $regfee = $confirmed;
-    }
-
+    
     //get customer savings
     //check for pending loan
     $pending_loan = Loan::where('no', $customer->no)->where('status', 'pending')->get();
@@ -372,7 +348,7 @@ Route::middleware('auth:sanctum')->post("/loan_request", function (Request $requ
         'purpose' => $request->purpose,
         'interest_percentage' => 5.5,
         'duration' => $request->duration,
-        'current_savings' => $savings,
+        'current_savings' => $balance,
         'handler' => auth()->user()->name,
         'status' => 'pending',
         'posted' => false
