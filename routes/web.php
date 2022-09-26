@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [OfficeController::class, 'index'])->name("home");
+Route::middleware(['auth'])->get('/', [OfficeController::class, 'index'])->name("home");
 
 Auth::routes();
 
