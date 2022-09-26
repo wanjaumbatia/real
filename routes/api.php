@@ -661,10 +661,10 @@ Route::middleware('auth:sanctum')->post("/verify_number/{id}", function ($id, Re
         //send otp
         $otp = rand(000000, 999999);
         $msg = 'Hello ' . $customer->name . ' Welcome to REAL cooperative APP. Use ' . $otp . ' as your REALdoe verification code. For enquires call 09021417778.';
-        $res = OtpCode::create([
-            'code' => $otp,
-            'user_id' => $request->user()->id
-        ]);
+        // $res = OtpCode::create([
+        //     'code' => $otp,
+        //     'user_id' => $request->user()->id
+        // ]);
         sendSMS($request->phone, $msg);
         return response([
             'success' => false,
@@ -1123,20 +1123,6 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                 'batch_number' => $otp
             ]);
 
-            // $sep_commision = $interest * $plan->sep_commission;
-            // //create sales agent line
-            // $comm_line = CommissionLines::create([
-            //     'handler' => $account->handler,
-            //     'amount' => $sep_commision,
-            //     'description' => 'Interest for withdrawal of ₦' . number_format($request->amount, 2) . ' with interest of ₦' . number_format($interest, 2) . ' for ' . $account->customer,
-            //     'batch_number' => $batch_number,
-            //     'transaction_type' => 'withdrawal',
-            //     'payment_id' => $charge->id,
-            //     'disbursed' => false,
-            //     'branch' => $request->user()->branch,
-            //     'approved' => false,
-            //     // 'transaction_type'=>'commission'
-            // ]);
         } else {
 
             //check pending withdrawal

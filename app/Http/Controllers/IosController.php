@@ -41,7 +41,7 @@ class IosController extends Controller
             $plans = Plans::where('active', true)->get();
             //get accounts
             $accounts = SavingsAccount::where('customer_id', $customer->id)->orderBy('id', 'ASC')->where('active', true)->get();
-        
+
             $data = array();
             $total_balance = 0;
             foreach ($accounts as $acc) {
@@ -66,7 +66,7 @@ class IosController extends Controller
                 $data[] = $saving_accounts;
                 $total_balance = $total_balance + $confirmed_transaction;
             }
-        
+
             $loan = Loan::where('customer_id', $customer->id)->first();
             if ($loan != null) {
                 $loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
@@ -80,24 +80,25 @@ class IosController extends Controller
                 $pending_loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'pending')->sum('amount');
                 $loan['pending_loan_repayment'] = $pending_loan_repayment;
             }
-        
+
             $result = array();
             $result['customer'] = $customer;
             $result['accounts'] = $data;
             $result['plans'] = $plans;
             $result['loan'] = $loan;
-            $result['total_balance'] = $total_balance; 
-            
+            $result['total_balance'] = $total_balance;
+
             $plans = Plans::all();
-            
-            return view('ios.customer')->with(['customer' => $customer, 'result'=>$result, 'plans'=>$plans]);
+
+            return view('ios.customer')->with(['customer' => $customer, 'result' => $result, 'plans' => $plans]);
         }
     }
 
-    public function create_plan(Request $request){
+    public function create_plan(Request $request)
+    {
         $plan = Plans::where('id', $request->plan)->first();
-        $customer = Customer::where('id', $request->customer)->first();   
-    
+        $customer = Customer::where('id', $request->customer)->first();
+
         $name = $request->name;
         if ($name == null) {
             $name = $plan->name . ".";
@@ -115,34 +116,38 @@ class IosController extends Controller
             'customer' => $customer->name,
             'plan' => $plan->name
         ]);
-    
+
         return redirect()->route('ios.customer', [$customer->id]);
     }
 
-    public function make_payment($id){
+    public function make_payment($id)
+    {
         $customer = Customer::where('id', $id)->first();
         $accounts = SavingsAccount::where('customer_id', $id)->orderBy('id', 'ASC')->where('active', true)->get();
 
-        return view('ios.payment')->with(['customer'=>$customer, 'accounts'=>$accounts]);
+        return view('ios.payment')->with(['customer' => $customer, 'accounts' => $accounts]);
     }
 
-    public function make_withdrawal($id){
+    public function make_withdrawal($id)
+    {
         $acc = SavingsAccount::where('id', $id)->first();
-        $customer = Customer::where('id', $acc->customer_id)->first();     
+        $customer = Customer::where('id', $acc->customer_id)->first();
         $plan = Plans::where('id', $acc->plans_id)->first();
         $balance = 100000;
-                
+
         //get Balance
-        
-        return view('ios.withdrawal')->with(['customer'=>$customer, 'balance'=> $balance]);
+
+        return view('ios.withdrawal')->with(['customer' => $customer, 'balance' => $balance, 'account' => $acc]);
     }
 
-    public function withdraw(Request $request){
-        
+    public function withdraw(Request $request)
+    {
+
         dd($request);
     }
 
-    public function pay(Request $request){
+    public function pay(Request $request)
+    {
         dd($request->request);
     }
 

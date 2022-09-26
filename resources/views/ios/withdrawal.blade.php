@@ -15,6 +15,7 @@
                     <form method="POST" action="/ios/withdraw">
                         @csrf
                         <div class="form-group">
+                            <input hidden value="{{$account->id}}" name="id"/>
                             <label>Amount</label>
                             <input type="number" class="form-control" name="amount">
                         </div>
