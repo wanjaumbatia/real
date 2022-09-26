@@ -27,7 +27,7 @@
                         <div class="form-group ">
                             <input name="handler" hidden value="{{$handler}}" />
                             <label for="amount">Expected Amount</label>
-                            <input type="text" class="form-control" disabled value="₦.{{number_format($total,0)}}" />
+                            <input type="text" class="form-control" disabled value="₦.{{number_format($total,2)}}" />
                         </div>
 
                         <div class="form-group">
