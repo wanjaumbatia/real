@@ -6,8 +6,11 @@ use App\Models\User;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class UsersImport implements ToModel, WithHeadingRow
+class UsersImport implements ToModel, WithHeadingRow, WithChunkReading, WithBatchInserts
 {
     /**
      * @param array $row
@@ -24,9 +27,19 @@ class UsersImport implements ToModel, WithHeadingRow
             'email_verified_at' => now(),
             'password' => Hash::make($row['password']),
             'branch' => $row['branch'],
-            'email_address'=>$row['email_address'],
-            'office_admin' => true
+            'sales_executive' => true
         ]);
         
+    }
+
+    
+    public function batchSize(): int
+    {
+        return 3;
+    }
+
+    public function chunkSize(): int
+    {
+        return 3;
     }
 }
