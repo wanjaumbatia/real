@@ -302,12 +302,13 @@ Route::middleware('auth:sanctum')->post("/loan_request", function (Request $requ
     $customer = Customer::where('no', $request->no)->first();
     
     $balance = get_total_balance($customer->id);
-    Log::warning($balance);
+    
     $pending_transaction = Transactions::where('no', $request->no)->where('status', 'pending')->get();
     $confirmed_transaction = Transactions::where('no', $request->no)->where('status', 'confirmed')->get();
     $withdrawals = Withdrawal::where('no', $request->no)->where('status', 'confirmed')->get();
 
-    if ($balance < ($request->amount * 0.2)) {
+    $limit = $request->amount * 0.2;
+    if ($balance < $limit) {
         return response([
             'success' => false,
             'message' => 'Loan cannot be processed, minimum saving threshold not met.'
@@ -377,7 +378,7 @@ Route::middleware('auth:sanctum')->post("/loan_request", function (Request $requ
         'posted' => false
     ]);
 
-    return response($pending_loan);
+    return response($loan);
 });
 
 Route::middleware('auth:sanctum')->post("/loan_repayment", function (Request $request) {
