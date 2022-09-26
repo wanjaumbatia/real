@@ -32,7 +32,7 @@
 
                         <div class="form-group">
                             <label for="amount">Received Amount</label>
-                            <input type="number" class="form-control" required name="amount" />
+                            <input type="number" class="form-control" step=".01" required name="amount" />
                         </div>
 
                         <div class="form-group">
