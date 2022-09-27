@@ -59,10 +59,10 @@ Route::post('/tokens/create', function (Request $request) {
         ]);
     }
 
-    return response([
-        'token' => $token->plainTextToken,
-        'user' => $user
-    ], 200);
+    // return response([
+    //     'token' => $token->plainTextToken,
+    //     'user' => $user
+    // ], 200);
 });
 
 Route::middleware('auth:sanctum')->get("/customers", function (Request $request) {
