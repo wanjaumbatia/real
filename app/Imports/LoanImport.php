@@ -21,7 +21,6 @@ class LoanImport implements ToModel, WithHeadingRow, WithChunkReading, WithBatch
      */
     public function model(array $row)
     {
-        Log::warning($row['username']);
         $customer = Customer::where('username', $row['username'])->first();
         Log::warning($customer);
         return new Loan([

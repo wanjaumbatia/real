@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\BalanceImport;
 use App\Mail\Shortage;
 use App\Models\Balances;
 use App\Models\Branch;
@@ -22,6 +23,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
 
 class OfficeController extends Controller
@@ -39,6 +41,13 @@ class OfficeController extends Controller
      * @return \Illuminate\Http\Response
      */
 
+    public function import_balances(Request $request)
+    {
+        Excel::import(new BalanceImport, $request->file);
+
+        return redirect()->route('home')->with('success', 'Balances Imported Successfully');
+    }
+
     public function backend()
     {
         $branches = Branch::get();
@@ -46,26 +55,30 @@ class OfficeController extends Controller
         return view('office.backend')->with(['branches' => $branches]);
     }
 
-    public function seps($name){
+    public function seps($name)
+    {
         $seps = User::where('branch', $name)->where('sales_executive', true)->get();
-        return view('office.seps')->with(['seps'=>$seps]);
+        return view('office.seps')->with(['seps' => $seps]);
     }
 
-    public function customer_seps($name){
+    public function customer_seps($name)
+    {
         $customers = Customer::where('handler', $name)->get();
-        return view('office.seps_customers')->with(['customers'=>$customers]);
+        return view('office.seps_customers')->with(['customers' => $customers]);
     }
 
-    public function customer($id){
+    public function customer($id)
+    {
         $customer = Customer::where('id', $id)->first();
         $balances = Balances::where('userid', $customer->username)->get();
-        $plans = Plans::get(); 
-        
-        return view('office.customer')->with(['customer'=>$customer, 'balances'=>$balances, 'plans'=>$plans]);
+        $plans = Plans::get();
+
+        return view('office.customer')->with(['customer' => $customer, 'balances' => $balances, 'plans' => $plans]);
     }
 
-    public function migrate_plan(Request $request){
-        
+    public function migrate_plan(Request $request)
+    {
+
         $customer = Customer::where('id', $request->customer)->first();
         $plan = Plans::where('id', $request->plan)->first();
         $reference = rand(100000000, 999999999);
@@ -81,7 +94,7 @@ class OfficeController extends Controller
             'customer' => $customer->name,
             'plan' => $plan->name
         ]);
-        
+
         $payment = Payments::create([
             'savings_account_id' => $acc->id,
             'plan' => $acc->plan,
@@ -101,11 +114,12 @@ class OfficeController extends Controller
             'batch_number' => $reference,
             'reference' => $reference
         ]);
-        
+
         redirect()->route('sep_customer', $customer->id);
     }
 
-    public function change_phone(Request $request){
+    public function change_phone(Request $request)
+    {
         dd($request);
     }
 
@@ -352,7 +366,7 @@ class OfficeController extends Controller
         $bal = Balances::all();
         $batch_number = rand(100000000, 999999999);
         $reference = rand(100000000, 999999999);
-        return($bal);
+        return ($bal);
         foreach ($bal as $item) {
             try {
                 if ($item->plan == "Regular") {
@@ -411,7 +425,7 @@ class OfficeController extends Controller
                         'handler' => $customer->handler,
                         'customer' => $customer->name,
                         'plan' => $plan->name
-                        
+
                     ]);
 
                     //create opening balance

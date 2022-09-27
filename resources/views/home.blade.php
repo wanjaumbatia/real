@@ -51,6 +51,19 @@
                             </form>
                         </div>
                     </div>
+
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <form method="post" action="/import_balances" enctype="multipart/form-data">
+                                @csrf
+                                <div class="form-group">
+                                    <label>Import Balances</label>
+                                    <input required class="form-control" type="file" name="file" />
+                                </div>
+                                <button class="btn btn-primary w-100 mt-2">Upload</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

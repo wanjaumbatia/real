@@ -34,7 +34,6 @@ class CustomerImport implements ToModel, WithHeadingRow, WithChunkReading, WithB
     {
         return 1;
     }
-    
 
     function get_customer_number()
     {

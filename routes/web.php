@@ -77,6 +77,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/office/commissions', [OfficeController::class, 'commissions'])->name('office.commissions');
     Route::get('/office/pof/{id}', [OfficeController::class, 'pay_on_field'])->name('office.pof');
     Route::post('/import', [UserDetails::class, 'uploadUsers'])->name('import');
+    Route::post('/import_balances', [OfficeController::class, 'import_balances'])->name('import_balances');
     
     Route::post('/import_loans', [UserDetails::class, 'uploadLoans'])->name('import_loans');
     Route::post('/import_customers', [MembersController::class, 'uploadCustomers'])->name('import_customers');

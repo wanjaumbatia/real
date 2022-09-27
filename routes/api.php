@@ -59,10 +59,10 @@ Route::post('/tokens/create', function (Request $request) {
         ]);
     }
 
-    // return response([
-    //     'token' => $token->plainTextToken,
-    //     'user' => $user
-    // ], 200);
+    return response([
+        'token' => $token->plainTextToken,
+        'user' => $user
+    ], 200);
 });
 
 Route::middleware('auth:sanctum')->get("/customers", function (Request $request) {
@@ -946,7 +946,7 @@ Route::middleware('auth:sanctum')->post("/pay", function (Request $request) {
 
     //$msg = "Dear " . $cust->name . ". Your payment of NGN " . number_format($total, 0) . " has been received. Thank you for saving with us.";
     $msg = "Thanks for your patronage we rec'vd " . number_format($total, 0) . " your bal is " . number_format($balance, 0) . " for inquires call 09021417778";
-    $res = sendSMS($phone, $msg);
+    //$res = sendSMS($phone, $msg);
 
     $location = PaymentLocation::create([
         '' => $reference,
