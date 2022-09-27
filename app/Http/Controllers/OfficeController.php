@@ -352,7 +352,7 @@ class OfficeController extends Controller
         $bal = Balances::all();
         $batch_number = rand(100000000, 999999999);
         $reference = rand(100000000, 999999999);
-
+        return($bal);
         foreach ($bal as $item) {
             try {
                 if ($item->plan == "Regular") {
@@ -411,6 +411,7 @@ class OfficeController extends Controller
                         'handler' => $customer->handler,
                         'customer' => $customer->name,
                         'plan' => $plan->name
+                        
                     ]);
 
                     //create opening balance
