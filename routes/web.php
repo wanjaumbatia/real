@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth'])->get('/', [OfficeController::class, 'index'])->name("home");
+Route::middleware(['auth'])->get('/', [HomeController::class, 'index'])->name("home");
 
 Auth::routes();
 
@@ -77,9 +77,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/office/commissions', [OfficeController::class, 'commissions'])->name('office.commissions');
     Route::get('/office/pof/{id}', [OfficeController::class, 'pay_on_field'])->name('office.pof');
     Route::post('/import', [UserDetails::class, 'uploadUsers'])->name('import');
+    
     Route::post('/import_loans', [UserDetails::class, 'uploadLoans'])->name('import_loans');
     Route::post('/import_customers', [MembersController::class, 'uploadCustomers'])->name('import_customers');
     Route::get('/create_account', [OfficeController::class, 'import_accounts'])->name('import_accounts');
+    Route::get('/reset_accounts', [OfficeController::class, 'reset_balances'])->name('reset_accounts');
+    
     Route::get('/repayment', [OfficeController::class, 'save_loan_repayment'])->name('repayment');
     Route::get('/branch_formation', [OfficeController::class, 'branch_creation'])->name('branch_formation');
 });
@@ -90,5 +93,11 @@ Route::middleware(['auth'])->prefix('/customers')->group(function () {
     Route::get('/show', [MembersController::class, 'show'])->name('customer.show');
 });
 
+Route::get('/backend', [OfficeController::class, 'backend'])->name('backend');
+Route::get('/sep/{name}', [OfficeController::class, 'seps'])->name('seps');
+Route::get('/sep-customers/{name}', [OfficeController::class, 'customer_seps'])->name('customer_seps');
+Route::get('/sep_customer/{id}', [OfficeController::class, 'customer'])->name('sep_customer');
+Route::post('/change_phone', [OfficeController::class, 'change_phone'])->name('change_phone');
+Route::post('/migrate_plan', [OfficeController::class, 'migrate_plan'])->name('migrate_plan');
 
 // Route::get('/home', [OfficeController::class, 'index'])->name('home');

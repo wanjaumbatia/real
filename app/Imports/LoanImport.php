@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 
 class LoanImport implements ToModel, WithHeadingRow, WithChunkReading, WithBatchInserts
@@ -20,7 +21,9 @@ class LoanImport implements ToModel, WithHeadingRow, WithChunkReading, WithBatch
      */
     public function model(array $row)
     {
+        Log::warning($row['username']);
         $customer = Customer::where('username', $row['username'])->first();
+        Log::warning($customer);
         return new Loan([
             'no' => $customer->no,
             'name' => $customer->name,
@@ -42,11 +45,11 @@ class LoanImport implements ToModel, WithHeadingRow, WithChunkReading, WithBatch
 
     public function batchSize(): int
     {
-        return 1;
+        return 2;
     }
 
     public function chunkSize(): int
     {
-        return 1;
+        return 2;
     }
 }

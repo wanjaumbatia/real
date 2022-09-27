@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\Shortage;
 use App\Models\Balances;
+use App\Models\Branch;
 use App\Models\CommissionLines;
 use App\Models\Customer;
 use App\Models\Loan;
@@ -26,7 +27,8 @@ use Throwable;
 class OfficeController extends Controller
 {
 
-    public function __construct(){
+    public function __construct()
+    {
         ini_set('memory_limit', '-1');
         ini_set('max_execution_time', '12000');
         ini_set('request_terminate_time', '12000');
@@ -36,6 +38,77 @@ class OfficeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function backend()
+    {
+        $branches = Branch::get();
+
+        return view('office.backend')->with(['branches' => $branches]);
+    }
+
+    public function seps($name){
+        $seps = User::where('branch', $name)->where('sales_executive', true)->get();
+        return view('office.seps')->with(['seps'=>$seps]);
+    }
+
+    public function customer_seps($name){
+        $customers = Customer::where('handler', $name)->get();
+        return view('office.seps_customers')->with(['customers'=>$customers]);
+    }
+
+    public function customer($id){
+        $customer = Customer::where('id', $id)->first();
+        $balances = Balances::where('userid', $customer->username)->get();
+        $plans = Plans::get(); 
+        
+        return view('office.customer')->with(['customer'=>$customer, 'balances'=>$balances, 'plans'=>$plans]);
+    }
+
+    public function migrate_plan(Request $request){
+        
+        $customer = Customer::where('id', $request->customer)->first();
+        $plan = Plans::where('id', $request->plan)->first();
+        $reference = rand(100000000, 999999999);
+        $acc = SavingsAccount::create([
+            'customer_id' => $customer->id,
+            'customer_number' => $customer->no,
+            'plans_id' => $plan->id,
+            'name' => 'Regular',
+            'created_by' => "Admin",
+            'active' => true,
+            'branch' => $customer->branch,
+            'handler' => $customer->handler,
+            'customer' => $customer->name,
+            'plan' => $plan->name
+        ]);
+        
+        $payment = Payments::create([
+            'savings_account_id' => $acc->id,
+            'plan' => $acc->plan,
+            'customer_id' => $acc->customer_id,
+            'customer_name' => $acc->customer,
+            'transaction_type' => 'savings',
+            'status' => 'confirmed',
+            'remarks' => 'Opening Balance',
+            'debit' => $request->balance,
+            'credit' => 0,
+            'amount' => $request->balance,
+            'requires_approval' => false,
+            'approved' => false,
+            'posted' => false,
+            'created_by' => $customer->handler,
+            'branch' => $customer->branch,
+            'batch_number' => $reference,
+            'reference' => $reference
+        ]);
+        
+        redirect()->route('sep_customer', $customer->id);
+    }
+
+    public function change_phone(Request $request){
+        dd($request);
+    }
+
     public function index()
     {
         $data = DB::select("select 
@@ -231,7 +304,7 @@ class OfficeController extends Controller
         $seps = User::where('sales_executive', true)->get();
         foreach ($seps as $item) {
             $customers = Customer::where('handler', $item->name)->get();
-            
+
             foreach ($customers as $customer) {
                 Customer::where('id', $customer->id)->update([
                     'branch' => $item->branch,
@@ -485,6 +558,12 @@ class OfficeController extends Controller
 
 
         return "done";
+    }
+
+    public function reset_balances(Request $request)
+    {
+        $customers = Customer::where('id' > '131494')->get();
+        return $customers;
     }
 
     public function recon_page($id)

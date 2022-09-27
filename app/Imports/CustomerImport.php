@@ -32,7 +32,7 @@ class CustomerImport implements ToModel, WithHeadingRow, WithChunkReading, WithB
 
     public function batchSize(): int
     {
-        return 200;
+        return 1;
     }
 
     function get_customer_number()
@@ -44,6 +44,6 @@ class CustomerImport implements ToModel, WithHeadingRow, WithChunkReading, WithB
 
     public function chunkSize(): int
     {
-        return 200;
+        return 1;
     }
 }
