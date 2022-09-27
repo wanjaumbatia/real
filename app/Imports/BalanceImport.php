@@ -10,8 +10,9 @@ use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class CustomerImport implements ToModel, WithHeadingRow, WithChunkReading, WithBatchInserts
+class BalanceImport implements ToModel, WithHeadingRow, WithChunkReading, WithBatchInserts
 {
+    
     /**
      * @param array $row
      *
@@ -19,28 +20,12 @@ class CustomerImport implements ToModel, WithHeadingRow, WithChunkReading, WithB
      */
     public function model(array $row)
     {
-        return new Customer([
-            'no' => get_customer_number(),
-            'name' => $row['name'],
-            'phone' => $row['phone'],
-            'address' => $row['address'],
-            'handler' => $row['handler'],
-            'username' => $row['username'],
-            'created_by' => auth()->user()->name
-        ]);
+        //$customer = Customer::where(id = )
     }
 
     public function batchSize(): int
     {
         return 1;
-    }
-    
-
-    function get_customer_number()
-    {
-        $customers = Customer::all();
-        $no = count($customers) + 1;
-        return str_pad($no, 6, '0', STR_PAD_LEFT);
     }
 
     public function chunkSize(): int
