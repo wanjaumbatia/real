@@ -83,7 +83,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/create_account', [OfficeController::class, 'import_accounts'])->name('import_accounts');
     Route::get('/reset_accounts', [OfficeController::class, 'reset_balances'])->name('reset_accounts');
     
-    Route::get('/repayment', [OfficeController::class, 'save_loan_repayment'])->name('repayment');
+    Route::get('/repayment', [OfficeController::class, 'save_loan_repayment'])->name('repayments');
     Route::get('/branch_formation', [OfficeController::class, 'branch_creation'])->name('branch_formation');
 });
 
