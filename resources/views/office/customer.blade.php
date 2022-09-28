@@ -178,6 +178,41 @@
                         </div>
 
                         <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingSeven">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="true" aria-controls="collapseOne">
+                                    Withdrawals - {{count($withdrawals)}}
+                                </button>
+                            </h2>
+                            <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Plan</th>
+                                                <th>Transaction</th>
+                                                <th>Branch</th>
+                                                <th>Amount</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($savings as $withdrawals)
+                                            <tr>
+                                                <td>{{$item->plan}}</td>
+                                                <td>{{$item->transaction_type}}</td>
+                                                <td>{{$item->branch}}</td>
+                                                <td>{{number_format($item->amount, 2)}}</td>
+                                                <td>{{$item->created_at}}</td>
+                                                <td><a href="/delete_payment/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
                             <h2 class="accordion-header" id="headingFour">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="true" aria-controls="collapseOne">
                                     Loan Repayments - {{count($loan_repayments)}}

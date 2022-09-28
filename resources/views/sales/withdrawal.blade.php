@@ -13,6 +13,7 @@
 
                 <div class="card-body">
                     <input value="{{$account->id}}" hidden name="id" id="id" />
+                    <input value="{{$customer->id}}" hidden name="dt" id="dt" />
                     <form id='withdrawal-form' method="post">
                         <div class="form-group">
                             <label for="">Amount</label>
@@ -44,13 +45,13 @@
 <script>
     $(document).ready(function() {
         const csrfToken = document.head.querySelector("[name~=csrf-token][content]").content;
-
         $('#withdrawal-form').submit((e) => {
             e.preventDefault();
             var id = $('#id').val();
+            var dt = $('#dt').val();
             var amount = $('#amount').val();
             var commission = $('#commission').val();
-            var payment = $('#commission').val();
+            var payment = $('#payment').val();
 
             var data = {
                 id: id,
@@ -58,7 +59,7 @@
                 commission: commission,
                 payment,
             };
-            console.log(data);
+
             fetch("/post_withdrawal", {
                     method: 'post',
                     headers: {
@@ -71,7 +72,6 @@
                 })
                 .then(results => results.json())
                 .then((data) => {
-                    console.log(data);
                     if (data.success == true) {
                         swal("Enter OTP:", {
                                 content: "input",
@@ -104,12 +104,52 @@
                                             }).then((value) => {
                                                 switch (value) {
                                                     case "ok":
-                                                        window.location.replace("/customer/" + id);
+                                                        window.location.replace("/customer/" + dt);
                                                         break;
                                                 }
                                             });;
                                         } else {
-                                            swal("Failed!", "An error occured, please again later.", "error");
+                                            swal("Invalid OTP:", {
+                                                    content: "input",
+                                                })
+                                                .then((value) => {
+                                                    var data2 = {
+                                                        payment: payment,
+                                                        otp: value.trim()
+                                                    }
+                                                    fetch("/verify", {
+                                                            method: 'post',
+                                                            headers: {
+                                                                "Content-Type": "application/json",
+                                                                "Accept": "application/json, text-plain, */*",
+                                                                "X-Requested-With": "XMLHttpRequest",
+                                                                "X-CSRF-TOKEN": csrfToken
+                                                            },
+                                                            body: JSON.stringify(data2),
+                                                        })
+                                                        .then(results => results.json())
+                                                        .then((data) => {
+                                                            if (data.success = true) {
+                                                                swal("Success!", "Withdrawal completed successfully", "success", {
+                                                                    buttons: {
+                                                                        catch: {
+                                                                            text: "Ok",
+                                                                            value: "ok",
+                                                                        },
+                                                                    },
+                                                                }).then((value) => {
+                                                                    switch (value) {
+                                                                        case "ok":
+                                                                            window.location.replace("/customer/" + dt);
+                                                                            break;
+                                                                    }
+                                                                });;
+                                                            } else {
+                                                                swal("Failed!", "An error occured, please again later.", "error");
+                                                            }
+                                                        })
+                                                        .catch(error => console.error(error));
+                                                });
                                         }
                                     })
                                     .catch(error => console.error(error));

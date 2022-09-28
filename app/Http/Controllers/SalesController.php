@@ -58,7 +58,7 @@ class SalesController extends Controller
         $otp = rand(000000, 999999);
 
 
-        if($plan->outward == false){
+        if ($plan->outward == false) {
 
             Log::info($request);
 
@@ -71,29 +71,29 @@ class SalesController extends Controller
             //check pending withdrawal
             $pending_withdrawal = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('credit');
             $pending_charge = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'charge')->sum('credit');
-    
+
             if ($balance < ($total_credit + $pending_withdrawal + $pending_charge)) {
                 return response([
                     "success" => false,
                     "message" => "Unable to process this withdrawal since customer has a pending withdrawal, this amount exceed the remaining balance."
                 ]);
             }
-    
+
             $plan = Plans::where('name', $account->plan)->first();
-    
+
             $expected_commision = $request->amount * $plan->charge;
-    
+
             $approval = false;
             if ($expected_commision > $request->commission) {
                 $approval = true;
             } else {
                 $approval = false;
             }
-    
+
             if ($plan->outward == false) {
                 $commision = $request->amount *  $plan->charge;
             }
-    
+
             $batch_number = rand(100000000, 999999999);
             //create withdrawal line
             $withdrawal = Payments::create([
@@ -114,7 +114,7 @@ class SalesController extends Controller
                 'branch' => auth()->user()->branch,
                 'batch_number' => $otp
             ]);
-    
+
             //create charge line
             $charge = Payments::create([
                 'savings_account_id' => $account->id,
@@ -134,8 +134,8 @@ class SalesController extends Controller
                 'branch' => auth()->user()->branch,
                 'batch_number' => $otp
             ]);
-    
-    
+
+
             $sep_commision = $request->commission * $plan->sep_commission;
             //create sales agent line
             $comm_line = CommissionLines::create([
@@ -158,35 +158,46 @@ class SalesController extends Controller
         ]);
     }
 
-    public function verify_withdrawal(Request $request) {
+    public function verify_withdrawal(Request $request)
+    {
         $payments = Payments::where('batch_number', $request->otp)->get();
         $reference = rand(100000000, 999999999);
-        foreach ($payments as $item) {
-            if ($request->payment == "Pay On Field") {
-                //handle request approval for disbursement
-                $tt = Payments::where('id', $item->id)->update([
-                    'status' => 'pending',
-                    'batch_number' => $reference,
-                    'remarks' => "POF"
-                ]);
-            } else if ($request->payment == "Office Admin") {
-                $tt = Payments::where('id', $item->id)->update([
-                    'status' => 'pending',
-                    'batch_number' => $reference
-                ]);
-            } else if ($request->payment == "Bank Transfer") {
-                $tt = Payments::where('id', $item->id)->update([
-                    'status' => 'pending',
-                    'batch_number' => $reference,
-                    'cps' => true
-                ]);
+        if (count($payments) > 0) {
+            foreach ($payments as $item) {
+                if ($request->payment == "Pay On Field") {
+                    //handle request approval for disbursement
+                    $tt = Payments::where('id', $item->id)->update([
+                        'status' => 'pending',
+                        'batch_number' => $reference,
+                        'remarks' => "POF"
+                    ]);
+                } else if ($request->payment == "Office Admin") {
+                    $tt = Payments::where('id', $item->id)->update([
+                        'status' => 'pending',
+                        'batch_number' => $reference
+                    ]);
+                } else if ($request->payment == "Bank Transfer") {
+                    $tt = Payments::where('id', $item->id)->update([
+                        'status' => 'pending',
+                        'batch_number' => $reference,
+                        'cps' => true
+                    ]);
+                }
             }
+            return response()->json([
+                'success' => true,
+                'message' => 'Withdrawal posted successfully'
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid OTP Code'
+            ]);
         }
-    
-        return response($payments);
+
     }
 
-    
+
     public function pay(Request $request)
     {
         $savingsAccount = SavingsAccount::where('customer_id', $request->id)->get();

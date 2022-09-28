@@ -74,7 +74,7 @@
                             <form>
                                 <div class="form-group">
                                     <label for="">Amount</label>
-                                    <input type="text" class="form-control" value=" {{$result['loan']->amount}}" disabled />
+                                    <input type="text" class="form-control" value=" {{number_format($result['loan']->amount, 2)}}" disabled />
                                 </div>
                                 @if($result['loan']->status=='pending')
                                 <div class="form-group">

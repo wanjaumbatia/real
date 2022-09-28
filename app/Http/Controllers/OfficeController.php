@@ -74,7 +74,8 @@ class OfficeController extends Controller
         $plans = Plans::get();
         $loan_repayments = LoanRepayment::where('status', 'pending')->where('no', $customer->no)->get();
         $accounts = SavingsAccount::where('customer_id', $customer->id)->get();
-        $savings = Payments::where('customer_id', $customer->id)->where('status', 'pending')->get();
+        $savings = Payments::where('customer_id', $customer->id)->where('transaction_type', 'savings')->where('status', 'pending')->get();
+        $withdrawals = Payments::where('customer_id', $customer->id)->where('transaction_type', 'withdrawal')->get();
         foreach ($accounts as $item) {            
             $item['balance'] = Payments::where('status', 'confirmed')->where('transaction_type', 'savings')->where('savings_account_id', $item->id)->sum('amount');
             $item['pending'] = Payments::where('status', 'pending')->where('transaction_type', 'savings')->where('savings_account_id', $item->id)->sum('amount');
@@ -85,7 +86,8 @@ class OfficeController extends Controller
             'plans' => $plans,
             'loan_repayments' => $loan_repayments,
             'accounts' => $accounts,
-            'savings' => $savings
+            'savings' => $savings,
+            'withdrawals' => $withdrawals
         ]);
     }
 
