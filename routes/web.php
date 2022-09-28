@@ -6,6 +6,7 @@ use App\Http\Controllers\IosController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\MembersController;
 use App\Http\Controllers\OfficeController;
+use App\Http\Controllers\SalesController;
 use App\Http\Controllers\TargetsController;
 use App\Http\Controllers\TransactionsController;
 use App\Http\Controllers\UserDetails;
@@ -57,12 +58,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/withdrawals', [WithdrawalsController::class, 'index'])->name('withdrawals.list');
     Route::get('/withdrawals/create', [WithdrawalsController::class, 'create'])->name('withdrawals.create');
 
-    Route::get('/customers', [MembersController::class, 'index'])->name('customers.list');
-    Route::get('/customers/create', [MembersController::class, 'create'])->name('customers.create');
-    Route::post('/customers/store', [MembersController::class, 'store'])->name('customers.store');
-    Route::get('/customers/show/{id}', [MembersController::class, 'show'])->name('customers.show');
-    Route::get('/customers/contribution/{id}', [MembersController::class, 'contribution'])->name('customers.contribution');
-    Route::get('/customers/contribute', [MembersController::class, 'contribute'])->name('customers.contribute');
+    // Route::get('/customers', [MembersController::class, 'index'])->name('customers.list');
+    // Route::get('/customers/create', [MembersController::class, 'create'])->name('customers.create');
+    // Route::post('/customers/store', [MembersController::class, 'store'])->name('customers.store');
+    // Route::get('/customers/show/{id}', [MembersController::class, 'show'])->name('customers.show');
+    // Route::get('/customers/contribution/{id}', [MembersController::class, 'contribution'])->name('customers.contribution');
+    // Route::get('/customers/contribute', [MembersController::class, 'contribute'])->name('customers.contribute');
     
     Route::get('/office/index', [OfficeController::class, 'index'])->name('office.list');
     Route::get('/office/reconcile/{id}', [OfficeController::class, 'reconcile'])->name('office.reconcile');
@@ -89,9 +90,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-Route::middleware(['auth'])->prefix('/customers')->group(function () {
-    Route::get('/index', [MembersController::class, 'index'])->name('customer.index');
-    Route::get('/show', [MembersController::class, 'show'])->name('customer.show');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/customers', [SalesController::class, 'customers'])->name('sales.customers');
+    Route::get('/customer/{id}', [SalesController::class, 'customer'])->name('sales.customer');
 });
 
 Route::get('/backend', [OfficeController::class, 'backend'])->name('backend');
