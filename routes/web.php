@@ -113,6 +113,6 @@ Route::post('/migrate_plan', [OfficeController::class, 'migrate_plan'])->name('m
 
 Route::get('/delete_loan_payment/{id}', [OfficeController::class, 'delete_loan_payment'])->name('delete_loan_payment');
 Route::get('/delete_saving_account/{id}', [OfficeController::class, 'delete_saving_account'])->name('delete_saving_account');
-Route::get('/delete_payment/{id}', [OfficeController::class, 'delete_saving_account'])->name('delete_payment');
+Route::get('/delete_payment/{id}', [OfficeController::class, 'delete_payment'])->name('delete_payment');
 
 // Route::get('/home', [OfficeController::class, 'index'])->name('home');
