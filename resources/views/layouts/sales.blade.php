@@ -43,7 +43,7 @@
                         @guest
                         @else
                         <li class="nav-item">
-                            <a class="nav-link" href="#">{{ __('Customers') }}</a>
+                            <a class="nav-link" href="sales.customers">{{ __('Customers') }}</a>
                         </li>
 
                         @endguest

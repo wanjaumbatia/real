@@ -53,11 +53,7 @@
                             <a class="nav-link" href="{{ route('office.commissions') }}">{{ __('Commissions') }}</a>
                         </li>
                         @endif
-                        @if(Auth::user()->sales_executive == true)
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('customers.list') }}">{{ __('Customers') }}</a>
-                        </li>
-                        @endif
+                        
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('loans.list') }}">{{ __('Loans') }}</a>
                         </li>
