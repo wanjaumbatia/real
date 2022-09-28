@@ -72,8 +72,45 @@ class OfficeController extends Controller
         $customer = Customer::where('id', $id)->first();
         $balances = Balances::where('userid', $customer->username)->get();
         $plans = Plans::get();
+        $loan_repayments = LoanRepayment::where('status', 'pending')->where('no', $customer->no)->get();
+        $accounts = SavingsAccount::where('customer_id', $customer->id)->get();
+        $savings = Payments::where('customer_id', $customer->id)->where('status', 'pending')->get();
+        foreach ($accounts as $item) {            
+            $item['balance'] = Payments::where('status', 'confirmed')->where('transaction_type', 'savings')->where('savings_account_id', $item->id)->sum('amount');
+            $item['pending'] = Payments::where('status', 'pending')->where('transaction_type', 'savings')->where('savings_account_id', $item->id)->sum('amount');
+        }
+        return view('office.customer')->with([
+            'customer' => $customer,
+            'balances' => $balances,
+            'plans' => $plans,
+            'loan_repayments' => $loan_repayments,
+            'accounts' => $accounts,
+            'savings' => $savings
+        ]);
+    }
 
-        return view('office.customer')->with(['customer' => $customer, 'balances' => $balances, 'plans' => $plans]);
+    public function delete_saving_account($id){
+        $acc = SavingsAccount::where('id', $id)->first();
+        $customer = Customer::where('id', $acc->customer_id)->first();
+        $acc->delete();
+        $url = '/sep_customer/'.$customer->id;
+        return redirect()->to($url);
+    }
+
+    public function delete_payment($id){
+        $payment = Payments::where('id', $id)->first();
+        $customer = Customer::where('id', $payment->customer_id)->first();
+        $payment->delete();
+        $url = '/sep_customer/'.$customer->id;
+        return redirect()->to($url);
+    }
+
+    public function delete_loan_payment($id){
+        $loan = LoanRepayment::where('id', $id)->first();
+        $customer = Customer::where('no', $loan->no)->first();
+        $loan->delete();
+        $url = '/sep_customer/'.$customer->id;
+        return redirect()->to($url);
     }
 
     public function migrate_plan(Request $request)

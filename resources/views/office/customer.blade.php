@@ -104,6 +104,114 @@
                             </div>
                         </div>
 
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingFour">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="true" aria-controls="collapseOne">
+                                    Accounts - {{count($accounts)}}
+                                </button>
+                            </h2>
+                            <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Plan</th>
+                                                <th>Created</th>
+                                                <th>Branch</th>
+                                                <th>Balance</th>
+                                                <th>Pending</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($accounts as $item)
+                                            <tr>
+                                                <td>{{$item->plan}}</td>
+                                                <td>{{$item->created_by}}</td>
+                                                <td>{{$item->branch}}</td>
+                                                <td>{{number_format($item->balance, 2)}}</td>
+                                                <td>{{number_format($item->pending, 2)}}</td>
+                                                <td>{{$item->created_at}}</td>
+                                                <td><a href="/delete_saving_account/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingFour">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="true" aria-controls="collapseOne">
+                                    Payments - {{count($savings)}}
+                                </button>
+                            </h2>
+                            <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Plan</th>
+                                                <th>Transaction</th>
+                                                <th>Branch</th>
+                                                <th>Amount</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($savings as $item)
+                                            <tr>
+                                                <td>{{$item->plan}}</td>
+                                                <td>{{$item->transaction_type}}</td>
+                                                <td>{{$item->branch}}</td>
+                                                <td>{{number_format($item->amount, 2)}}</td>
+                                                <td>{{$item->created_at}}</td>
+                                                <td><a href="/delete_payment/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingFour">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="true" aria-controls="collapseOne">
+                                    Loan Repayments - {{count($loan_repayments)}}
+                                </button>
+                            </h2>
+                            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Loan Number</th>
+                                                <th>Amount</th>
+                                                <th>Handler</th>
+                                                <th>Branch</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($loan_repayments as $item)
+                                            <tr>
+                                                <td>{{$item->loan_number}}</td>
+                                                <td>{{$item->amount}}</td>
+                                                <td>{{$item->handler}}</td>
+                                                <td>{{$item->branch}}</td>
+                                                <td>{{$item->created_at}}</td>
+                                                <td><a href="/delete_loan_payment/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingThree">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseOne">
@@ -129,6 +237,7 @@
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
