@@ -100,7 +100,6 @@ class OfficeController extends Controller
     }
 
     public function delete_payment($id){
-        dd($id);
         $payment = Payments::where('id', $id)->first();
         $customer = Customer::where('id', $payment->customer_id)->first();
         $payment->delete();
