@@ -300,10 +300,10 @@ Route::middleware('auth:sanctum')->get("/pending_loans/{id}", function (Request 
 
 Route::middleware('auth:sanctum')->post("/loan_request", function (Request $request) {
     $customer = Customer::where('id', $request->no)->first();
-    
+
     $balance = get_total_balance($customer->id);
-    
-    
+
+
     $limit = $request->amount * 0.2;
     if ($balance < $limit) {
         return response([
@@ -312,7 +312,7 @@ Route::middleware('auth:sanctum')->post("/loan_request", function (Request $requ
         ]);
     }
 
-    
+
     //get customer savings
     //check for pending loan
     $pending_loan = Loan::where('no', $customer->no)->where('status', 'pending')->get();
@@ -378,9 +378,12 @@ Route::middleware('auth:sanctum')->post("/loan_repayment", function (Request $re
             'posted' => false,
             'document_number' => rand(1000000, 9999999)
         ]);
+
+        $msg = "Thanks for your patronage we rec'vd " . number_format($request->amount, 0) . " as loan repayment. for inquires call 09021417778";
+        $customer = Customer::where('customer_id', $loan->customer_id)->first();
+        //sendSMS($customer->phone, $msg);
     }
 
-    "Thanks for your patronage we rec'vd " . number_format($request->amount, 0) . " as loan repayment. for inquires call 09021417778";
     return response([
         'success' => true
     ]);
@@ -1124,7 +1127,6 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                 'branch' => $request->user()->branch,
                 'batch_number' => $otp
             ]);
-
         } else {
 
             //check pending withdrawal
@@ -1217,7 +1219,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                 'user_id' => $request->user()->id
             ]);
 
-            $msg = 'Dear Customer, use ' . $otp . ' as OTP to withdraw ' . number_format($request->amount, 0).'';
+            $msg = 'Dear Customer, use ' . $otp . ' as OTP to withdraw ' . number_format($request->amount, 0) . '';
 
             $resp = sendSMS($customer->phone, $msg);
             return response([

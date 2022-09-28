@@ -64,12 +64,12 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('/customers/show/{id}', [MembersController::class, 'show'])->name('customers.show');
     // Route::get('/customers/contribution/{id}', [MembersController::class, 'contribution'])->name('customers.contribution');
     // Route::get('/customers/contribute', [MembersController::class, 'contribute'])->name('customers.contribute');
-    
+
     Route::get('/office/index', [OfficeController::class, 'index'])->name('office.list');
     Route::get('/office/reconcile/{id}', [OfficeController::class, 'reconcile'])->name('office.reconcile');
     Route::post('/office/reconciliation', [OfficeController::class, 'receive'])->name('office.receive');
     Route::get('/office/withdrawal_list/{id}', [OfficeController::class, 'withdrawal_list'])->name('office.withdrawal_list');
-    
+
     Route::post('/office/reconcile_withdrawal', [OfficeController::class, 'disburse'])->name('office.disburse');
     Route::get('/office/reconcile_withdrawal/{id}', [OfficeController::class, 'recon_page'])->name('office.recon_page');
 
@@ -79,20 +79,29 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/office/pof/{id}', [OfficeController::class, 'pay_on_field'])->name('office.pof');
     Route::post('/import', [UserDetails::class, 'uploadUsers'])->name('import');
     Route::post('/import_balances', [OfficeController::class, 'import_balances'])->name('import_balances');
-    
+
     Route::post('/import_loans', [UserDetails::class, 'uploadLoans'])->name('import_loans');
     Route::post('/import_customers', [MembersController::class, 'uploadCustomers'])->name('import_customers');
     Route::get('/create_account', [OfficeController::class, 'import_accounts'])->name('import_accounts');
     Route::get('/reset_accounts', [OfficeController::class, 'reset_balances'])->name('reset_accounts');
-    
+
     Route::get('/repayment', [OfficeController::class, 'save_loan_repayment'])->name('repayments');
     Route::get('/branch_formation', [OfficeController::class, 'branch_creation'])->name('branch_formation');
 });
 
-
 Route::middleware(['auth'])->group(function () {
     Route::get('/customers', [SalesController::class, 'customers'])->name('sales.customers');
     Route::get('/customer/{id}', [SalesController::class, 'customer'])->name('sales.customer');
+    Route::get('/loan/{id}', [SalesController::class, 'loan'])->name('sales.loan');
+    Route::post('/loan', [SalesController::class, 'apply_loan'])->name('sales.apply_loan');
+    Route::get('/repay/{id}', [SalesController::class, 'repay_loan'])->name('sales.repay_loan');
+    Route::post('/loan_repayment', [SalesController::class, 'post_loan_repay'])->name('sales.post_loan_repay');
+
+    Route::get('/collection/{id}', [SalesController::class, 'collection'])->name('sales.collection');
+    Route::post('/pay', [SalesController::class, 'pay'])->name('sales.pay');
+    Route::get('/withdrawal/{id}', [SalesController::class, 'withdrawal'])->name('sales.withdrawal');
+    Route::post('/post_withdrawal', [SalesController::class, 'post_withdrawal'])->name('sales.post_withdrawal');
+    Route::post('/verify', [SalesController::class, 'verify_withdrawal'])->name('sales.verify');
 });
 
 Route::get('/backend', [OfficeController::class, 'backend'])->name('backend');

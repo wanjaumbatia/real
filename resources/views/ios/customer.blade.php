@@ -33,7 +33,6 @@
                 <div class="card-header">
                     <div class="row font-weight-bold">
                         <h3 class="font-weight-bold">{{$item['details']->plan}}</h3>
-                        <h6>{{$item['details']->name}}</h6>
                     </div>
                 </div>
                 <div class="card-body">
