@@ -112,13 +112,14 @@ Route::get('/sep_customer/{id}', [OfficeController::class, 'customer'])->name('s
 Route::post('/change_phone', [OfficeController::class, 'change_phone'])->name('change_phone');
 Route::post('/migrate_plan', [OfficeController::class, 'migrate_plan'])->name('migrate_plan');
 Route::get('/loans', [SalesController::class, 'loans'])->name('sep_loans');
-
-
+Route::post('/change_amount', [OfficeController::class, 'change_amount'])->name('change_amount');
+Route::post('/change_loan_amount', [OfficeController::class, 'change_loan_amount'])->name('change_loan_amount');
 
 
 //Branch Managers
 Route::get('/branch_loans', [BranchController::class, 'loans'])->name('branch_loans');
 Route::get('/branch_loan/{id}', [BranchController::class, 'loan_card'])->name('loan_card');
+Route::post('/upload_forms/{id}', [BranchController::class, 'upload_forms'])->name('upload_forms');
 
 Route::get('/delete_loan_payment/{id}', [OfficeController::class, 'delete_loan_payment'])->name('delete_loan_payment');
 Route::get('/delete_saving_account/{id}', [OfficeController::class, 'delete_saving_account'])->name('delete_saving_account');

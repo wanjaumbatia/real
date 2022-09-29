@@ -72,4 +72,9 @@ class BranchController extends Controller
 
         return view('branch.loan_card')->with(['loan'=>$loan, 'customer'=>$customer]);
     }
+
+    public function upload_forms($id){
+        $url = '/branch_loan/'.$id;
+        redirect()->to($url);
+    }
 }

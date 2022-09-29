@@ -122,6 +122,8 @@
                                                 <th>Balance</th>
                                                 <th>Pending</th>
                                                 <th>Date</th>
+                                                <th></th>
+                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -133,6 +135,23 @@
                                                 <td>{{number_format($item->balance, 2)}}</td>
                                                 <td>{{number_format($item->pending, 2)}}</td>
                                                 <td>{{$item->created_at}}</td>
+                                                <td>
+                                                    <form action="/change_plan" method="post">
+                                                        @csrf
+                                                        <input type="number" name="id" value="{{$item->id}}" hidden>
+                                                        <div class="row">
+                                                            <div class="col-8">
+                                                                <select name="plan" id="plan" class="form-control">
+                                                                    @foreach($plans as $plan)
+                                                                    <option></option>
+                                                                    <option value="{{$plan->id}}">{{$plan->name}}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-4"><button class="btn btn-primary w-100">Edit</button></div>
+                                                        </div>
+                                                    </form>
+                                                </td>
                                                 <td><a href="/delete_saving_account/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
                                             </tr>
                                             @endforeach
@@ -168,7 +187,17 @@
                                                 <td>{{$item->branch}}</td>
                                                 <td>{{number_format($item->amount, 2)}}</td>
                                                 <td>{{$item->created_at}}</td>
-                                                <td><a href="/delete_payment/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
+                                                <td>
+                                                    <form action="/change_amount" method="post">
+                                                        @csrf
+                                                        <input type="number" name="id" value="{{$item->id}}" hidden>
+                                                        <div class="row">
+                                                            <div class="col-8"><input type="number" class="form-control" required name="amount" /></div>
+                                                            <div class="col-4"><button class="btn btn-primary w-100">Edit</button></div>
+                                                        </div>
+                                                    </form>
+                                                </td>
+                                                <td><a href="/delete_payment/{{$item->id}}" class="btn btn-danger w-100">DELETE</a></td>
                                             </tr>
                                             @endforeach
                                         </tbody>
@@ -196,7 +225,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($savings as $withdrawals)
+                                            @foreach($withdrawals as $withdrawals)
                                             <tr>
                                                 <td>{{$item->plan}}</td>
                                                 <td>{{$item->transaction_type}}</td>
@@ -238,6 +267,16 @@
                                                 <td>{{$item->handler}}</td>
                                                 <td>{{$item->branch}}</td>
                                                 <td>{{$item->created_at}}</td>
+                                                <td>
+                                                    <form action="/change_loan_amount" method="post">
+                                                        @csrf
+                                                        <input type="number" name="id" value="{{$item->id}}" hidden>
+                                                        <div class="row">
+                                                            <div class="col-8"><input type="number" class="form-control" required name="amount" /></div>
+                                                            <div class="col-4"><button class="btn btn-primary w-100">Edit</button></div>
+                                                        </div>
+                                                    </form>
+                                                </td>
                                                 <td><a href="/delete_loan_payment/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
                                             </tr>
                                             @endforeach

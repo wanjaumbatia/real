@@ -171,6 +171,50 @@ class OfficeController extends Controller
         return redirect()->to($url);
     }
 
+    public function change_amount(Request $request)
+    {
+        $payment = Payments::where('id', $request->id)->first();
+        $cust = Payments::where('id', $request->id)->update([
+            'debit' => $request->amount,
+            'amount' => $request->amount,
+        ]);
+        $url = '/sep_customer/' . $payment->customer_id;
+        return redirect()->to($url);
+    }
+
+    public function change_loan_amount(Request $request)
+    {
+        $payment = LoanRepayment::where('id', $request->id)->first();
+        $cust = LoanRepayment::where('id', $request->id)->update([
+            'amount' => $request->amount,
+        ]);
+        $loan = Loan::where('id', $payment->loan_number)->first();
+        $url = '/sep_customer/' . $loan->customer_id;
+        return redirect()->to($url);
+    }
+
+    public function change_plan(Request $request)
+    {
+        dd('Go Back');
+        // $acc = SavingsAccount::where('id', $request->id)->first();
+        // $plan = Plans::where('id', $request->plan)->first()
+        // dd($acc);
+        // $acc = SavingsAccount::create([
+        //     'customer_id' => $customer->id,
+        //     'customer_number' => $customer->no,
+        //     'plans_id' => $plan->id,
+        //     'name' => $plan->name,
+        //     'created_by' => "Admin",
+        //     'active' => true,
+        //     'branch' => $customer->branch,
+        //     'handler' => $customer->handler,
+        //     'customer' => $customer->name,
+        //     'plan' => $plan->name
+        // ]);
+        // $url = '/sep_customer/' . $acc->customer_id;
+        // return redirect()->to($url);
+    }
+
     public function index()
     {
         if (auth()->user()->office_admin == true) {
