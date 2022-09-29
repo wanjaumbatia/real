@@ -117,4 +117,4 @@ Route::get('/delete_payment/{id}', [OfficeController::class, 'delete_payment'])-
 
 Route::get('/collection', [SalesController::class, 'show_collection'])->name('show_collection');
 
-// Route::get('/home', [OfficeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');

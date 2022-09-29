@@ -62,7 +62,7 @@
                     </div>
                     @endforeach
                     @else
-                    <p>This Customer has no plan.</p>
+                    <p>This Customer has no plan. kindly contact the IT Department.</p>
                     @endif
 
                     @if($result['loan']!=null)

@@ -30,7 +30,7 @@ class SalesController extends Controller
     }
 
     public function show_collection(){
-        $collections = Payments::where('created_by', auth()->user()->name)->get();
+        $collections = Payments::where('created_by', auth()->user()->name)->where('remarks','!=', 'Opening Balance')->get();
         return view('sales.payments')->with(['data'=> $collections]);
     }
 
