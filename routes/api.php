@@ -380,8 +380,8 @@ Route::middleware('auth:sanctum')->post("/loan_repayment", function (Request $re
         ]);
 
         $msg = "Thanks for your patronage we rec'vd " . number_format($request->amount, 0) . " as loan repayment. for inquires call 09021417778";
-        $customer = Customer::where('customer_id', $loan->customer_id)->first();
-        //sendSMS($customer->phone, $msg);
+        $customer = Customer::where('id', $loan->customer_id)->first();
+        sendSMS($customer->phone, $msg);
     }
 
     return response([
