@@ -2,83 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Loan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BranchController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function loans(Request $request)
     {
-        //
-    }
+        if (auth()->user()->branch_manager == true) {
+            $branch = auth()->user()->branch;
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+            $data = DB::select("
+            select 
+                    loans.id, 
+                    loans.name, 
+                    loans.application_date,
+                    loans.customer_id,
+                    loans.amount, 
+                    loans.paid,
+                    loans.interest_percentage,
+                    loans.duration,
+                    loans.handler,
+                    loans.status,
+                    loans.remarks,
+                    users.branch 
+                from loans inner join users on  loans.handler = users.name where branch='".$branch."';
+            ");
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+            return view('branch.loans')->with(['loans' => $data, 'status' => $request->status, 'branch' => $branch]);
+        } else {
+            return abort(401);
+        }
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\FieldTeam;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IosController;
@@ -110,6 +111,13 @@ Route::get('/sep-customers/{name}', [OfficeController::class, 'customer_seps'])-
 Route::get('/sep_customer/{id}', [OfficeController::class, 'customer'])->name('sep_customer');
 Route::post('/change_phone', [OfficeController::class, 'change_phone'])->name('change_phone');
 Route::post('/migrate_plan', [OfficeController::class, 'migrate_plan'])->name('migrate_plan');
+Route::get('/loans', [SalesController::class, 'loans'])->name('sep_loans');
+
+
+
+
+//Branch Managers
+Route::get('/branch_loans', [BranchController::class, 'loans'])->name('branch_loans');
 
 Route::get('/delete_loan_payment/{id}', [OfficeController::class, 'delete_loan_payment'])->name('delete_loan_payment');
 Route::get('/delete_saving_account/{id}', [OfficeController::class, 'delete_saving_account'])->name('delete_saving_account');

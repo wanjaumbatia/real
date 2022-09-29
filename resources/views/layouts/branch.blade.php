@@ -44,15 +44,7 @@
                         @guest
                         @else
                         <li class="nav-item">
-                            <a class="nav-link" href="/customers">{{ __('Customers') }}</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="/collection">{{ __('Collections') }}</a>
-                        </li> 
-                        
-                        <li class="nav-item">
-                            <a class="nav-link" href="/loans">{{ __('Loans') }}</a>
+                            <a class="nav-link" href="/branch_loans">{{ __('Branch Loans') }}</a>
                         </li>
                         @endguest
                     </ul>

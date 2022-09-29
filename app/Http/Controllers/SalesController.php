@@ -29,9 +29,10 @@ class SalesController extends Controller
         return view('sales.customers')->with(['customers' => $customers]);
     }
 
-    public function show_collection(){
-        $collections = Payments::where('created_by', auth()->user()->name)->where('remarks','!=', 'Opening Balance')->get();
-        return view('sales.payments')->with(['data'=> $collections]);
+    public function show_collection()
+    {
+        $collections = Payments::where('created_by', auth()->user()->name)->where('remarks', '!=', 'Opening Balance')->get();
+        return view('sales.payments')->with(['data' => $collections]);
     }
 
     public function collection($id)
@@ -200,7 +201,6 @@ class SalesController extends Controller
                 'message' => 'Invalid OTP Code'
             ]);
         }
-
     }
 
 
@@ -601,5 +601,21 @@ class SalesController extends Controller
             $total_balance = $total_balance + $confirmed_transaction;
         }
         return $total_balance;
+    }
+
+    public function loans(Request $request)
+    {
+
+        if (auth()->user()->sales_executive == true) {
+            if ($request->status == null || $request->status=='all') {
+                $loans = Loan::where('handler', auth()->user()->name)->get();
+            } else {
+                $loans = Loan::where('handler', auth()->user()->name)->where('status', $request->status)->get();
+            }
+
+            return view('sales.loans')->with(['loans' => $loans, 'status' => $request->status]);
+        } else {
+            return abort(401);
+        }
     }
 }

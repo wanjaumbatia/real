@@ -163,7 +163,12 @@ class OfficeController extends Controller
 
     public function change_phone(Request $request)
     {
-        dd($request);
+        $customer = Customer::where('phone', $request->id)->first();
+        $cust = Customer::where('phone', $request->id)->update([
+            'phone' => $request->phone,
+        ]);
+        $url = '/sep_customer/' . $customer->id;
+        return redirect()->to($url);
     }
 
     public function index()
@@ -183,7 +188,7 @@ class OfficeController extends Controller
                 $total_expected = $total_expected + $item->savings + $item->loan_collection - $item->pof;
             }
             return view('office.index')->with(['data' => $data, 'total_expected' => $total_expected]);
-        }else{
+        } else {
             return abort(401);
         }
     }

@@ -259,7 +259,7 @@
                                         @csrf
                                         <div class="form-group">
                                             <label for="">Old Phone Number</label>
-                                            <input type="number" class="form-control" value="{{$customer->phone}}" disabled />
+                                            <input type="number" class="form-control" name="old_phone" value="{{$customer->phone}}" disabled />
                                         </div>
 
                                         <div class="form-group">

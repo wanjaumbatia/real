@@ -45,6 +45,11 @@ class HomeController extends Controller
                 $total_expected = $total_expected + $item->savings + $item->loan_collection - $item->pof;
             }
             return view('office.index')->with(['data' => $data, 'total_expected' => $total_expected]);
+        }else if($user->branch_manager == true){
+            return view('branch.index');
+        }else
+        {
+            return abort(401);
         }
     }
 }
