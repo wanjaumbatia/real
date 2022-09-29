@@ -255,7 +255,7 @@
                             </h2>
                             <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
-                                    <form action="/phone_change" method="post">
+                                    <form action="/change_phone" method="post">
                                         @csrf
                                         <div class="form-group">
                                             <label for="">Old Phone Number</label>
