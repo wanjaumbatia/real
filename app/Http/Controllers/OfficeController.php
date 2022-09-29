@@ -128,7 +128,7 @@ class OfficeController extends Controller
             'customer_id' => $customer->id,
             'customer_number' => $customer->no,
             'plans_id' => $plan->id,
-            'name' => 'Regular',
+            'name' => $plan->id,
             'created_by' => "Admin",
             'active' => true,
             'branch' => $customer->branch,
