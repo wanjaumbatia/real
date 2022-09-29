@@ -76,7 +76,7 @@ class OfficeController extends Controller
         $accounts = SavingsAccount::where('customer_id', $customer->id)->get();
         $savings = Payments::where('customer_id', $customer->id)->where('transaction_type', 'savings')->where('status', 'pending')->get();
         $withdrawals = Payments::where('customer_id', $customer->id)->where('transaction_type', 'withdrawal')->get();
-        foreach ($accounts as $item) {            
+        foreach ($accounts as $item) {
             $item['balance'] = Payments::where('status', 'confirmed')->where('transaction_type', 'savings')->where('savings_account_id', $item->id)->sum('amount');
             $item['pending'] = Payments::where('status', 'pending')->where('transaction_type', 'savings')->where('savings_account_id', $item->id)->sum('amount');
         }
@@ -91,27 +91,30 @@ class OfficeController extends Controller
         ]);
     }
 
-    public function delete_saving_account($id){
+    public function delete_saving_account($id)
+    {
         $acc = SavingsAccount::where('id', $id)->first();
         $customer = Customer::where('id', $acc->customer_id)->first();
         $acc->delete();
-        $url = '/sep_customer/'.$customer->id;
+        $url = '/sep_customer/' . $customer->id;
         return redirect()->to($url);
     }
 
-    public function delete_payment($id){
+    public function delete_payment($id)
+    {
         $payment = Payments::where('id', $id)->first();
         $customer = Customer::where('id', $payment->customer_id)->first();
         $payment->delete();
-        $url = '/sep_customer/'.$customer->id;
+        $url = '/sep_customer/' . $customer->id;
         return redirect()->to($url);
     }
 
-    public function delete_loan_payment($id){
+    public function delete_loan_payment($id)
+    {
         $loan = LoanRepayment::where('id', $id)->first();
         $customer = Customer::where('no', $loan->no)->first();
         $loan->delete();
-        $url = '/sep_customer/'.$customer->id;
+        $url = '/sep_customer/' . $customer->id;
         return redirect()->to($url);
     }
 
@@ -164,10 +167,8 @@ class OfficeController extends Controller
 
     public function index()
     {
-        if(auth()->user()->sales_executive == true){
-            redirect()->to('/customers');
-        }
-        $data = DB::select("select 
+        if (auth()->user()->office_admin == true) {
+            $data = DB::select("select 
             name,
             IFNULL((select sum(debit) from payments where status = 'pending' and transaction_type='savings' and created_by=u.name),0) as savings,
             IFNULL((select sum(credit) from payments where status = 'pending' and transaction_type='withdrawal' and created_by=u.name),0) as withdrawals,
@@ -176,11 +177,14 @@ class OfficeController extends Controller
             IFNULL((select sum(amount) from loan_repayments where status = 'pending' and handler=u.name), 0) as loan_collection
             from users u where sales_executive='1' and branch='" . auth()->user()->branch . "' order by savings desc;");
 
-        $total_expected = 0;
-        foreach ($data as $item) {
-            $total_expected = $total_expected + $item->savings + $item->loan_collection - $item->pof;
+            $total_expected = 0;
+            foreach ($data as $item) {
+                $total_expected = $total_expected + $item->savings + $item->loan_collection - $item->pof;
+            }
+            return view('office.index')->with(['data' => $data, 'total_expected' => $total_expected]);
+        }else{
+            return abort(401);
         }
-        return view('office.index')->with(['data' => $data, 'total_expected' => $total_expected]);
     }
 
     public function pay_on_field($id)
