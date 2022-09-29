@@ -115,4 +115,6 @@ Route::get('/delete_loan_payment/{id}', [OfficeController::class, 'delete_loan_p
 Route::get('/delete_saving_account/{id}', [OfficeController::class, 'delete_saving_account'])->name('delete_saving_account');
 Route::get('/delete_payment/{id}', [OfficeController::class, 'delete_payment'])->name('delete_payment');
 
+Route::get('/collection', [SalesController::class, 'show_collection'])->name('show_collection');
+
 // Route::get('/home', [OfficeController::class, 'index'])->name('home');

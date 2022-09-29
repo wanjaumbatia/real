@@ -164,6 +164,9 @@ class OfficeController extends Controller
 
     public function index()
     {
+        if(auth()->user()->sales_executive == true){
+            redirect()->to('/customers');
+        }
         $data = DB::select("select 
             name,
             IFNULL((select sum(debit) from payments where status = 'pending' and transaction_type='savings' and created_by=u.name),0) as savings,

@@ -11,6 +11,7 @@ use App\Models\PaymentLocation;
 use App\Models\Payments;
 use App\Models\Plans;
 use App\Models\SavingsAccount;
+use Faker\Provider\ar_EG\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -26,6 +27,11 @@ class SalesController extends Controller
     {
         $customers = Customer::where('handler', auth()->user()->name)->get();
         return view('sales.customers')->with(['customers' => $customers]);
+    }
+
+    public function show_collection(){
+        $collections = Payments::where('created_by', auth()->user()->name)->get();
+        return view('sales.payments')->with(['data'=> $collections]);
     }
 
     public function collection($id)
