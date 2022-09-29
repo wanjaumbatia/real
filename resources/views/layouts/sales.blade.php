@@ -47,6 +47,9 @@
                             <a class="nav-link" href="/customers">{{ __('Customers') }}</a>
                         </li>
 
+                        <li class="nav-item">
+                            <a class="nav-link" href="/customers">{{ __('Collections') }}</a>
+                        </li>
                         @endguest
                     </ul>
 
