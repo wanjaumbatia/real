@@ -10,6 +10,7 @@ use App\Models\CommissionLines;
 use App\Models\Customer;
 use App\Models\Loan;
 use App\Models\LoanRepayment;
+use App\Models\NewBalances;
 use App\Models\Payments;
 use App\Models\Plans;
 use App\Models\SavingsAccount;
@@ -70,7 +71,7 @@ class OfficeController extends Controller
     public function customer($id)
     {
         $customer = Customer::where('id', $id)->first();
-        $balances = Balances::where('userid', $customer->username)->get();
+        $balances = NewBalances::where('userid', $customer->username)->get();
         $plans = Plans::get();
         $loan_repayments = LoanRepayment::where('status', 'pending')->where('no', $customer->no)->get();
         $accounts = SavingsAccount::where('customer_id', $customer->id)->get();
