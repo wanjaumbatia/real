@@ -24,7 +24,7 @@
                             </div>
                             <div class="col-3">
                                 <button class="btn btn-primary w-100">
-                                    Search
+                                    Filter
                                 </button>
                             </div>
                         </div>
@@ -42,6 +42,12 @@
                                 <th>Paid Amount</th>
                                 @endif
                                 <th>Status</th>
+                                @if($status=='pending')
+                                <th>Currenct Savings</th>
+                                @endif
+                                @if($status=='pending')
+                                <th>Action</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -72,6 +78,13 @@
                                     <span class="btn btn-danger p-1">Bad Loan</span>
                                     @endif
                                 </td>
+                                @if($status=='pending')
+                                <th>{{$item->current_savings}}</th>
+                                @endif
+                                @if($status=='pending')
+                                <td><a href="/branch_loans/{{$item->id}}" class="btn btn-primary btn-block">Open</a></td>
+                                @endif
+
                             </tr>
                             @endforeach
                         </tbody>

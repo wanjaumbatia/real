@@ -163,9 +163,9 @@ class OfficeController extends Controller
 
     public function change_phone(Request $request)
     {
-        $customer = Customer::where('phone', $request->id)->first();
-        $cust = Customer::where('phone', $request->id)->update([
-            'phone' => $request->phone,
+        $customer = Customer::where('phone', $request->old_phone)->first();
+        $cust = Customer::where('phone', $request->old_phone)->update([
+            'phone' => $request->new_phone,
         ]);
         $url = '/sep_customer/' . $customer->id;
         return redirect()->to($url);

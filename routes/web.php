@@ -118,6 +118,7 @@ Route::get('/loans', [SalesController::class, 'loans'])->name('sep_loans');
 
 //Branch Managers
 Route::get('/branch_loans', [BranchController::class, 'loans'])->name('branch_loans');
+Route::get('/branch_loan/{id}', [BranchController::class, 'loan_card'])->name('loan_card');
 
 Route::get('/delete_loan_payment/{id}', [OfficeController::class, 'delete_loan_payment'])->name('delete_loan_payment');
 Route::get('/delete_saving_account/{id}', [OfficeController::class, 'delete_saving_account'])->name('delete_saving_account');
