@@ -114,7 +114,7 @@ Route::post('/migrate_plan', [OfficeController::class, 'migrate_plan'])->name('m
 Route::get('/loans', [SalesController::class, 'loans'])->name('sep_loans');
 Route::post('/change_amount', [OfficeController::class, 'change_amount'])->name('change_amount');
 Route::post('/change_loan_amount', [OfficeController::class, 'change_loan_amount'])->name('change_loan_amount');
-
+Route::post('/change_plan', [OfficeController::class, 'change_plan'])->name('change_plan');
 
 //Branch Managers
 Route::get('/branch_loans', [BranchController::class, 'loans'])->name('branch_loans');

@@ -195,24 +195,21 @@ class OfficeController extends Controller
 
     public function change_plan(Request $request)
     {
-        dd('Go Back');
-        // $acc = SavingsAccount::where('id', $request->id)->first();
-        // $plan = Plans::where('id', $request->plan)->first()
-        // dd($acc);
-        // $acc = SavingsAccount::create([
-        //     'customer_id' => $customer->id,
-        //     'customer_number' => $customer->no,
-        //     'plans_id' => $plan->id,
-        //     'name' => $plan->name,
-        //     'created_by' => "Admin",
-        //     'active' => true,
-        //     'branch' => $customer->branch,
-        //     'handler' => $customer->handler,
-        //     'customer' => $customer->name,
-        //     'plan' => $plan->name
-        // ]);
-        // $url = '/sep_customer/' . $acc->customer_id;
-        // return redirect()->to($url);
+        $acc = SavingsAccount::where('id', $request->id)->first();
+        $plan = Plans::where('id', $request->plan)->first();
+        $account = SavingsAccount::where('id', $request->id)->update([
+            'plans_id' => $plan->id,
+            'name' => $plan->name,
+            'active' => true,
+            'plan' => $plan->name
+        ]);
+
+        $payments = Payments::where('savings_account_id', $request->id)->update([
+            'plan'=>$plan->name
+        ]);
+
+        $url = '/sep_customer/' . $acc->customer_id;
+        return redirect()->to($url);
     }
 
     public function index()
