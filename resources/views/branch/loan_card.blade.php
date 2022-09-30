@@ -64,60 +64,92 @@
                             <div class="col-md-6 col-sm-12">
                                 <div class="form-group">
                                     <label for="">Current Savings</label>
-                                    <input type="text" class="form-control" value="{{$loan->current_savings}}" disabled>
+                                    <input type="text" class="form-control" value="{{number_format($loan->current_savings, 2)}}" disabled>
                                 </div>
                             </div>
                         </div>
+                    </form>
 
-                        <!-- <div class="card mt-3">
-                            <div class="card-header">
-                                Upload Documents
-                            </div> 
-                            <div class="card-body">
-                                <form action="/upload_forms/{{$loan->id}" method="post">
-                                    <div class="row">
-                                        <div class="col-md-6 col-sm-12">
-                                            <label for="">Loan Form</label>
-                                            <input type="file" name="loan-form" id="loan-form" class="form-control">
-                                        </div>
-                                        <div class="col-md-6 col-sm-12">
-                                            <label for="">Guarantorship</label>
-                                            <input type="file" name="guarantor-form" id="guarantor-form" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 col-sm-12">
-                                            <label for="">Loan Agreement</label>
-                                            <input type="file" name="agreement-form" id="loan-form" class="form-control">
-                                        </div>
-                                        <div class="col-md-6 col-sm-12">
-                                            <label></label>
-                                            <button type="submit" class="btn btn-primary w-100">Upload</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div> -->
-
-                        <!-- <div class="card mt-2">
-                            <div class="card-header">Approval</div>
-                            <div class="card-body">
-                                <form>
-                                    <textarea class="form-control w-100" placeholder="Extra Comments" rows="3"></textarea>
-                                    <button class="btn btn-primary w-100 mt-2">Approve</button>
-                                </form>
-                            </div>
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            Upload Documents
                         </div>
+                        <div class="card-body">
+                            <form action="/branch_upload_forms/{{$loan->id}}" method="post" enctype="multipart/form-data">
+                                @csrf
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-12">
+                                        <label for="">ID Card</label>
+                                        @if($identity==false)
+                                        <input type="file" name="id_card" id="id_card" class="form-control">
+                                        @else
+                                        <a href="" class="btn btn-primary btn-sm">Download</a>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <label for="">Passport Photos</label>
+                                        @if($photo==false)
+                                        <input type="file" name="passport_photo" id="passport_photo" class="form-control">
+                                        @else
+                                        <a href="" class="btn btn-primary btn-sm">Download</a>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6 col-sm-12">
+                                        <label for="">Loan Form</label>
+                                        @if($form==false)
+                                        <input type="file" name="loan_form" id="loan_form" class="form-control">
+                                        @else
+                                        <a href="" class="btn btn-primary btn-sm">Download</a>
+                                        @endif
+                                    </div>  
+                                    <div class="col-md-6 col-sm-12">
+                                        <label for="">Guarantorship</label>
+                                        @if($guarantor==false)
+                                        <input type="file" name="guarantor_form" id="guarantor_form" class="form-control">
+                                        @else
+                                        <a href="" class="btn btn-primary btn-sm">Download</a>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6 col-sm-12">
+                                        <label for="">Loan Agreement</label>
+                                        @if($agreement==false)
+                                        <input type="file" name="agreement_form" id="agreement_form" class="form-control">
+                                        @else
+                                        <a href="" class="btn btn-primary btn-sm">Download</a>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <label></label>
+                                        <button type="submit" class="btn btn-primary w-100">Upload</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
 
-                        <div class="card mt-2">
-                            <div class="card-header">Rejection</div>
-                            <div class="card-body">
-                                <form>
-                                    <textarea class="form-control w-100" placeholder="Reason for rejection" rows="3"></textarea>
-                                    <button class="btn btn-danger w-100 mt-2">Reject</button>
-                                </form>
-                            </div>
-                        </div> -->
+                    <div class="card mt-2">
+                        <div class="card-header">Approval</div>
+                        <div class="card-body">
+                            <form>
+                                <textarea class="form-control w-100" placeholder="Extra Comments" rows="3"></textarea>
+                                <button class="btn btn-primary w-100 mt-2">Approve</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card mt-2">
+                        <div class="card-header">Rejection</div>
+                        <div class="card-body">
+                            <form>
+                                <textarea class="form-control w-100" placeholder="Reason for rejection" rows="3"></textarea>
+                                <button class="btn btn-danger w-100 mt-2">Reject</button>
+                            </form>
+                        </div>
+                    </div>
 
                     </form>
                 </div>

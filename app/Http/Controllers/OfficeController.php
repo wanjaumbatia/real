@@ -197,6 +197,8 @@ class OfficeController extends Controller
             'amount' => $request->amount,
         ]);
         $loan = Loan::where('id', $payment->loan_number)->first();
+        
+        dd($loan);
         $url = '/sep_customer/' . $loan->customer_id;
         return redirect()->to($url);
     }

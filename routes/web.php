@@ -104,6 +104,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/withdrawal/{id}', [SalesController::class, 'withdrawal'])->name('sales.withdrawal');
     Route::post('/post_withdrawal', [SalesController::class, 'post_withdrawal'])->name('sales.post_withdrawal');
     Route::post('/verify', [SalesController::class, 'verify_withdrawal'])->name('sales.verify');
+
+
+    //Branch Managers
+    Route::get('/branch_loans', [BranchController::class, 'loans'])->name('branch_loans');
+    Route::get('/branch_loan/{id}', [BranchController::class, 'loan_card'])->name('loan_card');
+    Route::post('/branch_upload_forms/{id}', [BranchController::class, 'upload_forms'])->name('branch_upload_forms');
 });
 
 Route::get('/backend', [OfficeController::class, 'backend'])->name('backend');
@@ -118,11 +124,6 @@ Route::post('/change_loan_amount', [OfficeController::class, 'change_loan_amount
 Route::post('/change_plan', [OfficeController::class, 'change_plan'])->name('change_plan');
 
 Route::get('/upload_accounts', [BranchController::class, 'upload_accounts'])->name('upload_accounts');
-
-//Branch Managers
-Route::get('/branch_loans', [BranchController::class, 'loans'])->name('branch_loans');
-Route::get('/branch_loan/{id}', [BranchController::class, 'loan_card'])->name('loan_card');
-Route::post('/upload_forms/{id}', [BranchController::class, 'upload_forms'])->name('upload_forms');
 
 Route::get('/delete_loan_payment/{id}', [OfficeController::class, 'delete_loan_payment'])->name('delete_loan_payment');
 Route::get('/delete_saving_account/{id}', [OfficeController::class, 'delete_saving_account'])->name('delete_saving_account');

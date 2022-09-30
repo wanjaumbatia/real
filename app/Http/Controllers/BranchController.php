@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Balances;
 use App\Models\Customer;
 use App\Models\Loan;
+use App\Models\LoanForm;
 use App\Models\NewBalances;
 use App\Models\Payments;
 use App\Models\Plans;
@@ -82,17 +83,100 @@ class BranchController extends Controller
         $loan = Loan::where('id', $id)->first();
         //get customer details
         $customer = Customer::where('id', $loan->customer_id)->first();
+        $identity = false;
+        $photo = false;
+        $form = false;
+        $guarantor = false;
+        $agreement = false;
+        $loan_forms = LoanForm::where('loan_id', $id)->get();
+        foreach ($loan_forms as $item) {
+            if ($item->title == 'ID') {
+                $identity = true;
+            }
 
+            if ($item->title == 'photo') {
+                $photo = true;
+            }
+
+            if ($item->title == 'loan') {
+                $form = true;
+            }
+
+            if ($item->title == 'guarantor') {
+                $guarantor = true;
+            }
+
+            if ($item->title == 'agreement') {
+                $agreement = true;
+            }
+        }
         //create charges
 
         //calculate payments
 
-        return view('branch.loan_card')->with(['loan' => $loan, 'customer' => $customer]);
+        return view('branch.loan_card')
+            ->with([
+                'loan' => $loan,
+                'customer' => $customer,
+                'loan_forms' => $loan_forms,
+                'identity' => $identity,
+                'photo' => $photo,
+                'guarantor' => $guarantor,
+                'agreement' => $agreement,
+                'form'=>$form
+            ]);
     }
 
-    public function upload_forms($id)
+    public function upload_forms(Request $request, $id)
     {
+        if ($request->file('id_card') != null) {
+            $id_url = $request->file('id_card')->store('loan_docs', 'public');
+
+            $form = LoanForm::create([
+                'url' => $id_url,
+                'title' => 'ID',
+                'loan_id' => $id
+            ]);
+        }
+
+        if ($request->file('passport_photo') != null) {
+            $id_url = $request->file('passport_photo')->store('loan_docs', 'public');
+            $form = LoanForm::create([
+                'url' => $id_url,
+                'title' => 'photo',
+                'loan_id' => $id
+            ]);
+        }
+
+        if ($request->file('loan_form') != null) {
+            $id_url = $request->file('loan_form')->store('loan_docs', 'public');
+            $form = LoanForm::create([
+                'url' => $id_url,
+                'title' => 'loan',
+                'loan_id' => $id
+            ]);
+        }
+
+        if ($request->file('guarantor_form') != null) {
+            $id_url = $request->file('guarantor_form')->store('loan_docs', 'public');
+            $form = LoanForm::create([
+                'url' => $id_url,
+                'title' => 'guarantor',
+                'loan_id' => $id
+            ]);
+        }
+
+        if ($request->file('agreement_form') != null) {
+            $id_url = $request->file('agreement_form')->store('loan_docs', 'public');
+            $form = LoanForm::create([
+                'url' => $id_url,
+                'title' => 'agreement',
+                'loan_id' => $id
+            ]);
+        }
+
         $url = '/branch_loan/' . $id;
+        Log::info($url);
         redirect()->to($url);
     }
 
