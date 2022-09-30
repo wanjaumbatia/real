@@ -198,7 +198,6 @@ class OfficeController extends Controller
         ]);
         $loan = Loan::where('id', $payment->loan_number)->first();
         
-        dd($loan);
         $url = '/sep_customer/' . $loan->customer_id;
         return redirect()->to($url);
     }
