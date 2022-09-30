@@ -68,6 +68,14 @@ class OfficeController extends Controller
         return view('office.seps_customers')->with(['customers' => $customers]);
     }
 
+    public function search_customer(Request $request){
+        if($request->userid !== null){
+            $customer = Customer::where('username', $request->userid)->first();
+            return view('search')->with(['customer'=>$customer]);
+        }
+        return view('search')->with(['customer'=>null]);
+    }
+
     public function customer($id)
     {
         $customer = Customer::where('id', $id)->first();
@@ -205,7 +213,7 @@ class OfficeController extends Controller
         ]);
 
         $payments = Payments::where('savings_account_id', $request->id)->update([
-            'plan'=>$plan->name
+            'plan' => $plan->name
         ]);
 
         $url = '/sep_customer/' . $acc->customer_id;
@@ -663,8 +671,6 @@ class OfficeController extends Controller
                 Log::warning($e);
             }
         }
-
-
         return "done";
     }
 
@@ -710,5 +716,71 @@ class OfficeController extends Controller
         $savings = Payments::where('status', 'pending')->where('transaction_type', 'savings')->where('created_by', $name)->sum('debit');
         $regfee = Payments::where('status', 'pending')->where('transaction_type', 'registration')->where('created_by', $name)->sum('debit');
         $withdrawal = Payments::where('status', 'pending')->where('transaction_type', 'withdrawal')->where('created_by', $name)->sum('credit');
+    }
+
+
+    public function loans(Request $request)
+    {
+        if (auth()->user()->office_admin == true) {
+            $branch = auth()->user()->branch;
+
+
+            if ($request->status == null || $request->status == 'all') {
+                $data = DB::select("
+                select 
+                        loans.id, 
+                        loans.name, 
+                        loans.application_date,
+                        loans.customer_id,
+                        loans.amount, 
+                        loans.paid,
+                        loans.interest_percentage,
+                        loans.duration,
+                        loans.handler,
+                        loans.status,
+                        loans.remarks,
+                        users.branch,
+                        loans.current_savings
+                    from loans inner join users on  loans.handler = users.name where branch='" . $branch . "';
+                ");
+            } else {
+                $data = DB::select("
+                select 
+                        loans.id, 
+                        loans.name, 
+                        loans.application_date,
+                        loans.customer_id,
+                        loans.amount, 
+                        loans.paid,
+                        loans.interest_percentage,
+                        loans.duration,
+                        loans.handler,
+                        loans.status,
+                        loans.remarks,
+                        users.branch ,
+                        loans.current_savings
+                    from loans inner join users on  loans.handler = users.name where branch='" . $branch . "' and status = '" . $request->status . "';
+                ");
+            }
+
+
+            return view('office.loans')->with(['loans' => $data, 'status' => $request->status, 'branch' => $branch]);
+        } else {
+            return abort(401);
+        }
+    }
+
+    public function loan_card($id)
+    {
+        //get loan details
+        $loan = Loan::where('id', $id)->first();
+        //get customer details
+        $customer = Customer::where('id', $loan->customer_id)->first();
+
+        //create charges
+
+        //calculate payments
+
+        return view('office.loan_card')->with(['loan' => $loan, 'customer' => $customer]);
     }
 }

@@ -54,7 +54,7 @@
                         @endif
                         
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('loans.list') }}">{{ __('Loans') }}</a>
+                            <a class="nav-link" href="{{ route('admin.loans.list') }}">{{ __('Loans') }}</a>
                         </li>
                         @endguest
                     </ul>

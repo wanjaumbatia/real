@@ -1,4 +1,4 @@
-@extends('layouts.branch')
+@extends('layouts.app')
 
 @section('content')
 <div class="container">
@@ -69,7 +69,7 @@
                             </div>
                         </div>
 
-                        <!-- <div class="card mt-3">
+                        <div class="card mt-3">
                             <div class="card-header">
                                 Upload Documents
                             </div> 
@@ -97,9 +97,9 @@
                                     </div>
                                 </form>
                             </div>
-                        </div> -->
+                        </div>
 
-                        <!-- <div class="card mt-2">
+                        <div class="card mt-2">
                             <div class="card-header">Approval</div>
                             <div class="card-body">
                                 <form>
@@ -117,7 +117,7 @@
                                     <button class="btn btn-danger w-100 mt-2">Reject</button>
                                 </form>
                             </div>
-                        </div> -->
+                        </div>
 
                     </form>
                 </div>

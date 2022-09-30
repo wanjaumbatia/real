@@ -74,7 +74,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/office/reconcile_withdrawal', [OfficeController::class, 'disburse'])->name('office.disburse');
     Route::get('/office/reconcile_withdrawal/{id}', [OfficeController::class, 'recon_page'])->name('office.recon_page');
 
-    Route::get('/loans/index', [LoanController::class, 'index'])->name('loans.list');
+    Route::get('/loans/index', [OfficeController::class, 'loans'])->name('admin.loans.list');
+    Route::get('/loans/{id}', [OfficeController::class, 'loan_card'])->name('admin.loan.card');
     Route::get('/office/loan_recon_list/{id}', [LoanController::class, 'loan_recon_list'])->name('office.loan_recon_list');
     Route::get('/office/commissions', [OfficeController::class, 'commissions'])->name('office.commissions');
     Route::get('/office/pof/{id}', [OfficeController::class, 'pay_on_field'])->name('office.pof');
@@ -130,3 +131,4 @@ Route::get('/delete_payment/{id}', [OfficeController::class, 'delete_payment'])-
 Route::get('/collection', [SalesController::class, 'show_collection'])->name('show_collection');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/search', [OfficeController::class, 'search_customer'])->name('search');
