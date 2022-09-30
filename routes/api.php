@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
 use Faker\Provider\ar_EG\Payment;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;;
 
 
@@ -39,10 +40,22 @@ Route::post('/tokens/create', function (Request $request) {
         'password' => 'required'
     ]);
 
+    $data = [
+        'email' => $fields['username'],
+        'password' => $fields['password']
+    ];
+
     $user = User::where('email', $fields['username'])->first();
     if (!$user) {
         return response([
             'message' => 'Bad Credredentials'
+        ], 401);
+    }
+
+    if (!Auth::attempt($data)) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Email & Password does not match with our record.',
         ], 401);
     }
 
