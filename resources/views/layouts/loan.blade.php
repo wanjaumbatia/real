@@ -16,15 +16,17 @@
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.datatables.net/datetime/1.1.2/css/dataTables.dateTime.min.css">
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
     <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 </head>
 
 <body>
@@ -32,7 +34,7 @@
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Reliance') }}
+                    {{ config('app.name', 'Laravel') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -43,22 +45,20 @@
                     <ul class="navbar-nav me-auto">
                         @guest
                         @else
-                        <li class="nav-item">
-                            <a class="nav-link" href="/customers">{{ __('Customers') }}</a>
-                        </li>
 
+                        @if(Auth::user()->loan_manager == true)
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">{{ __('Loan Request') }}</a>
+                        </li>
+                        @endif
                         @if(Auth::user()->office_admin == true)
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('office.list') }}">{{ __('Reconciliation') }}</a>
+                            <a class="nav-link" href="{{ route('office.commissions') }}">{{ __('Commissions') }}</a>
                         </li>
                         @endif
 
                         <li class="nav-item">
-                            <a class="nav-link" href="/collection">{{ __('Collections') }}</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="/loans">{{ __('Loans') }}</a>
+                            <a class="nav-link" href="{{ route('admin.loans.list') }}">{{ __('Loans') }}</a>
                         </li>
                         @endguest
                     </ul>

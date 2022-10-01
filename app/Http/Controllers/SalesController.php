@@ -11,7 +11,6 @@ use App\Models\PaymentLocation;
 use App\Models\Payments;
 use App\Models\Plans;
 use App\Models\SavingsAccount;
-use Faker\Provider\ar_EG\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
