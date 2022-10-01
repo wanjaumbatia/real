@@ -287,11 +287,11 @@ class OfficeController extends Controller
         $total_regfee = Payments::where('created_by', $handler)->where('transaction_type', 'registration')->where('status', 'pending')->sum('debit');
 
         if (($total_transactions + $total_regfee - $pof + $total_loans) < $amount) {
-            dd('overage');
+            
             return back()->withErrors(['You can not reconcile more than the required amount of ₦.' . number_format(($total_transactions + $total_regfee - $pof))]);
         } else if (($total_transactions + $total_regfee - $pof + $total_loans) > $amount) {
             // handle shortages
-            dd('shortage');
+            
             $short = ($total_transactions + $total_regfee - $pof) - $amount;
             $reference = rand(100000000, 999999999);
             foreach ($transactions as $item) {
@@ -348,7 +348,6 @@ class OfficeController extends Controller
             var_dump(Mail::failures());
             return redirect()->route('office.list');
         } else {
-            dd('normal');
             //clear sales executive
             $reference = rand(100000000, 999999999);
             foreach ($transactions as $item) {
