@@ -1,4 +1,4 @@
-@extends('layouts.branch')
+@extends('layouts.loan')
 
 @section('content')
 <div class="container">
@@ -70,17 +70,63 @@
                         </div>
                     </form>
 
-                    <div class="card mt-2">
-                        <div class="card-header">Security</div>
+                    <div class="card mt-3">
+                        <div class="card-header">Loan Charges</div>
                         <div class="card-body">
-                            <div class="form-group">
-                                <label for="">Security Type</label>
-                                <select id="security" name="security" class="form-control">
-                                    @foreach($securities as $item)
-                                    <option value="{{$item->type}}">{{$item->type}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            <table class="table">
+                                @foreach($deductions as $item)
+                                <tr>
+                                    <td style="font-weight: 600;">{{$item['name']}}</td>
+                                    <td>{{number_format($item['amount'], 2)}}</td>
+                                </tr>
+                                @endforeach
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card mt-3">
+                        <div class="card-header">Expected Repayment</div>
+                        <div class="card-body">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="">Expected Total Capital</label>
+                                            <input type="text" class="form-control" value="{{number_format($loan->amount, 2)}}" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <label for="">Expected Total Interest</label>
+                                        <input type="text" class="form-control" value="{{number_format(($loan->amount*(5.5/100)*$loan->duration), 2)}}" disabled />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="">Monthly Capital Repayment</label>
+                                            <input type="text" class="form-control" value="{{number_format(($loan->amount)/$loan->duration, 2)}}" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <label for="">Monthly Interest Payment</label>
+                                        <input type="text" class="form-control" value="{{number_format($loan->amount*(5.5/100), 2)}}" disabled />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="">Monthly Capital Repayment</label>
+                                            <input type="text" class="form-control" value="{{number_format((($loan->amount)/$loan->duration)+($loan->amount*(5.5/100)), 2)}}" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <label for="">Monthly Interest Payment</label>
+                                        <input type="text" class="form-control" value="{{number_format($loan->amount + ($loan->amount*(5.5/100)*$loan->duration), 2)}}" disabled />
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
 
@@ -89,7 +135,7 @@
                             Upload Documents
                         </div>
                         <div class="card-body">
-                            <form action="/branch_upload_forms/{{$loan->id}}" method="post" enctype="multipart/form-data">
+                            <!-- <form>
                                 @csrf
                                 <div class="row">
                                     <div class="col-md-6 col-sm-12">
@@ -109,7 +155,7 @@
                                         <input type="file" name="passport_photo" id="passport_photo" class="form-control">
                                         @else
                                         <div class="row">
-                                            <div class="col-6"><label for="">Passport Photo</label></div>
+                                            <div class="col-6"><label for="">Passport Photos</label></div>
                                             <div class="col-6"><a href="" class="btn btn-primary btn-sm">Download</a></div>
                                         </div>
                                         @endif
@@ -152,16 +198,29 @@
                                         </div>
                                         @endif
                                     </div>
-                                    <div class="col-md-6 col-sm-12">
-                                        <label></label>
-                                        <button type="submit" class="btn btn-primary w-100">Upload</button>
-                                    </div>
                                 </div>
-                            </form>
+                            </form> -->
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Document</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($loan_forms as $form)
+                                    <tr>
+                                        <td>{{$form->title}}</td>
+                                        <td>
+                                            <a href="/{{$form->url}}" class="btn btn-primary btn-sm">Download</a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+
                         </div>
                     </div>
-
-
 
                     <div class="card mt-2">
                         <div class="card-header">Approval</div>
@@ -190,13 +249,5 @@
         </div>
     </div>
 </div>
-
-<script>
-    $(document).ready(function() {
-        $('#security').on('change', function() {
-           //alert(this.value);
-        });
-    });
-</script>
 
 @endsection

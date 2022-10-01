@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Loan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +25,7 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
         if ($user->sales_executive == true) {
@@ -45,11 +46,14 @@ class HomeController extends Controller
                 $total_expected = $total_expected + $item->savings + $item->loan_collection - $item->pof;
             }
             return view('office.index')->with(['data' => $data, 'total_expected' => $total_expected]);
-        }else if($user->branch_manager == true){
+        } else if ($user->branch_manager == true) {
             return view('branch.index');
-        }else
-        {
+        } else if ($user->assistant_manager == true) {           
+            return view('loans.dashboard');
+        } else {
             return abort(401);
         }
     }
+
+    
 }

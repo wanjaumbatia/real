@@ -6,6 +6,7 @@ use App\Models\Balances;
 use App\Models\Customer;
 use App\Models\Loan;
 use App\Models\LoanForm;
+use App\Models\LoanSecurityType;
 use App\Models\NewBalances;
 use App\Models\Payments;
 use App\Models\Plans;
@@ -90,33 +91,34 @@ class BranchController extends Controller
         $agreement = false;
         $loan_forms = LoanForm::where('loan_id', $id)->get();
         foreach ($loan_forms as $item) {
-            if ($item->title == 'ID') {
+            if ($item->title == 'ID Number') {
                 $identity = true;
             }
 
-            if ($item->title == 'photo') {
+            if ($item->title == 'Photo') {
                 $photo = true;
             }
 
-            if ($item->title == 'loan') {
+            if ($item->title == 'Loan Form') {
                 $form = true;
             }
 
-            if ($item->title == 'guarantor') {
+            if ($item->title == 'Guarantor') {
                 $guarantor = true;
             }
 
-            if ($item->title == 'agreement') {
+            if ($item->title == 'Agreement') {
                 $agreement = true;
             }
         }
         //create charges
-
+        $security = LoanSecurityType::where('active', true)->get();
         //calculate payments
 
         return view('branch.loan_card')
             ->with([
                 'loan' => $loan,
+                'securities' => $security,
                 'customer' => $customer,
                 'loan_forms' => $loan_forms,
                 'identity' => $identity,
@@ -134,7 +136,7 @@ class BranchController extends Controller
 
             $form = LoanForm::create([
                 'url' => $id_url,
-                'title' => 'ID',
+                'title' => 'ID Number',
                 'loan_id' => $id
             ]);
         }
@@ -143,7 +145,7 @@ class BranchController extends Controller
             $id_url = $request->file('passport_photo')->store('loan_docs', 'public');
             $form = LoanForm::create([
                 'url' => $id_url,
-                'title' => 'photo',
+                'title' => 'Photo',
                 'loan_id' => $id
             ]);
         }
@@ -152,7 +154,7 @@ class BranchController extends Controller
             $id_url = $request->file('loan_form')->store('loan_docs', 'public');
             $form = LoanForm::create([
                 'url' => $id_url,
-                'title' => 'loan',
+                'title' => 'Loan Form',
                 'loan_id' => $id
             ]);
         }
@@ -161,7 +163,7 @@ class BranchController extends Controller
             $id_url = $request->file('guarantor_form')->store('loan_docs', 'public');
             $form = LoanForm::create([
                 'url' => $id_url,
-                'title' => 'guarantor',
+                'title' => 'Guarantor',
                 'loan_id' => $id
             ]);
         }
@@ -170,14 +172,14 @@ class BranchController extends Controller
             $id_url = $request->file('agreement_form')->store('loan_docs', 'public');
             $form = LoanForm::create([
                 'url' => $id_url,
-                'title' => 'agreement',
+                'title' => 'Agreement',
                 'loan_id' => $id
             ]);
         }
 
         $url = '/branch_loan/' . $id;
-        Log::info($url);
-        redirect()->to($url);
+        
+        return redirect()->to($url);
     }
 
 
@@ -185,6 +187,7 @@ class BranchController extends Controller
         $loan = Loan::where('id', $id)->first();
         $ln = Loan::where('id', $id)->update([
             'status' => 'processing',
+            'remarks' => $request->comment
         ]);
 
         return redirect()->to('/branch_loans');

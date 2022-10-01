@@ -1317,18 +1317,18 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
 
         $sep_commision = $request->commission * $plan->sep_commission;
         //create sales agent line
-        $comm_line = CommissionLines::create([
-            'handler' => $account->handler,
-            'amount' => $sep_commision,
-            'description' => 'Commission for withdrawal of ₦' . number_format($request->amount, 2) . ' charged at ₦' . number_format($request->commission, 2) . ' for ' . $account->customer,
-            'batch_number' => $batch_number,
-            'transaction_type' => 'withdrawal',
-            'payment_id' => $charge->id,
-            'disbursed' => false,
-            'branch' => $request->user()->branch,
-            'approved' => false,
-            // 'transaction_type'=>'commission'
-        ]);
+        // $comm_line = CommissionLines::create([
+        //     'handler' => $account->handler,
+        //     'amount' => $sep_commision,
+        //     'description' => 'Commission for withdrawal of ₦' . number_format($request->amount, 2) . ' charged at ₦' . number_format($request->commission, 2) . ' for ' . $account->customer,
+        //     'batch_number' => $batch_number,
+        //     'transaction_type' => 'withdrawal',
+        //     'payment_id' => $charge->id,
+        //     'disbursed' => false,
+        //     'branch' => $request->user()->branch,
+        //     'approved' => false,
+        //     // 'transaction_type'=>'commission'
+        // ]);
     }
 
     $cust = Customer::where('id', $request->no)->first();

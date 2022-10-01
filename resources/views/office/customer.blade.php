@@ -136,7 +136,7 @@
                                                 <td>{{number_format($item->pending, 2)}}</td>
                                                 <td>{{$item->created_at}}</td>
                                                 <td>
-                                                    <form action="/change_plan" method="post">
+                                                    <!-- <form action="/change_plan" method="post">
                                                         @csrf
                                                         <input type="number" name="id" value="{{$item->id}}" hidden>
                                                         <div class="row">
@@ -149,6 +149,26 @@
                                                                 </select>
                                                             </div>
                                                             <div class="col-4"><button class="btn btn-primary w-100">Edit</button></div>
+                                                        </div>
+                                                    </form> -->
+                                                    <form action="/post_withdrawal" method="POST">
+                                                        @csrf
+                                                        <input type="number" name="id" value="{{$item->id}}" hidden>
+                                                        <div class="row">
+                                                            <div class="col-8">
+                                                                <input type="text" name="id" value="{{$item->id}}" hidden>
+                                                                <input value="{{$customer->id}}" hidden name="dt" id="dt" />
+                                                                <div class="col-6">
+                                                                    <input class="form-input" name='amount' type="number" placeholder="Amount" />
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <input class="form-input" name='commission' type="number" placeholder="Commission" />
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <input class="form-input" name='payment' type="number" value="Office Admin" hidden />
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-4"><button class="btn btn-primary w-100" type="submit">Post</button></div>
                                                         </div>
                                                     </form>
                                                 </td>
@@ -225,12 +245,12 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($withdrawals as $withdrawals)
+                                            @foreach($withdrawals as $item)
                                             <tr>
                                                 <td>{{$item->plan}}</td>
                                                 <td>{{$item->transaction_type}}</td>
                                                 <td>{{$item->branch}}</td>
-                                                <td>{{number_format($item->amount, 2)}}</td>
+                                                <td>{{number_format($item->credit, 2)}}</td>
                                                 <td>{{$item->created_at}}</td>
                                                 <td><a href="/delete_payment/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
                                             </tr>
@@ -357,6 +377,41 @@
 <script>
     $(document).ready(function() {
         $('#seps').select2();
+        const csrfToken = document.head.querySelector("[name~=csrf-token][content]").content;
+        $('#withdrawal-form').submit((e) => {
+            e.preventDefault();
+
+            var id = $('#id').val();
+            var dt = $('#dt').val();
+            var amount = $('#amount').val();
+            var commission = $('#commission').val();
+            var payment = $('#payment').val();
+
+            var data = {
+                id: id,
+                amount: amount,
+                commission: commission,
+                payment: 'Office Admin',
+            };
+
+            fetch("/post_withdrawal", {
+                    method: 'post',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json, text-plain, */*",
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRF-TOKEN": csrfToken
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(results => results.json())
+                .then((data) => {
+                    log(data);
+                    window.location.replace("/sep_customer/" + dt);
+                })
+                .catch(error => console.error(error));
+        });
+
     });
 </script>
 @endsection

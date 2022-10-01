@@ -46,20 +46,16 @@
                         @guest
                         @else
 
-                        @if(Auth::user()->loan_manager == true)
+                        @if(Auth::user()->assistant_manager == true)
                         <li class="nav-item">
-                            <a class="nav-link" href="/">{{ __('Loan Request') }}</a>
+                            <a class="nav-link" href="{{ route('loans.index') }}">{{ __('All Loans') }}</a>
                         </li>
-                        @endif
-                        @if(Auth::user()->office_admin == true)
+
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('office.commissions') }}">{{ __('Commissions') }}</a>
+                            <a class="nav-link" href="{{ route('loans.requests') }}">{{ __('Loan Requests') }}</a>
                         </li>
                         @endif
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('admin.loans.list') }}">{{ __('Loans') }}</a>
-                        </li>
                         @endguest
                     </ul>
 

@@ -56,10 +56,6 @@
                             <a class="nav-link" href="{{ route('office.commissions') }}">{{ __('Commissions') }}</a>
                         </li>
                         @endif
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('admin.loans.list') }}">{{ __('Loans') }}</a>
-                        </li>
                         @endguest
                     </ul>
 

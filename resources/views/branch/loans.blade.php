@@ -79,7 +79,7 @@
                                     @endif
                                 </td>
                                 @if($status=='pending')
-                                <th>{{$item->current_savings}}</th>
+                                <th>{{number_format($item->current_savings, 2)}}</th>
                                 @endif
                                 @if($status=='pending')
                                 <td><a href="/branch_loan/{{$item->id}}" class="btn btn-primary btn-block">Open</a></td>
