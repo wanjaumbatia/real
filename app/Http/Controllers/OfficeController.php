@@ -1017,6 +1017,6 @@ class OfficeController extends Controller
 
         }
 
-        return redirect()->to('/customer/'.$customer->id);
+        return redirect()->to('/sep_customer/'.$customer->id);
     }
 }
