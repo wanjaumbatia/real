@@ -294,21 +294,25 @@
                             </h2>
                             <div id="collapseEight" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
-                                   <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label for="">Current Handler</label>
-                                            <input type="text" class="form-control" value="{{$customer->handler}}" disabled>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="">New Handler</label>
-                                            <select class="form-control">
-                                                <option>s</option>
-                                                <option>No records</option>
-                                            </select>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <form method="post" action="/handler_change/{{$customer->id}}">
+                                                <div class="form-group">
+                                                    <label for="">Current Handler</label>
+                                                    <input type="text" class="form-control" value="{{$customer->handler}}" disabled>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="">New Handler</label>
+                                                    <select name="handler" id="seps" class="form-control" style="width: 100%;">
+                                                        <option></option>
+                                                        @foreach($seps as $sep)
+                                                        <option>{{$sep->name}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
-                                   </div>
                                 </div>
                             </div>
                         </div>
@@ -346,4 +350,11 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#seps').select2();
+    });
+</script>
 @endsection

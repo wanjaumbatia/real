@@ -23,6 +23,10 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
     <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 </head>
 
 <body>
@@ -52,7 +56,7 @@
                             <a class="nav-link" href="{{ route('office.commissions') }}">{{ __('Commissions') }}</a>
                         </li>
                         @endif
-                        
+
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('admin.loans.list') }}">{{ __('Loans') }}</a>
                         </li>

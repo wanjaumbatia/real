@@ -89,12 +89,16 @@ class OfficeController extends Controller
             $item['balance'] = Payments::where('status', 'confirmed')->where('transaction_type', 'savings')->where('savings_account_id', $item->id)->sum('amount');
             $item['pending'] = Payments::where('status', 'pending')->where('transaction_type', 'savings')->where('savings_account_id', $item->id)->sum('amount');
         }
+
+        $seps = User::where('sales_executive', true)->where('branch', $customer->branch)->get();
+
         return view('office.customer')->with([
             'customer' => $customer,
             'balances' => $balances,
             'plans' => $plans,
             'loan_repayments' => $loan_repayments,
             'accounts' => $accounts,
+            'seps'=>$seps,
             'savings' => $savings,
             'withdrawals' => $withdrawals
         ]);

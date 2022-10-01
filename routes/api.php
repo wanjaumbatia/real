@@ -62,15 +62,15 @@ Route::post('/tokens/create', function (Request $request) {
     $token = $user->createToken("token");
 
     //check if user has shortage
-    $shortage = ShortageLine::where('sales_executive', $user->name)
-        ->where('cleared', false)->get();
+    // $shortage = ShortageLine::where('sales_executive', $user->name)
+    //     ->where('cleared', false)->get();
 
-    if (count($shortage) > 0) {
-        return response([
-            'success' => false,
-            'message' => "Please clear your shortage to proceed"
-        ]);
-    }
+    // if (count($shortage) > 0) {
+    //     return response([
+    //         'success' => false,
+    //         'message' => "Please clear your shortage to proceed"
+    //     ]);
+    // }
 
     return response([
         'token' => $token->plainTextToken,
@@ -1425,7 +1425,7 @@ Route::middleware("auth:sanctum")->get("/dashboard", function (Request $request)
     $loan_repayment_weekly = LoanRepayment::where('status', 'pending')->where('handler', $request->user()->name)->whereDate('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('amount');
     $loan_repayment_monthly = LoanRepayment::where('status', 'pending')->where('handler', $request->user()->name)->whereDate('created_at',  Carbon::now()->month)->sum('amount');
 
-    
+
     $todays_sales = Payments::where('status', 'confirmed')->where(function ($q) {
         $q->where('transaction_type', 'savings')
             ->orWhere('transaction_type', 'registration');
