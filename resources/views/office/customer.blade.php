@@ -310,6 +310,7 @@
                                                         @endforeach
                                                     </select>
                                                 </div>
+                                                <button class="btn btn-primary w-100" type="submit">Submit</button>
                                             </form>
                                         </div>
                                     </div>
