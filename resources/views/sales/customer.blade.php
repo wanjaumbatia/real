@@ -94,9 +94,10 @@
                         <div class="card-body">
                             <a href="/loan/{{$customer->id}}" class="btn btn-primary btn-sm w-100 my-1">Apply Loan</a>
                             <a href="/collection/{{$customer->id}}" class="btn btn-primary btn-sm w-100 my-1">Go to payments</a>
-                            <a href="/" class="btn btn-primary btn-sm w-100 my-1">New Plan</a>
+                            <button  class="btn btn-primary btn-sm w-100 my-1">New Plan</buttin>
                         </div>
                     </div>
+                    
                 </div>
             </div>
         </div>

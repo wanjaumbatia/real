@@ -297,6 +297,7 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <form method="post" action="/handler_change/{{$customer->id}}">
+                                                @csrf
                                                 <div class="form-group">
                                                     <label for="">Current Handler</label>
                                                     <input type="text" class="form-control" value="{{$customer->handler}}" disabled>
@@ -306,7 +307,7 @@
                                                     <select name="handler" id="seps" class="form-control" style="width: 100%;">
                                                         <option></option>
                                                         @foreach($seps as $sep)
-                                                        <option>{{$sep->name}}</option>
+                                                        <option value="{{$sep->name}}">{{$sep->name}}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>

@@ -124,7 +124,7 @@ Route::get('/loans', [SalesController::class, 'loans'])->name('sep_loans');
 Route::post('/change_amount', [OfficeController::class, 'change_amount'])->name('change_amount');
 Route::post('/change_loan_amount', [OfficeController::class, 'change_loan_amount'])->name('change_loan_amount');
 Route::post('/change_plan', [OfficeController::class, 'change_plan'])->name('change_plan');
-Route::post('/handler_change', [OfficeController::class, 'handler_change'])->name('handler_change');
+Route::post('/handler_change/{id}', [OfficeController::class, 'handler_change'])->name('handler_change');
 Route::get('/upload_accounts', [BranchController::class, 'upload_accounts'])->name('upload_accounts');
 
 Route::get('/delete_loan_payment/{id}', [OfficeController::class, 'delete_loan_payment'])->name('delete_loan_payment');
