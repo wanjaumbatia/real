@@ -13,8 +13,7 @@ class DeductionSeeder extends Seeder
      * @return void
      */
     public function run()
-    {
-        
+    {        
         LoanDeduction::create([
             'name' => 'Management Fees',
             'percentange' => true,

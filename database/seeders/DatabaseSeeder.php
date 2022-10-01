@@ -20,6 +20,6 @@ class DatabaseSeeder extends Seeder
         // $this->call(BranchSeeder::class);
         // // $this->call(CustomerSeeder::class);
         // $this->call(PlansSeeder::class);\
-        $this->call(DeductionSeeder::class);
+        $this->call(AdminSeeder::class);
     }
 }

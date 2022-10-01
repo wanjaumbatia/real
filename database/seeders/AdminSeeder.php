@@ -16,23 +16,23 @@ class AdminSeeder extends Seeder
     public function run()
     {
         $user = User::create([
-            'name' => 'Francis Mbatia',
-            'email' => 'mbatia',
-            'phone' => '0707220224',
+            'name' => 'BEST UFUOMA ERHABOR',
+            'email' => 'best',
+            'phone' => '',
             'email_verified_at' => now(),
-            'branch' => 'Asaba',
-            'admin' => true,
-            'password' => Hash::make('123@Team'),
+            'branch' => 'Delta',
+            'loan_officer' => true,
+            'password' => Hash::make('NENENE3247'),
         ]);
 
         $user = User::create([
-            'name' => 'David Owuor',
-            'email' => 'david',
-            'phone' => '0707220224',
+            'name' => 'MICHAEL ABIA',
+            'email' => 'abia4real',
+            'phone' => '',
             'email_verified_at' => now(),
-            'branch' => 'Asaba',
-            'office_admin' => true,
-            'password' => Hash::make('123@Team'),
+            'branch' => 'Delta',
+            'loan_officer' => true,
+            'password' => Hash::make('abia1986'),
         ]);
     }
 }

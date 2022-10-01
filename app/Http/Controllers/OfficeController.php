@@ -190,6 +190,14 @@ class OfficeController extends Controller
         return redirect()->to($url);
     }
 
+    public function handler_change(Request $request, $id){
+        $cust = Customer::where('id', $id)->update([
+            'handler'=> $request->handler
+        ]);
+        $url = '/sep_customer/' . $id;
+        return redirect()->to($url);
+    }
+
     public function change_loan_amount(Request $request)
     {
         $payment = LoanRepayment::where('id', $request->id)->first();
