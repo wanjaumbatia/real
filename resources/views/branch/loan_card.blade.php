@@ -103,7 +103,7 @@
                                         @else
                                         <a href="" class="btn btn-primary btn-sm">Download</a>
                                         @endif
-                                    </div>  
+                                    </div>
                                     <div class="col-md-6 col-sm-12">
                                         <label for="">Guarantorship</label>
                                         @if($guarantor==false)
@@ -134,8 +134,9 @@
                     <div class="card mt-2">
                         <div class="card-header">Approval</div>
                         <div class="card-body">
-                            <form>
-                                <textarea class="form-control w-100" placeholder="Extra Comments" rows="3"></textarea>
+                            <form method="post" action="/branch_approve_loan/{{$loan->id}}">
+                                @csrf
+                                <textarea class="form-control w-100" placeholder="Extra Comments" rows="3" name="comment"></textarea>
                                 <button class="btn btn-primary w-100 mt-2">Approve</button>
                             </form>
                         </div>

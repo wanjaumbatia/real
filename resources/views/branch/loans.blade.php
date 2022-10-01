@@ -71,7 +71,7 @@
                                     @if($item->status=='processing')
                                     <span class="btn btn-warning p-1">Processing</span>
                                     @endif
-                                    @if($item->status=='processing')
+                                    @if($item->status=='approved')
                                     <span class="btn btn-default p-1">Approved</span>
                                     @endif
                                     @if($item->status=='bad_loan')

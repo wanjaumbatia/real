@@ -13,6 +13,7 @@ use App\Http\Controllers\TransactionsController;
 use App\Http\Controllers\UserDetails;
 use App\Http\Controllers\Withdrawal;
 use App\Http\Controllers\WithdrawalsController;
+use App\Models\Branch;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -110,6 +111,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/branch_loans', [BranchController::class, 'loans'])->name('branch_loans');
     Route::get('/branch_loan/{id}', [BranchController::class, 'loan_card'])->name('loan_card');
     Route::post('/branch_upload_forms/{id}', [BranchController::class, 'upload_forms'])->name('branch_upload_forms');
+    Route::post('/branch_approve_loan/{id}', [BranchController::class, 'branch_approve_loan'])->name('branch_approve_loan');
 });
 
 Route::get('/backend', [OfficeController::class, 'backend'])->name('backend');

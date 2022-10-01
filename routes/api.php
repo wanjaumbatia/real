@@ -1420,22 +1420,30 @@ Route::middleware("auth:sanctum")->get("/dashboard", function (Request $request)
     Carbon::setWeekEndsAt(Carbon::SUNDAY);
     $resp = array();
     //get total months 
+    $loan_repayment = LoanRepayment::where('status', 'pending')->where('handler', $request->user()->name)->sum('amount');
+    $loan_repayment_daily = LoanRepayment::where('status', 'pending')->where('handler', $request->user()->name)->whereDate('created_at', Carbon::today())->sum('amount');
+    $loan_repayment_weekly = LoanRepayment::where('status', 'pending')->where('handler', $request->user()->name)->whereDate('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('amount');
+    $loan_repayment_monthly = LoanRepayment::where('status', 'pending')->where('handler', $request->user()->name)->whereDate('created_at',  Carbon::now()->month)->sum('amount');
+
+    
     $todays_sales = Payments::where('status', 'confirmed')->where(function ($q) {
         $q->where('transaction_type', 'savings')
             ->orWhere('transaction_type', 'registration');
-    })->where('created_by', $request->user()->name)->whereDate('created_at', Carbon::today())->sum('amount');
+    })->where('created_by', $request->user()->name)->whereDate('created_at', Carbon::today())->sum('amount') + $loan_repayment_daily;
+
     $weekly_sales = Payments::where('status', 'confirmed')->where(function ($q) {
         $q->where('transaction_type', 'savings')
             ->orWhere('transaction_type', 'registration');
-    })->where('created_by', $request->user()->name)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('amount');
+    })->where('created_by', $request->user()->name)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('amount') + $loan_repayment_weekly;
+
     $monthly_sales = Payments::where('status', 'confirmed')->where(function ($q) {
         $q->where('transaction_type', 'savings')
             ->orWhere('transaction_type', 'registration');
-    })->where('created_by', $request->user()->name)->whereMonth('created_at', Carbon::now()->month)->sum('amount');
+    })->where('created_by', $request->user()->name)->whereMonth('created_at', Carbon::now()->month)->sum('amount') + $loan_repayment_monthly;
     $pending_collections = Payments::where('status', 'pending')->where('created_by', $request->user()->name)->where(function ($q) {
         $q->where('transaction_type', 'savings')
             ->orWhere('transaction_type', 'registration');
-    })->sum('amount');
+    })->sum('amount') + $loan_repayment;
 
     $todays_withdrawals = Payments::where('status', 'confirmed')->where('transaction_type', 'withdrawal')->where('created_by', $request->user()->name)->whereDate('created_at', Carbon::today())->sum('amount');
     $weekly_withdrawals = Payments::where('status', 'confirmed')->where('transaction_type', 'withdrawal')->where('created_by', $request->user()->name)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('amount');

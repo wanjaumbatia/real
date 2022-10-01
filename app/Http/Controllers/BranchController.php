@@ -180,6 +180,17 @@ class BranchController extends Controller
         redirect()->to($url);
     }
 
+
+    public function branch_approve_loan(Request $request, $id){
+        $loan = Loan::where('id', $id)->first();
+        $ln = Loan::where('id', $id)->update([
+            'status' => 'processing',
+        ]);
+
+        return redirect()->to('/branch_loans');
+    }
+
+
     public function upload_accounts()
     {
         //get balances
