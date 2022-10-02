@@ -7,11 +7,11 @@
             <div class="row">
                 <div class="col-6">
                     {{ __('Customers') }}
-                </div> 
+                </div>
             </div>
         </div>
         <div class="card-body">
-            <table class="table">
+            <table class="table" id="table">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -29,4 +29,14 @@
             </table>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#table').DataTable({
+                "paging": true,
+                "ordering": true,
+                "info": true
+            });
+        });
+    </script>
     @endsection
