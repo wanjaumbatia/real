@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Balances;
 use App\Models\Customer;
 use App\Models\Loan;
+use App\Models\LoanDeduction;
 use App\Models\LoanForm;
 use App\Models\LoanSecurityType;
 use App\Models\NewBalances;
@@ -115,9 +116,24 @@ class BranchController extends Controller
         $security = LoanSecurityType::where('active', true)->get();
         //calculate payments
 
+        $deduction = LoanDeduction::where('active', true)->get();
+        $deductions = array();
+        foreach ($deduction as $item) {
+            $rec = array();      
+            $rec['name'] = $item->name;     
+            if ($item->percentange == true) {
+                $rec['amount'] = $loan->amount * ($item->percentange_amount/100);
+            } else {
+                $rec['amount'] = $item->amount;
+            }
+            $deductions[] = $rec;
+        }
+        
+
         return view('branch.loan_card')
             ->with([
                 'loan' => $loan,
+                'deductions'=>$deductions,
                 'securities' => $security,
                 'customer' => $customer,
                 'loan_forms' => $loan_forms,

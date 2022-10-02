@@ -70,17 +70,63 @@
                         </div>
                     </form>
 
-                    <div class="card mt-2">
-                        <div class="card-header">Security</div>
+                    <div class="card mt-3">
+                        <div class="card-header">Loan Charges</div>
                         <div class="card-body">
-                            <div class="form-group">
-                                <label for="">Security Type</label>
-                                <select id="security" name="security" class="form-control">
-                                    @foreach($securities as $item)
-                                    <option value="{{$item->type}}">{{$item->type}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            <table class="table">
+                                @foreach($deductions as $item)
+                                <tr>
+                                    <td style="font-weight: 600;">{{$item['name']}}</td>
+                                    <td>{{number_format($item['amount'], 2)}}</td>
+                                </tr>
+                                @endforeach
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card mt-3">
+                        <div class="card-header">Expected Repayment</div>
+                        <div class="card-body">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="">Expected Total Capital</label>
+                                            <input type="text" class="form-control" value="{{number_format($loan->amount, 2)}}" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <label for="">Expected Total Interest</label>
+                                        <input type="text" class="form-control" value="{{number_format(($loan->amount*(5.5/100)*$loan->duration), 2)}}" disabled />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="">Monthly Capital Repayment</label>
+                                            <input type="text" class="form-control" value="{{number_format(($loan->amount)/$loan->duration, 2)}}" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <label for="">Monthly Interest Payment</label>
+                                        <input type="text" class="form-control" value="{{number_format($loan->amount*(5.5/100), 2)}}" disabled />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-12">
+                                        <div class="form-group">
+                                            <label for="">Monthly Capital Repayment</label>
+                                            <input type="text" class="form-control" value="{{number_format((($loan->amount)/$loan->duration)+($loan->amount*(5.5/100)), 2)}}" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <label for="">Monthly Interest Payment</label>
+                                        <input type="text" class="form-control" value="{{number_format($loan->amount + ($loan->amount*(5.5/100)*$loan->duration), 2)}}" disabled />
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
 
@@ -128,7 +174,7 @@
                                         @endif
                                     </div>
                                     <div class="col-md-6 col-sm-12">
-
+                                        <!-- 
                                         @if($guarantor==false)
                                         <label for="">Guarantorship</label>
                                         <input type="file" name="guarantor_form" id="guarantor_form" class="form-control">
@@ -137,22 +183,22 @@
                                             <div class="col-6"><label for="">Guarantorship</label></div>
                                             <div class="col-6"><a href="" class="btn btn-primary btn-sm">Download</a></div>
                                         </div>
-                                        @endif
+                                        @endif -->
+                                        <div class="col-md-6 col-sm-12">
+                                            @if($agreement==false)
+                                            <label for="">Loan Agreement</label>
+                                            <input type="file" name="agreement_form" id="agreement_form" class="form-control">
+                                            @else
+                                            <div class="row">
+                                                <div class="col-6"><label for="">Loan Agreement</label></div>
+                                                <div class="col-6"><a href="" class="btn btn-primary btn-sm">Download</a></div>
+                                            </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row mt-2">
-                                    <div class="col-md-6 col-sm-12">
-                                        @if($agreement==false)
-                                        <label for="">Loan Agreement</label>
-                                        <input type="file" name="agreement_form" id="agreement_form" class="form-control">
-                                        @else
-                                        <div class="row">
-                                            <div class="col-6"><label for="">Loan Agreement</label></div>
-                                            <div class="col-6"><a href="" class="btn btn-primary btn-sm">Download</a></div>
-                                        </div>
-                                        @endif
-                                    </div>
-                                    <div class="col-md-6 col-sm-12">
+                                    <div class="col-md-12 col-sm-12">
                                         <label></label>
                                         <button type="submit" class="btn btn-primary w-100">Upload</button>
                                     </div>
@@ -161,7 +207,23 @@
                         </div>
                     </div>
 
+                    <div class="card mt-2">
+                        <div class="card-header">Security</div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <div class="row">
+                                    @foreach($securities as $item)
+                                    <div class="col-3">
+                                        <input type="checkbox" name="chkbx" />
+                                        <label>{{$item->type}}</label>
+                                    </div>
+                                    @endforeach
+                                </div>
 
+                                
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="card mt-2">
                         <div class="card-header">Approval</div>
@@ -194,7 +256,7 @@
 <script>
     $(document).ready(function() {
         $('#security').on('change', function() {
-           //alert(this.value);
+            //alert(this.value);
         });
     });
 </script>

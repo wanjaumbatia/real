@@ -286,8 +286,7 @@ class OfficeController extends Controller
         $total_transactions = Payments::where('created_by', $handler)->where('transaction_type', 'savings')->where('status', 'pending')->sum('debit');
         $total_regfee = Payments::where('created_by', $handler)->where('transaction_type', 'registration')->where('status', 'pending')->sum('debit');
 
-        if (($total_transactions + $total_regfee - $pof + $total_loans) < $amount) {
-            
+        if (($total_transactions + $total_regfee - $pof + $total_loans) < $amount) {            
             return back()->withErrors(['You can not reconcile more than the required amount of ₦.' . number_format(($total_transactions + $total_regfee - $pof))]);
         } else if (($total_transactions + $total_regfee - $pof + $total_loans) > $amount) {
             // handle shortages
@@ -365,15 +364,13 @@ class OfficeController extends Controller
                         'reconciled' => true
                     ]);
                 }
-
-
-
                 //create commission line
                 $comm = CommissionLines::where('batch_number', $item->batch_number)->update([
                     'approved' => true,
                     'approved_by' => auth()->user()->name
                 ]);
             }
+            
             $loans = LoanRepayment::where('handler', $handler)->where('status', 'pending')->get();
 
             foreach ($loans as $item) {
@@ -892,12 +889,12 @@ class OfficeController extends Controller
                 //get total
                 $totals = $request->amount + $interest;
                 $acceptable = $balance - $interest;
-                if ($balance < $totals) {
-                    return response([
-                        "success" => false,
-                        "message" => "You do not have enough balance in this account ttto withdraw ₦" . number_format($request->amount) . ". You can withdraw up to ₦" . number_format($acceptable, 2) . "."
-                    ]);
-                }
+                // if ($balance < $totals) {
+                //     return response([
+                //         "success" => false,
+                //         "message" => "You do not have enough balance in this account ttto withdraw ₦" . number_format($request->amount) . ". You can withdraw up to ₦" . number_format($acceptable, 2) . "."
+                //     ]);
+                // }
                 //create withdrawal line
                 $withdrawal = Payments::create([
                     'savings_account_id' => $account->id,
@@ -941,21 +938,21 @@ class OfficeController extends Controller
                 $sep_commision = $request->amount * $plan->penalty * $plan->sep_commission;
             }
         } else {
-            if ($balance < $total_credit) {
-                return response([
-                    "success" => false,
-                    "message" => "You do not have enough balance in this account to withdraw ₦" . number_format($request->amount) . "."
-                ]);
-            }
+            // if ($balance < $total_credit) {
+            //     return response([
+            //         "success" => false,
+            //         "message" => "You do not have enough balance in this account to withdraw ₦" . number_format($request->amount) . "."
+            //     ]);
+            // }
             //check pending withdrawal
             $pending_withdrawal = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('credit');
             $pending_charge = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'charge')->sum('credit');
 
             if ($balance < ($total_credit + $pending_withdrawal + $pending_charge)) {
-                return response([
-                    "success" => false,
-                    "message" => "Unable to process this withdrawal since customer has a pending withdrawal, this amount exceed the remaining balance."
-                ]);
+                // return response([
+                //     "success" => false,
+                //     "message" => "Unable to process this withdrawal since customer has a pending withdrawal, this amount exceed the remaining balance."
+                // ]);
             }
 
             $plan = Plans::where('name', $account->plan)->first();
