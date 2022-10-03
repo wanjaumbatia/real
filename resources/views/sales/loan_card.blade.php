@@ -64,8 +64,8 @@
                             </div>
                             <div class="col-md-6 col-sm-12">
                                 <div class="form-group">
-                                    <label for="">Current Savings</label>
-                                    <input type="text" class="form-control" value="{{number_format($loan->current_savings, 2)}}" disabled>
+                                    <label for="">Balance</label>
+                                    <input type="text" class="form-control" value="{{number_format($balance, 2)}}" disabled>
                                 </div>
                             </div>
                         </div>

@@ -7,7 +7,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="row">
-                        <div class="col-6">Name</div>
+                        <div class="col-6">Statement For {{$customer->name}}</div>
                     </div>
                 </div>
 

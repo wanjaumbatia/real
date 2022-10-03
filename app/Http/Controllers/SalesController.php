@@ -45,8 +45,12 @@ class SalesController extends Controller
         $total_exp_repayment = $loan->amount + ($loan->amount * (5.5 / 100) * $loan->duration);
 
         $progress = round($repayed / $total_exp_repayment * 100);
-        echo  $progress;
-        return view('sales.loan_card')->with(['customer' => $customer, 'loan' => $loan, 'payments' => $payments, 'progress' => $progress]);
+        $balance = $total_exp_repayment - $repayed;
+
+        return view('sales.loan_card')->with([
+            'customer' => $customer, 'loan' => $loan,
+            'payments' => $payments, 'progress' => $progress, 'balance' => $balance
+        ]);
     }
 
     public function show_collection()
@@ -643,8 +647,10 @@ class SalesController extends Controller
     public function statement($id)
     {
 
+        $payment = Payments::where('savings_account_id', $id)->first();
+        $customer = Customer::where('id', $payment->customer_id)->first();
         $payments = Payments::where('savings_account_id', $id)->get();
 
-        return view('sales.statement')->with(['payments' => $payments]);
+        return view('sales.statement')->with(['payments' => $payments, 'customer' => $customer]);
     }
 }
