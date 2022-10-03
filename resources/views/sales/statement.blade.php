@@ -14,7 +14,7 @@
                 <div class="card-body">
                     <div class="card">
                         <div class="card-body">
-                            <table class="table table-striped">
+                            <table id="table" class="table table-striped">
                                 <thead>
                                     <tr>
                                         <th>Date</th>
@@ -47,9 +47,12 @@
     $(document).ready(function() {
 
         $('#table').DataTable({
-            "paging": true,
+            "paging": false,
             "ordering": true,
-            "info": true
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ]
         });
     });
 </script>

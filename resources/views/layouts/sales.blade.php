@@ -18,6 +18,7 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Styles -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/datetime/1.1.2/css/dataTables.dateTime.min.css">
