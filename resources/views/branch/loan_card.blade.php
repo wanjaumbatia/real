@@ -54,6 +54,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="row mt-1">
                             <div class="col-md-6 col-sm-12">
                                 <div class="form-group">
@@ -174,59 +175,96 @@
                                         @endif
                                     </div>
                                     <div class="col-md-6 col-sm-12">
-                                        <!-- 
                                         @if($guarantor==false)
-                                        <label for="">Guarantorship</label>
+                                        <label for="">Security Document</label>
                                         <input type="file" name="guarantor_form" id="guarantor_form" class="form-control">
                                         @else
                                         <div class="row">
-                                            <div class="col-6"><label for="">Guarantorship</label></div>
+                                            <div class="col-6"><label for="">Security Document</label></div>
                                             <div class="col-6"><a href="" class="btn btn-primary btn-sm">Download</a></div>
                                         </div>
-                                        @endif -->
-                                        <div class="col-md-6 col-sm-12">
-                                            @if($agreement==false)
-                                            <label for="">Loan Agreement</label>
-                                            <input type="file" name="agreement_form" id="agreement_form" class="form-control">
-                                            @else
-                                            <div class="row">
-                                                <div class="col-6"><label for="">Loan Agreement</label></div>
-                                                <div class="col-6"><a href="" class="btn btn-primary btn-sm">Download</a></div>
-                                            </div>
-                                            @endif
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6 col-sm-12">
+                                        @if($agreement==false)
+                                        <label for="">Loan Agreement</label>
+                                        <input type="file" name="agreement_form" id="agreement_form" class="form-control">
+                                        @else
+                                        <div class="row">
+                                            <div class="col-6"><label for="">Loan Agreement</label></div>
+                                            <div class="col-6"><a href="" class="btn btn-primary btn-sm">Download</a></div>
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="row mt-2">
                                     <div class="col-md-12 col-sm-12">
                                         <label></label>
+                                        @if($loan->status=='pending')
                                         <button type="submit" class="btn btn-primary w-100">Upload</button>
+                                        @endif
                                     </div>
                                 </div>
                             </form>
                         </div>
                     </div>
 
-                    <div class="card mt-2">
+
+                    <div class="card mt-3">
                         <div class="card-header">Security</div>
                         <div class="card-body">
-                            <form action="/save_security" method="post">
+                            <form action="/save_security/{{$loan->id}}" method="post">
                                 @csrf
                                 <div class="form-group">
                                     <div class="row">
-                                        @foreach($securities as $item)
                                         <div class="col-3">
-                                            <input name="{{$item->type}}" type="checkbox" name="chkbx" />
-                                            <label>{{$item->name}}</label>
+                                            @if($loan->Collateral==true)
+                                            <input name="Collateral" type="checkbox" name="chkbx" checked />
+                                            @else
+                                            <input name="Collateral" type="checkbox" name="chkbx" />
+                                            @endif
+                                            <label>Collateral</label>
                                         </div>
-                                        @endforeach
+
+                                        <div class="col-3">
+                                            @if($loan->Guarantorship==true)
+                                            <input name="Guarantorship" type="checkbox" name="chkbx" checked />
+                                            @else
+                                            <input name="Guarantorship" type="checkbox" name="chkbx" />
+                                            @endif
+                                            <label>Guarantorship</label>
+                                        </div>
+
+                                        <div class="col-3">
+                                            @if($loan->CivilServantGuarantee==true)
+                                            <input name="CivilServantGuarantee" type="checkbox" name="chkbx" checked />
+                                            @else
+                                            <input name="CivilServantGuarantee" type="checkbox" name="chkbx" />
+                                            @endif
+                                            <label>Civil Servant Guarantee</label>
+                                        </div>
+
+                                        <div class="col-3">
+                                            @if($loan->Cheque==true)
+                                            <input name="Cheque" type="checkbox" name="chkbx" checked />
+                                            @else
+                                            <input name="Cheque" type="checkbox" name="chkbx" />
+                                            @endif
+                                            <label>Cheque</label>
+                                        </div>
                                     </div>
+                                    @if($loan->status=='pending')
                                     <button class="btn btn-primary w-100 mt-3">Save</button>
+                                    @endif
                             </form>
                         </div>
                     </div>
                 </div>
 
+                @if($loan->status=='pending')
+                @if(Auth::user()->branch_manager == true)
                 <div class="card mt-2">
                     <div class="card-header">Approval</div>
                     <div class="card-body">
@@ -248,8 +286,55 @@
                         </form>
                     </div>
                 </div>
+                @endif
+                @endif
 
-                </form>
+
+                @if($loan->legal==true)
+                @if(Auth::user()->legal == true)
+                <div class="card mt-2">
+                    <div class="card-header">Loan Remarks</div>
+                    <div class="card-body">
+                        <form>
+                            <div class="form-group mb-2">
+                                <label for="">Branch Manager</label>
+                                <input name="comment" class="form-control w-100" disabled value="{{$loan->branch_manager_remarks}}" rows="3" name="comment" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="">Loan Officer</label>
+                                <input name="comment" class="form-control w-100" disabled value="{{$loan->loan_officer_remarks}}" rows="3" name="comment" />
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+                <div class="card mt-2">
+                    <div class="card-header">Approval</div>
+                    <div class="card-body">
+                        <form method="post" action="/legal_approval/{{$loan->id}}">
+                            @csrf
+                            <textarea name="comment" class="form-control w-100" placeholder="Extra Comments" rows="3" name="comment"></textarea>
+                            <button class="btn btn-primary w-100 mt-2">Approve</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card mt-2">
+                    <div class="card-header">Rejection</div>
+                    <div class="card-body">
+                        <form method="post" action="/legal_rejection/{{$loan->id}}">
+                            @csrf
+                            <textarea name="comment" class="form-control w-100" placeholder="Reason for rejection" rows="3"></textarea>
+                            <button class="btn btn-danger w-100 mt-2">Reject</button>
+                        </form>
+                    </div>
+                </div>
+                @endif
+                @endif
+
+
+                <a href="/disburse/{{$loan->id}}" class="btn btn-primary w-100 mt-3">Disburse Loan</a>
             </div>
         </div>
     </div>

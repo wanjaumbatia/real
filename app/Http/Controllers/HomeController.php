@@ -48,8 +48,29 @@ class HomeController extends Controller
             return view('office.index')->with(['data' => $data, 'total_expected' => $total_expected]);
         } else if ($user->branch_manager == true) {
             return view('branch.index');
-        } else if ($user->assistant_manager == true) {           
+        } else if ($user->loan_officer == true) {           
             return view('loans.dashboard');
+        } else if ($user->legal == true) {       
+            
+            $data = DB::select("
+            select 
+                    loans.id, 
+                    loans.name, 
+                    loans.application_date,
+                    loans.customer_id,
+                    loans.amount, 
+                    loans.paid,
+                    loans.interest_percentage,
+                    loans.duration,
+                    loans.handler,
+                    loans.status,
+                    loans.remarks,
+                    users.branch ,
+                    loans.current_savings
+                from loans inner join users on  loans.handler = users.name and status = 'processing' and loans.legal='1';
+            ");
+
+            return view('loans.legal_loans')->with(['loans' => $data]);;
         } else {
             return abort(401);
         }

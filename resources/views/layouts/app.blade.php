@@ -51,9 +51,23 @@
                             <a class="nav-link" href="{{ route('office.list') }}">{{ __('Reconciliation') }}</a>
                         </li>
                         @endif
+
+                        @if(Auth::user()->office_admin == true)
+                        <li class="nav-item">
+                            <a class="nav-link" href="/recon_statement">{{ __('Reconciliation Report') }}</a>
+                        </li>
+                        @endif
+
+                        
                         @if(Auth::user()->office_admin == true)
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('office.commissions') }}">{{ __('Commissions') }}</a>
+                        </li>
+                        @endif
+
+                        @if(Auth::user()->legal == true)
+                        <li class="nav-item">
+                            <a class="nav-link" href="">{{ __('Legal') }}</a>
                         </li>
                         @endif
                         @endguest

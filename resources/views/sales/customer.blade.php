@@ -37,8 +37,13 @@
                     <div class="card mt-2">
                         <div class="card-header">
                             <div class="row font-weight-bold">
-                                <h3 class="font-weight-bold">{{$item['details']->plan}}</h3>
-                                <h6>{{$item['details']->name}}</h6>
+                                <div class="col-6">
+                                    <h3 class="font-weight-bold">{{$item['details']->plan}}</h3>
+                                    <h6>{{$item['details']->name}}</h6>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <a href="/statement/{{$item['details']->id}}" class="btn btn-primary btn-sm">Statement</a>
+                                </div>
                             </div>
                         </div>
                         <div class="card-body">
@@ -106,7 +111,7 @@
 
                                 </div>
                                 <div class="modal-body">
-                                    
+
                                 </div>
                             </div>
                         </div>

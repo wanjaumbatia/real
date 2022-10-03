@@ -104,16 +104,16 @@ class LoanController extends Controller
         $deduction = LoanDeduction::where('active', true)->get();
         $deductions = array();
         foreach ($deduction as $item) {
-            $rec = array();      
-            $rec['name'] = $item->name;     
+            $rec = array();
+            $rec['name'] = $item->name;
             if ($item->percentange == true) {
-                $rec['amount'] = $loan->amount * ($item->percentange_amount/100);
+                $rec['amount'] = $loan->amount * ($item->percentange_amount / 100);
             } else {
                 $rec['amount'] = $item->amount;
             }
             $deductions[] = $rec;
         }
-        
+
         //calculate payments
 
         return view('loans.processing_loan')
@@ -126,12 +126,25 @@ class LoanController extends Controller
                 'guarantor' => $guarantor,
                 'agreement' => $agreement,
                 'form' => $form,
-                'deductions'=>$deductions,
-                'loan_forms'=>$loan_forms
+                'deductions' => $deductions,
+                'loan_forms' => $loan_forms
             ]);
     }
 
-    public function download_file(Request $request){
-        if(Storage::disk('loan_docs')->exists(""));
+    public function download_file(Request $request)
+    {
+        if (Storage::disk('loan_docs')->exists(""));
+    }
+
+    public function loan_officer_approval(Request $request, $id)
+    {
+        $loan = Loan::where('id', $id)->first();
+        $ln = Loan::where('id', $id)->update([
+            'status' => 'processing',
+            'loan_officer_approval' => true,
+            'loan_officer_remarks' => $request->comment
+        ]);
+
+        return redirect()->to('/home');
     }
 }

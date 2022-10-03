@@ -50,6 +50,19 @@ class OfficeController extends Controller
         return redirect()->route('home')->with('success', 'Balances Imported Successfully');
     }
 
+    public function recon_statement(Request $request)
+    {
+        //$payments = Payments::all();
+        $today = today();
+        $dates = [];
+
+        for ($i = 1; $i < $today->daysInMonth + 1; ++$i) {
+            $dates[] = \Carbon\Carbon::createFromDate($today->year, $today->month, $i)->format('d-m-Y');
+        }
+        dd($dates);
+        return view('office.recon_statement');
+    }
+
     public function backend()
     {
         $branches = Branch::get();
@@ -87,7 +100,7 @@ class OfficeController extends Controller
         $accounts = SavingsAccount::where('customer_id', $customer->id)->get();
         $savings = Payments::where('customer_id', $customer->id)->where('transaction_type', 'savings')->where('status', 'pending')->get();
         $withdrawals = Payments::where('customer_id', $customer->id)->where('transaction_type', 'withdrawal')->get();
-        
+
         foreach ($accounts as $item) {
             $item['balance'] = Payments::where('status', 'confirmed')->where('transaction_type', 'savings')->where('savings_account_id', $item->id)->sum('amount');
             $item['pending'] = Payments::where('status', 'pending')->where('transaction_type', 'savings')->where('savings_account_id', $item->id)->sum('amount');
@@ -179,7 +192,7 @@ class OfficeController extends Controller
     public function change_phone(Request $request)
     {
         $customer = Customer::where('phone', $request->old_phone)->first();
-        $cust = Customer::where('phone', $request->old_phone)->update([
+        $cust = Customer::where('id', $customer->id)->update([
             'phone' => $request->new_phone,
         ]);
         $url = '/sep_customer/' . $customer->id;
@@ -286,16 +299,17 @@ class OfficeController extends Controller
         $total_transactions = Payments::where('created_by', $handler)->where('transaction_type', 'savings')->where('status', 'pending')->sum('debit');
         $total_regfee = Payments::where('created_by', $handler)->where('transaction_type', 'registration')->where('status', 'pending')->sum('debit');
 
-        if (($total_transactions + $total_regfee - $pof + $total_loans) < $amount) {            
+        if (($total_transactions + $total_regfee - $pof + $total_loans) < $amount) {
             return back()->withErrors(['You can not reconcile more than the required amount of ₦.' . number_format(($total_transactions + $total_regfee - $pof))]);
         } else if (($total_transactions + $total_regfee - $pof + $total_loans) > $amount) {
             // handle shortages
-            
+
             $short = ($total_transactions + $total_regfee - $pof) - $amount;
             $reference = rand(100000000, 999999999);
             foreach ($transactions as $item) {
                 $tt = Payments::where('id', $item->id)->update([
                     'status' => 'confirmed',
+                    'recon_reference' =>$reference
                 ]);
 
                 //create commission line
@@ -330,21 +344,21 @@ class OfficeController extends Controller
 
             //send notifications
 
-            $myEmail = [
-                'charlez.o@reliancegroup.com.ng',
-                'compliance@reliancegroup.com.ng',
-                'personnel@reliancegroup.com.ng',
-                'lucky.nwaise@reliancegroup.com.ng',
-                'it@reliancegroup.com.ng',
-                'esther.ugbo@reliancegroup.com.ng',
-                'nwaisemoses@reliancegroup.com.ng',
-                'christopher.om@reliancegroup.com.ng',
-                "wanjaumbatia@gmail.com",
-                'davidonyango7872@gmail.com',
-            ];
-            Mail::to($myEmail)->send(new Shortage($handler, $short, ($total_transactions + $total_regfee - $pof + $total_loans), 0, auth()->user()->branch, auth()->user()->name));
+            // $myEmail = [
+            //     'charlez.o@reliancegroup.com.ng',
+            //     'compliance@reliancegroup.com.ng',
+            //     'personnel@reliancegroup.com.ng',
+            //     'lucky.nwaise@reliancegroup.com.ng',
+            //     'it@reliancegroup.com.ng',
+            //     'esther.ugbo@reliancegroup.com.ng',
+            //     'nwaisemoses@reliancegroup.com.ng',
+            //     'christopher.om@reliancegroup.com.ng',
+            //     "wanjaumbatia@gmail.com",
+            //     'davidonyango7872@gmail.com',
+            // ];
+            // Mail::to($myEmail)->send(new Shortage($handler, $short, ($total_transactions + $total_regfee - $pof + $total_loans), 0, auth()->user()->branch, auth()->user()->name));
 
-            var_dump(Mail::failures());
+            // var_dump(Mail::failures());
             return redirect()->route('office.list');
         } else {
             //clear sales executive
@@ -370,7 +384,7 @@ class OfficeController extends Controller
                     'approved_by' => auth()->user()->name
                 ]);
             }
-            
+
             $loans = LoanRepayment::where('handler', $handler)->where('status', 'pending')->get();
 
             foreach ($loans as $item) {
@@ -871,7 +885,7 @@ class OfficeController extends Controller
                 //check pending withdrawal
                 $pending_withdrawal = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('credit');
 
-               
+
                 $plan = Plans::where('name', $account->plan)->first();
 
                 $expected_commision = $request->amount * $plan->charge;
@@ -1004,9 +1018,8 @@ class OfficeController extends Controller
                 'branch' => $request->user()->branch,
                 'batch_number' => $otp
             ]);
-
         }
 
-        return redirect()->to('/sep_customer/'.$customer->id);
+        return redirect()->to('/sep_customer/' . $customer->id);
     }
 }

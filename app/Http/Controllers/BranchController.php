@@ -14,6 +14,7 @@ use App\Models\Plans;
 use App\Models\SavingsAccount;
 use App\Models\User;
 use Error;
+use Faker\Provider\ar_EG\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -101,22 +102,88 @@ class BranchController extends Controller
         return view('branch.applied_loans')->with(['loans' => $data,]);
     }
 
-    public function save_security(Request $request){
-        if($request->Collateral){
-            dd('legal');
+    public function processing_branch_loans(Request $request)
+    {
+        $branch = auth()->user()->branch;
+        $data = DB::select("
+        select 
+                loans.id, 
+                loans.name, 
+                loans.application_date,
+                loans.customer_id,
+                loans.amount, 
+                loans.paid,
+                loans.interest_percentage,
+                loans.duration,
+                loans.handler,
+                loans.status,
+                loans.remarks,
+                users.branch,
+                loans.current_savings
+            from loans inner join users on  loans.handler = users.name where branch='" . $branch . "' and loans.status ='processing';
+        ");
+
+        return view('branch.processing_loans')->with(['loans' => $data,]);
+    }
+
+    public function approved_branch_loans(Request $request)
+    {
+        $branch = auth()->user()->branch;
+        $data = DB::select("
+        select 
+                loans.id, 
+                loans.name, 
+                loans.application_date,
+                loans.customer_id,
+                loans.amount, 
+                loans.paid,
+                loans.interest_percentage,
+                loans.duration,
+                loans.handler,
+                loans.status,
+                loans.remarks,
+                users.branch,
+                loans.current_savings
+            from loans inner join users on  loans.handler = users.name where branch='" . $branch . "' and loans.status ='approved';
+        ");
+
+        return view('branch.approved_loans')->with(['loans' => $data,]);
+    }
+
+    public function save_security(Request $request, $id)
+    {
+        $loan = Loan::where('id', $id)->first();
+        if ($request->Collateral) {
+            $ln = Loan::where('id', $id)->update([
+                'legal' => true,
+                'Collateral' => true
+            ]);
         }
 
-        if($request->Guarantorship){
-            dd('direct');
+        if ($request->Guarantorship) {
+            $ln = Loan::where('id', $id)->update([
+                'direct' => true,
+                'Guarantorship' => true
+            ]);
         }
 
-        if($request->CivilServantGuarantee){
-            dd('erick');
+        if ($request->CivilServantGuarantee) {
+            $ln = Loan::where('id', $id)->update([
+                'public_finance' => true,
+                'CivilServantGuarantee' => true
+            ]);
         }
 
-        if($request->CivilServantGuarantee){
-            dd('direct');
+        if ($request->Cheque) {
+            $ln = Loan::where('id', $id)->update([
+                'direct' => true,
+                'Cheque' => true
+            ]);
         }
+
+        $url = '/branch_loan/' . $id;
+
+        return redirect()->to($url);
     }
 
     public function loan_card($id)
@@ -155,7 +222,6 @@ class BranchController extends Controller
         //create charges
         $security = LoanSecurityType::where('active', true)->get();
         //calculate payments
-
         $deduction = LoanDeduction::where('active', true)->get();
         $deductions = array();
         foreach ($deduction as $item) {
@@ -244,7 +310,8 @@ class BranchController extends Controller
         $loan = Loan::where('id', $id)->first();
         $ln = Loan::where('id', $id)->update([
             'status' => 'processing',
-            'remarks' => $request->comment
+            'branch_manager_approval' => true,
+            'branch_manager_remarks' => $request->comment
         ]);
 
         return redirect()->to('/branch_loans');
@@ -255,12 +322,11 @@ class BranchController extends Controller
         $loan = Loan::where('id', $id)->first();
         $ln = Loan::where('id', $id)->update([
             'status' => 'rejected',
-            'remarks' => $request->comment
+            'branch_manager_remarks' => $request->comment
         ]);
 
         return redirect()->to('/branch_loans');
     }
-
 
 
     public function upload_accounts()
@@ -526,5 +592,65 @@ class BranchController extends Controller
                 Log::info($e);
             }
         }
+    }
+
+    public function disburse_loan($id)
+    {
+        $loan = Loan::where('id', $id)->first();
+        $account = SavingsAccount::where('customer_id', $loan->customer_id)->where('plan', 'Regular')->first();
+
+        //get deductions
+        $deduction = LoanDeduction::where('active', true)->get();
+        $deductions = array();
+        $batch_number = rand(100000000, 999999999);
+        foreach ($deduction as $item) {
+            if ($item->percentange == true) {
+                $amount = $loan->amount * ($item->percentange_amount / 100);
+                //create charge line
+                $charge = Payments::create([
+                    'savings_account_id' => $account->id,
+                    'plan' => $account->plan,
+                    'customer_id' => $account->customer_id,
+                    'customer_name' => $account->customer,
+                    'transaction_type' => 'charge',
+                    'status' => 'confirmed',
+                    'remarks' => $item->name . ' Fee - ' . number_format($amount, 2) . ".",
+                    'debit' => 0,
+                    'credit' => $amount,
+                    'amount' => $amount * -1,
+                    'approved' => false,
+                    'posted' => false,
+                    'created_by' => auth()->user()->name,
+                    'branch' => auth()->user()->branch,
+                    'batch_number' => $batch_number
+                ]);
+            } else {
+                $amount = $item->amount;
+                $charge = Payments::create([
+                    'savings_account_id' => $account->id,
+                    'plan' => $account->plan,
+                    'customer_id' => $account->customer_id,
+                    'customer_name' => $account->customer,
+                    'transaction_type' => 'charge',
+                    'status' => 'confirmed',
+                    'remarks' => $item->name . ' Fee - ' . number_format($amount, 2) . ".",
+                    'debit' => 0,
+                    'credit' => $amount,
+                    'amount' => $amount * -1,
+                    'approved' => false,
+                    'posted' => false,
+                    'created_by' => auth()->user()->name,
+                    'branch' => auth()->user()->branch,
+                    'batch_number' => $batch_number
+                ]);
+            }
+        }
+
+
+        $ln = Loan::where('id', $id)->update([
+            'status' => 'running',
+        ]);
+
+        return redirect('/branch_loan/'.$loan->id);
     }
 }

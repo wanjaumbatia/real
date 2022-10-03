@@ -46,7 +46,7 @@
                         @guest
                         @else
 
-                        @if(Auth::user()->assistant_manager == true)
+                        @if(Auth::user()->loan_officer == true)
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('loans.index') }}">{{ __('All Loans') }}</a>
                         </li>

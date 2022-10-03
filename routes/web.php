@@ -112,13 +112,22 @@ Route::middleware(['auth'])->group(function () {
     //Branch Managers
     Route::get('/branch_loans', [BranchController::class, 'loans'])->name('branch_loans');
     Route::get('/pending_branch_loans', [BranchController::class, 'pending_branch_loans'])->name('pending_branch_loans');
-    Route::post('/save_security', [BranchController::class, 'save_security'])->name('save_security');
-    
+    Route::get('/processing_branch_loans', [BranchController::class, 'processing_branch_loans'])->name('processing_branch_loans');
+    Route::post('/save_security/{id}', [BranchController::class, 'save_security'])->name('save_security');
+
     Route::get('/branch_loan/{id}', [BranchController::class, 'loan_card'])->name('loan_card');
     Route::post('/branch_upload_forms/{id}', [BranchController::class, 'upload_forms'])->name('branch_upload_forms');
     Route::post('/branch_approve_loan/{id}', [BranchController::class, 'branch_approve_loan'])->name('branch_approve_loan');
+    Route::get('/approved_branch_loans', [BranchController::class, 'approved_branch_loans'])->name('approved_branch_loans');
+    Route::get('/disburse/{id}', [BranchController::class, 'disburse_loan'])->name('disburse_loan');
+    
+    Route::get('/statement/{id}', [SalesController::class, 'statement'])->name('statement');
+    Route::get('/recon_statement', [OfficeController::class, 'recon_statement'])->name('recon_statement');
+    
+    Route::post('/loan_officer_approval/{id}', [LoanController::class, 'loan_officer_approval'])->name('loan_officer_approval');
+    
     Route::post('/branch_reject_loan/{id}', [BranchController::class, 'branch_reject_loan'])->name('branch_reject_loan');
-
+    
     
 });
 

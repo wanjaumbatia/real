@@ -45,15 +45,23 @@
                         @else
 
                         <li class="nav-item">
-                            <a class="nav-link" href="">{{ __('Collection') }}</a>
+                            <a class="nav-link" href="">{{ __('Collections') }}</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="/branch_loans">{{ __('Branch Loans') }}</a>
+                            <a class="nav-link" href="/branch_loans">{{ __('Branch Report') }}</a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link" href="/pending_branch_loans">{{ __('Applied Loans') }}</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/processing_branch_loans">{{ __('Processing Loans') }}</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/approved_branch_loans">{{ __('Approved Loans') }}</a>
                         </li>
                         @endguest
                     </ul>

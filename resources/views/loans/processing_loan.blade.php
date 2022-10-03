@@ -130,9 +130,10 @@
                         </div>
                     </div>
 
+
                     <div class="card mt-3">
                         <div class="card-header">
-                            Upload Documents
+                            Uploaded Documents
                         </div>
                         <div class="card-body">
                             <!-- <form>
@@ -222,32 +223,94 @@
                         </div>
                     </div>
 
-                    <div class="card mt-2">
-                        <div class="card-header">Approval</div>
+                    <div class="card mt-3">
+                        <div class="card-header">Security</div>
                         <div class="card-body">
-                            <form method="post" action="/branch_approve_loan/{{$loan->id}}">
+                            <form action="/save_security/{{$loan->id}}" method="post">
                                 @csrf
-                                <textarea class="form-control w-100" placeholder="Extra Comments" rows="3" name="comment"></textarea>
-                                <button class="btn btn-primary w-100 mt-2">Approve</button>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-3">
+                                            @if($loan->Collateral==true)
+                                            <input name="Collateral" type="checkbox" name="chkbx" checked disabled />
+                                            @else
+                                            <input name="Collateral" type="checkbox" name="chkbx" disabled />
+                                            @endif
+                                            <label>Collateral</label>
+                                        </div>
+
+                                        <div class="col-3">
+                                            @if($loan->Guarantorship==true)
+                                            <input name="Guarantorship" type="checkbox" name="chkbx" checked disabled />
+                                            @else
+                                            <input name="Guarantorship" type="checkbox" name="chkbx" disabled />
+                                            @endif
+                                            <label>Guarantorship</label>
+                                        </div>
+
+                                        <div class="col-3">
+                                            @if($loan->CivilServantGuarantee==true)
+                                            <input name="CivilServantGuarantee" type="checkbox" name="chkbx" checked disabled />
+                                            @else
+                                            <input name="CivilServantGuarantee" type="checkbox" name="chkbx" disabled />
+                                            @endif
+                                            <label>Civil Servant Guarantee</label>
+                                        </div>
+
+                                        <div class="col-3">
+                                            @if($loan->Cheque==true)
+                                            <input name="Cheque" type="checkbox" name="chkbx" checked disabled />
+                                            @else
+                                            <input name="Cheque" type="checkbox" name="chkbx" disabled />
+                                            @endif
+                                            <label>Cheque</label>
+                                        </div>
+                                    </div>
                             </form>
                         </div>
                     </div>
-
-                    <div class="card mt-2">
-                        <div class="card-header">Rejection</div>
-                        <div class="card-body">
-                            <form>
-                                <textarea class="form-control w-100" placeholder="Reason for rejection" rows="3"></textarea>
-                                <button class="btn btn-danger w-100 mt-2">Reject</button>
-                            </form>
-                        </div>
-                    </div>
-
-                    </form>
                 </div>
+
+                <div class="card mt-3">
+                    <div class="card-header">Remarks</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="">Branch Manager Remarks</label>
+                            <input type="text" class="form-control" value="{{$loan->branch_manager_remarks}}" disabled/>
+                        </div>
+                    </div>
+                </div>
+
+                @if($loan->status=='processing' && $loan->loan_officer_approval == false)
+                @if(Auth::user()->loan_officer==true)
+                <div class="card mt-2">
+                    <div class="card-header">Approval</div>
+                    <div class="card-body">
+                        <form method="post" action="/loan_officer_approval/{{$loan->id}}">
+                            @csrf
+                            <textarea class="form-control w-100" placeholder="Extra Comments" rows="3" name="comment"></textarea>
+                            <button class="btn btn-primary w-100 mt-2">Approve</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card mt-2">
+                    <div class="card-header">Rejection</div>
+                    <div class="card-body">
+                        <form>
+                            <textarea class="form-control w-100" placeholder="Reason for rejection" rows="3"></textarea>
+                            <button class="btn btn-danger w-100 mt-2">Reject</button>
+                        </form>
+                    </div>
+                </div>
+                @endif
+                @endif
+
+
             </div>
         </div>
     </div>
+</div>
 </div>
 
 @endsection

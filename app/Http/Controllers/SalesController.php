@@ -11,6 +11,7 @@ use App\Models\PaymentLocation;
 use App\Models\Payments;
 use App\Models\Plans;
 use App\Models\SavingsAccount;
+use Faker\Provider\ar_EG\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -466,6 +467,7 @@ class SalesController extends Controller
         ]);
 
         $customer = Customer::where('id', $request->json('id'))->first();
+        
         $balance = get_total_balance($customer->id);
 
         $amount = $request->json('amount');
@@ -616,5 +618,10 @@ class SalesController extends Controller
         } else {
             return abort(401);
         }
+    }
+
+    public function statement($id){
+        $payment = Payments::where('savings_account_id', $id)->get();
+        dd($payment);
     }
 }
