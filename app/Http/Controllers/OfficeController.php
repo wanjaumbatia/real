@@ -59,7 +59,6 @@ class OfficeController extends Controller
         for ($i = 1; $i < $today->daysInMonth + 1; ++$i) {
             $dates[] = \Carbon\Carbon::createFromDate($today->year, $today->month, $i)->format('d-m-Y');
         }
-        dd($dates);
         return view('office.recon_statement');
     }
 

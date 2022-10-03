@@ -621,7 +621,9 @@ class SalesController extends Controller
     }
 
     public function statement($id){
-        $payment = Payments::where('savings_account_id', $id)->get();
-        dd($payment);
+        
+        $payments = Payments::where('savings_account_id', $id)->get();
+        
+        return view('sales.statement')->with(['payments'=>$payments]);
     }
 }
