@@ -122,6 +122,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/disburse/{id}', [BranchController::class, 'disburse_loan'])->name('disburse_loan');
     
     Route::get('/statement/{id}', [SalesController::class, 'statement'])->name('statement');
+    Route::get('/loan_status/{id}', [SalesController::class, 'loan_card'])->name('sales.loan_card');
     Route::get('/recon_statement', [OfficeController::class, 'recon_statement'])->name('recon_statement');
     
     Route::post('/loan_officer_approval/{id}', [LoanController::class, 'loan_officer_approval'])->name('loan_officer_approval');

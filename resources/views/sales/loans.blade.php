@@ -42,6 +42,9 @@
                                 <th>Paid Amount</th>
                                 @endif
                                 <th>Status</th>
+                                @if($status=='running')
+                                <th>Open</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -72,6 +75,9 @@
                                     <span class="btn btn-danger p-1">Bad Loan</span>
                                     @endif
                                 </td>
+                                @if($status=='running')
+                                <td><a href="/loan_status/{{$item->id}}" class="btn btn-primary">Open</a></td>
+                                @endif
                             </tr>
                             @endforeach
                         </tbody>

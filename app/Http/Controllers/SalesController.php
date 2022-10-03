@@ -11,6 +11,7 @@ use App\Models\PaymentLocation;
 use App\Models\Payments;
 use App\Models\Plans;
 use App\Models\SavingsAccount;
+use Carbon\CarbonPeriod;
 use Faker\Provider\ar_EG\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,9 +30,28 @@ class SalesController extends Controller
         return view('sales.customers')->with(['customers' => $customers]);
     }
 
+    public function loan_card($id)
+    {
+        $loan = Loan::where('id', $id)->first();
+        //get customer details
+        $customer = Customer::where('id', $loan->customer_id)->first();
+        $payments = LoanRepayment::where('loan_number', $loan->id)->get();
+        $repayed = $loan->paid + LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
+        //get capital and interest payment
+        //get nuber of months
+        $tt_months = CarbonPeriod::create($loan->date_posted, '1 month', '2022-10-01');
+        $no_of_months = count($tt_months);
+        //get paid amount
+        $total_exp_repayment = $loan->amount + ($loan->amount * (5.5 / 100) * $loan->duration);
+
+        $progress = round($repayed / $total_exp_repayment * 100);
+        echo  $progress;
+        return view('sales.loan_card')->with(['customer' => $customer, 'loan' => $loan, 'payments' => $payments, 'progress' => $progress]);
+    }
+
     public function show_collection()
     {
-        $collections = Payments::where('created_by', auth()->user()->name)->where('remarks', '!=', 'Opening Balance')->get();
+        $collections = Payments::where('created_by', auth()->user()->name)->orderBy('created_at', 'DESC')->where('remarks', '!=', 'Opening Balance')->get();
         return view('sales.payments')->with(['data' => $collections]);
     }
 
@@ -467,7 +487,7 @@ class SalesController extends Controller
         ]);
 
         $customer = Customer::where('id', $request->json('id'))->first();
-        
+
         $balance = get_total_balance($customer->id);
 
         $amount = $request->json('amount');
@@ -608,7 +628,7 @@ class SalesController extends Controller
     {
 
         if (auth()->user()->sales_executive == true) {
-            if ($request->status == null || $request->status=='all') {
+            if ($request->status == null || $request->status == 'all') {
                 $loans = Loan::where('handler', auth()->user()->name)->get();
             } else {
                 $loans = Loan::where('handler', auth()->user()->name)->where('status', $request->status)->get();
@@ -620,10 +640,11 @@ class SalesController extends Controller
         }
     }
 
-    public function statement($id){
-        
+    public function statement($id)
+    {
+
         $payments = Payments::where('savings_account_id', $id)->get();
-        
-        return view('sales.statement')->with(['payments'=>$payments]);
+
+        return view('sales.statement')->with(['payments' => $payments]);
     }
 }
