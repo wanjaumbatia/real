@@ -32,8 +32,6 @@ class BranchController extends Controller
     {
         if (auth()->user()->branch_manager == true) {
             $branch = auth()->user()->branch;
-
-
             if ($request->status == null || $request->status == 'all') {
                 $data = DB::select("
                 select 
@@ -79,6 +77,48 @@ class BranchController extends Controller
         }
     }
 
+    public function pending_branch_loans(Request $request)
+    {
+        $branch = auth()->user()->branch;
+        $data = DB::select("
+        select 
+                loans.id, 
+                loans.name, 
+                loans.application_date,
+                loans.customer_id,
+                loans.amount, 
+                loans.paid,
+                loans.interest_percentage,
+                loans.duration,
+                loans.handler,
+                loans.status,
+                loans.remarks,
+                users.branch,
+                loans.current_savings
+            from loans inner join users on  loans.handler = users.name where branch='" . $branch . "' and loans.status ='pending';
+        ");
+
+        return view('branch.applied_loans')->with(['loans' => $data,]);
+    }
+
+    public function save_security(Request $request){
+        if($request->Collateral){
+            dd('legal');
+        }
+
+        if($request->Guarantorship){
+            dd('direct');
+        }
+
+        if($request->CivilServantGuarantee){
+            dd('erick');
+        }
+
+        if($request->CivilServantGuarantee){
+            dd('direct');
+        }
+    }
+
     public function loan_card($id)
     {
         //get loan details
@@ -119,21 +159,21 @@ class BranchController extends Controller
         $deduction = LoanDeduction::where('active', true)->get();
         $deductions = array();
         foreach ($deduction as $item) {
-            $rec = array();      
-            $rec['name'] = $item->name;     
+            $rec = array();
+            $rec['name'] = $item->name;
             if ($item->percentange == true) {
-                $rec['amount'] = $loan->amount * ($item->percentange_amount/100);
+                $rec['amount'] = $loan->amount * ($item->percentange_amount / 100);
             } else {
                 $rec['amount'] = $item->amount;
             }
             $deductions[] = $rec;
         }
-        
+
 
         return view('branch.loan_card')
             ->with([
                 'loan' => $loan,
-                'deductions'=>$deductions,
+                'deductions' => $deductions,
                 'securities' => $security,
                 'customer' => $customer,
                 'loan_forms' => $loan_forms,
@@ -141,7 +181,7 @@ class BranchController extends Controller
                 'photo' => $photo,
                 'guarantor' => $guarantor,
                 'agreement' => $agreement,
-                'form'=>$form
+                'form' => $form
             ]);
     }
 
@@ -194,12 +234,13 @@ class BranchController extends Controller
         }
 
         $url = '/branch_loan/' . $id;
-        
+
         return redirect()->to($url);
     }
 
 
-    public function branch_approve_loan(Request $request, $id){
+    public function branch_approve_loan(Request $request, $id)
+    {
         $loan = Loan::where('id', $id)->first();
         $ln = Loan::where('id', $id)->update([
             'status' => 'processing',
@@ -208,6 +249,18 @@ class BranchController extends Controller
 
         return redirect()->to('/branch_loans');
     }
+
+    public function branch_reject_loan(Request $request, $id)
+    {
+        $loan = Loan::where('id', $id)->first();
+        $ln = Loan::where('id', $id)->update([
+            'status' => 'rejected',
+            'remarks' => $request->comment
+        ]);
+
+        return redirect()->to('/branch_loans');
+    }
+
 
 
     public function upload_accounts()

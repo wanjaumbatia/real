@@ -210,47 +210,50 @@
                     <div class="card mt-2">
                         <div class="card-header">Security</div>
                         <div class="card-body">
-                            <div class="form-group">
-                                <div class="row">
-                                    @foreach($securities as $item)
-                                    <div class="col-3">
-                                        <input type="checkbox" name="chkbx" />
-                                        <label>{{$item->type}}</label>
-                                    </div>
-                                    @endforeach
-                                </div>
-
-                                
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card mt-2">
-                        <div class="card-header">Approval</div>
-                        <div class="card-body">
-                            <form method="post" action="/branch_approve_loan/{{$loan->id}}">
+                            <form action="/save_security" method="post">
                                 @csrf
-                                <textarea class="form-control w-100" placeholder="Extra Comments" rows="3" name="comment"></textarea>
-                                <button class="btn btn-primary w-100 mt-2">Approve</button>
+                                <div class="form-group">
+                                    <div class="row">
+                                        @foreach($securities as $item)
+                                        <div class="col-3">
+                                            <input name="{{$item->type}}" type="checkbox" name="chkbx" />
+                                            <label>{{$item->name}}</label>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                    <button class="btn btn-primary w-100 mt-3">Save</button>
                             </form>
                         </div>
                     </div>
-
-                    <div class="card mt-2">
-                        <div class="card-header">Rejection</div>
-                        <div class="card-body">
-                            <form>
-                                <textarea class="form-control w-100" placeholder="Reason for rejection" rows="3"></textarea>
-                                <button class="btn btn-danger w-100 mt-2">Reject</button>
-                            </form>
-                        </div>
-                    </div>
-
-                    </form>
                 </div>
+
+                <div class="card mt-2">
+                    <div class="card-header">Approval</div>
+                    <div class="card-body">
+                        <form method="post" action="/branch_approve_loan/{{$loan->id}}">
+                            @csrf
+                            <textarea name="comment" class="form-control w-100" placeholder="Extra Comments" rows="3" name="comment"></textarea>
+                            <button class="btn btn-primary w-100 mt-2">Approve</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card mt-2">
+                    <div class="card-header">Rejection</div>
+                    <div class="card-body">
+                        <form method="post" action="/branch_reject_loan/{{$loan->id}}">
+                            @csrf
+                            <textarea name="comment" class="form-control w-100" placeholder="Reason for rejection" rows="3"></textarea>
+                            <button class="btn btn-danger w-100 mt-2">Reject</button>
+                        </form>
+                    </div>
+                </div>
+
+                </form>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <script>

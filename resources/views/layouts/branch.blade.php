@@ -43,8 +43,17 @@
                     <ul class="navbar-nav me-auto">
                         @guest
                         @else
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="">{{ __('Collection') }}</a>
+                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link" href="/branch_loans">{{ __('Branch Loans') }}</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/pending_branch_loans">{{ __('Applied Loans') }}</a>
                         </li>
                         @endguest
                     </ul>

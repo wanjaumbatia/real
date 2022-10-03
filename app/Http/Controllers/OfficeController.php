@@ -871,13 +871,7 @@ class OfficeController extends Controller
                 //check pending withdrawal
                 $pending_withdrawal = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('credit');
 
-                if ($balance < $total_credit + $pending_withdrawal) {
-                    return response([
-                        "success" => false,
-                        "message" => "Unable to process this withdrawal since customer has a pending withdrawal, this amount exceed the remaining balance."
-                    ]);
-                }
-
+               
                 $plan = Plans::where('name', $account->plan)->first();
 
                 $expected_commision = $request->amount * $plan->charge;

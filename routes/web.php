@@ -111,9 +111,15 @@ Route::middleware(['auth'])->group(function () {
 
     //Branch Managers
     Route::get('/branch_loans', [BranchController::class, 'loans'])->name('branch_loans');
+    Route::get('/pending_branch_loans', [BranchController::class, 'pending_branch_loans'])->name('pending_branch_loans');
+    Route::post('/save_security', [BranchController::class, 'save_security'])->name('save_security');
+    
     Route::get('/branch_loan/{id}', [BranchController::class, 'loan_card'])->name('loan_card');
     Route::post('/branch_upload_forms/{id}', [BranchController::class, 'upload_forms'])->name('branch_upload_forms');
     Route::post('/branch_approve_loan/{id}', [BranchController::class, 'branch_approve_loan'])->name('branch_approve_loan');
+    Route::post('/branch_reject_loan/{id}', [BranchController::class, 'branch_reject_loan'])->name('branch_reject_loan');
+
+    
 });
 
 Route::get('/backend', [OfficeController::class, 'backend'])->name('backend');
