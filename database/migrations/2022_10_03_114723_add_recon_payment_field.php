@@ -14,7 +14,7 @@ class AddReconPaymentField extends Migration
     public function up()
     {
         Schema::table('payments', function (Blueprint $table) {
-            $table->string('recon_reference');
+            $table->string('recon_reference')->nullable();
         });
     }
 

@@ -41,6 +41,9 @@
                                 @if($status=='running')
                                 <th>Paid Amount</th>
                                 @endif
+                                @if($status=='running')
+                                <th>Balance</th>
+                                @endif
                                 <th>Status</th>
                                 @if($status=='running')
                                 <th>Open</th>
@@ -57,6 +60,9 @@
                                 <td>{{$item->duration}} Months</td>
                                 @if($status=='running')
                                 <td>{{number_format($item->paid, 2)}}</td>
+                                @endif
+                                @if($status=='running')
+                                <td>{{number_format($item->balance, 2)}}</td>
                                 @endif
                                 <td>
                                     @if($item->status=='running')

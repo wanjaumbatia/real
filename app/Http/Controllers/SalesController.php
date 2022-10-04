@@ -37,12 +37,9 @@ class SalesController extends Controller
         $customer = Customer::where('id', $loan->customer_id)->first();
         $payments = LoanRepayment::where('loan_number', $loan->id)->get();
         $repayed = $loan->paid + LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
-        //get capital and interest payment
-        //get nuber of months
-        $tt_months = CarbonPeriod::create($loan->date_posted, '1 month', '2022-10-01');
-        $no_of_months = count($tt_months);
-        //get paid amount
-        $total_exp_repayment = $loan->amount + ($loan->amount * (5.5 / 100) * $loan->duration);
+
+
+        $total_exp_repayment = $loan->amount + (($loan->amount * (5.5 / 100)) * $loan->duration);
 
         $progress = round($repayed / $total_exp_repayment * 100);
         $balance = $total_exp_repayment - $repayed;
@@ -636,6 +633,14 @@ class SalesController extends Controller
                 $loans = Loan::where('handler', auth()->user()->name)->get();
             } else {
                 $loans = Loan::where('handler', auth()->user()->name)->where('status', $request->status)->get();
+            }
+
+            foreach ($loans as $loan) {
+                $repayed = $loan->paid + LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
+                $total_exp_repayment = $loan->amount + (($loan->amount * (5.5 / 100)) * $loan->duration);
+                
+                $balance = $total_exp_repayment - $repayed;
+                $loan['balance'] = $balance;
             }
 
             return view('sales.loans')->with(['loans' => $loans, 'status' => $request->status]);
