@@ -645,6 +645,16 @@ Route::middleware('auth:sanctum')->get("/account/{id}", function ($id) {
     $pending_withdrawals = Payments::where('savings_account_id', $acc->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('amount');
     $plan = Plans::where('id', $acc->plans_id)->first();
 
+    $open_withdrawal_amount = Payments::where('savings_account_id', $acc->id)->where('status', 'open')->where('transaction_type', 'withdrawal')->first();
+    $open_withdrawal_comm = Payments::where('savings_account_id', $acc->id)->where('status', 'open')->where('transaction_type', 'charge')->first('credit');
+
+    $open_withdrawal = null;
+    if ($open_withdrawal_amount != null) {
+        $open_withdrawal['amount'] = $open_withdrawal_amount->credit;
+        $open_withdrawal['charge'] = $open_withdrawal_comm->credit;
+        $open_withdrawal['batch_number'] = $open_withdrawal_amount->batch_number;
+    }
+
     $to = \Carbon\Carbon::now();
     $from = $acc->created_at;
     $diff_in_months = $to->diffInMonths($from);
@@ -660,6 +670,7 @@ Route::middleware('auth:sanctum')->get("/account/{id}", function ($id) {
     $saving_accounts['confirmed'] = $confirmed_transaction;
     $saving_accounts['pending'] = $pending_transaction;
     $saving_accounts['pending_withdrawal'] = $pending_withdrawals;
+    $saving_accounts['open_withdrawal'] = $open_withdrawal;
     return response($saving_accounts);
 });
 
@@ -1081,7 +1092,6 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
         $diff_in_months = $to->diffInMonths($from);
 
         if ($diff_in_months >= $plan->duration) {
-
             $pending_withdrawal = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('credit');
 
             if ($balance < $total_credit + $pending_withdrawal) {
@@ -1090,8 +1100,6 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                     "message" => "Unable to process this withdrawal since customer has a pending withdrawal, this amount exceed the remaining balance."
                 ]);
             }
-
-
 
             $plan = Plans::where('name', $account->plan)->first();
 
@@ -1211,19 +1219,6 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
 
 
             $sep_commision = $request->amount * $plan->penalty * $plan->sep_commission;
-            //create sales agent line
-            // $comm_line = CommissionLines::create([
-            //     'handler' => $account->handler,
-            //     'amount' => $sep_commision,
-            //     'description' => 'Commission for withdrawal of ₦' . number_format($request->amount, 2) . ' charged at ₦' . number_format($request->commission, 2) . ' for ' . $account->customer,
-            //     'batch_number' => $batch_number,
-            //     'payment_id' => $withdrawal->id,
-            //     'transaction_type' => 'withdrawal',
-            //     'disbursed' => false,
-            //     'branch' => $request->user()->branch,
-            //     'approved' => false,
-            //     // 'transaction_type'=>'commission'
-            // ]);
 
             $cust = Customer::where('id', $request->no)->first();
 
@@ -1232,12 +1227,14 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
                 'user_id' => $request->user()->id
             ]);
 
-            $msg = 'Dear Customer, use ' . $otp . ' as OTP to withdraw ' . number_format($request->amount, 0) . '';
+            $msg = 'Thanks for your patronage, use ' . $otp . ' to complete  the withdrawal of ' . number_format($request->amount, 0) . ' from REAL COOPERATIVE REALdoe. For enquiries call 09021417778';
 
             $resp = sendSMS($customer->phone, $msg);
             return response([
                 'success' => true,
-                "code" => $otp
+                "code" => $otp,
+                "amount" => $withdrawal->credit,
+                "commission" => $interest->credit,
             ]);
         }
     } else {
@@ -1314,21 +1311,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
             'batch_number' => $otp
         ]);
 
-
         $sep_commision = $request->commission * $plan->sep_commission;
-        //create sales agent line
-        // $comm_line = CommissionLines::create([
-        //     'handler' => $account->handler,
-        //     'amount' => $sep_commision,
-        //     'description' => 'Commission for withdrawal of ₦' . number_format($request->amount, 2) . ' charged at ₦' . number_format($request->commission, 2) . ' for ' . $account->customer,
-        //     'batch_number' => $batch_number,
-        //     'transaction_type' => 'withdrawal',
-        //     'payment_id' => $charge->id,
-        //     'disbursed' => false,
-        //     'branch' => $request->user()->branch,
-        //     'approved' => false,
-        //     // 'transaction_type'=>'commission'
-        // ]);
     }
 
     $cust = Customer::where('id', $request->no)->first();
@@ -1337,14 +1320,16 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
         'user_id' => $request->user()->id
     ]);
 
-    $msg = 'Dear Customer, use ' . $otp . ' as OTP to withdraw ' . number_format($request->amount, 0);
+    $msg = 'Thanks for your patronage, use ' . $otp . ' to complete  the withdrawal of ' . number_format($request->amount, 0) . ' from REAL COOPERATIVE REALdoe. For enquiries call 09021417778';
 
     $resp = sendSMS($customer->phone, $msg);
 
 
     return response([
         "success" => true,
-        "code" => $otp
+        "code" => $otp,
+        "amount" => $withdrawal->credit,
+        "commission" => $charge->credit,
     ]);
 });
 
@@ -1501,11 +1486,12 @@ function sendSMS($phone, $message)
     Log::warning('sending');
     $url = 'http://pro.strongsmsportal.com/api/?username=neodream&password=Prayer12&message=' . $message . '&sender=Reliance&mobiles=234' . formatNumber($phone);
 
-    $response =  Http::get($url)->json();
+    // $response =  Http::get($url)->json();
 
-    Log::info($response);
+    // Log::info($response);
 
-    return $response;
+    // return $response;
+    return 'sent';
 }
 
 function formatNumber($phone)
