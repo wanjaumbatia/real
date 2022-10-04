@@ -24,6 +24,14 @@
                                 <th>Amount</th>
                             </tr>
                         </thead>
+                        <tbody>
+                            @foreach($data as $item)
+                            <tr>
+                                <td>{{$item->handler}}</td>
+                                <td>{{number_format($item->amount,2)}}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
                     </table>
                    
                 </div>
