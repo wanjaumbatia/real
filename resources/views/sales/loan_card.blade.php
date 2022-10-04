@@ -87,17 +87,17 @@
                                         </div>
                                     </div>
                                     <div class="col-md-3 col-sm-6">
-                                        <label for="">Paid Capital</label>
+                                        <label for="">Total Paid Capital</label>
                                         <input type="text" class="form-control" value="{{number_format(($loan->amount*(5.5/100)*$loan->duration), 2)}}" disabled />
                                     </div>
                                       <div class="col-md-3 col-sm-6">
                                         <div class="form-group">
-                                            <label for="">Expected Total Capital</label>
+                                            <label for="">Expected Total Interest</label>
                                             <input type="text" class="form-control" value="{{number_format($loan->amount, 2)}}" disabled />
                                         </div>
                                     </div>
                                     <div class="col-md-3 col-sm-6">
-                                        <label for="">Expected Total Interest</label>
+                                        <label for="">Total Paid Interest</label>
                                         <input type="text" class="form-control" value="{{number_format(($loan->amount*(5.5/100)*$loan->duration), 2)}}" disabled />
                                     </div>
                                 </div>
