@@ -17,6 +17,14 @@
                     </div>
                     @endif
 
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Sales Executive</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                    </table>
                    
                 </div>
             </div>

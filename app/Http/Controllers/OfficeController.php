@@ -52,14 +52,9 @@ class OfficeController extends Controller
 
     public function recon_statement(Request $request)
     {
-        //$payments = Payments::all();
-        $today = today();
-        $dates = [];
-
-        for ($i = 1; $i < $today->daysInMonth + 1; ++$i) {
-            $dates[] = \Carbon\Carbon::createFromDate($today->year, $today->month, $i)->format('d-m-Y');
-        }
-        return view('office.recon_statement');
+        $data = DB::select("select created_by, sum(amount) from payments where branch = 'warri' and remarks!='Opening Balance' and status='confirmed' group by created_by;");
+        dd($data);
+        return view('office.recon_statement')->with(['data' => $data]);
     }
 
     public function backend()
@@ -308,7 +303,7 @@ class OfficeController extends Controller
             foreach ($transactions as $item) {
                 $tt = Payments::where('id', $item->id)->update([
                     'status' => 'confirmed',
-                    'recon_reference' =>$reference
+                    'recon_reference' => $reference
                 ]);
 
                 //create commission line
