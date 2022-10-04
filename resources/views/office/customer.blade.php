@@ -351,7 +351,7 @@
                                         @csrf
                                         <div class="form-group">
                                             <label for="">Old Phone Number</label>
-                                            <input type="number" class="form-control" name="old_phone" value="{{$customer->id}}" hidden />
+                                            <input type="number" class="form-control" name="id" value="{{$customer->id}}" hidden />
                                             <input type="number" class="form-control" name="old_phone" value="{{$customer->phone}}" hidden />
                                             <input type="number" class="form-control" name="old_phone" value="{{$customer->phone}}" disabled />
                                         </div>
