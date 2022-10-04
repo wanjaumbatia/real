@@ -53,7 +53,7 @@ class OfficeController extends Controller
     public function recon_statement(Request $request)
     {
         $branch = auth()->user()->branch;
-        $data = DB::select("select created_by as handler, sum(amount) as amount from payments where branch = '".$branch."' and remarks!='Opening Balance' and status='confirmed' group by created_by;");
+        $data = DB::select("select created_by as handler, sum(debit) as amount from payments where branch = '".$branch."' and remarks!='Opening Balance' and status='confirmed' group by created_by;");
         
         return view('office.recon_statement')->with(['data' => $data]);
     }

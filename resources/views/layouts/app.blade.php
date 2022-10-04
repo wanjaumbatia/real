@@ -53,11 +53,11 @@
                         </li>
                         @endif
 
-                        <!-- @if(Auth::user()->office_admin == true)
+                        @if(Auth::user()->office_admin == true)
                         <li class="nav-item">
                             <a class="nav-link" href="/recon_statement">{{ __('Reconciliation Report') }}</a>
                         </li>
-                        @endif -->
+                        @endif
 
                         
                         @if(Auth::user()->office_admin == true)
