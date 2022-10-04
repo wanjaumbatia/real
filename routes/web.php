@@ -128,11 +128,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/loan_officer_approval/{id}', [LoanController::class, 'loan_officer_approval'])->name('loan_officer_approval');
     
     Route::post('/branch_reject_loan/{id}', [BranchController::class, 'branch_reject_loan'])->name('branch_reject_loan');
-    
-    
-});
 
-Route::get('/backend', [OfficeController::class, 'backend'])->name('backend');
+    
+    Route::get('/backend', [OfficeController::class, 'backend'])->name('backend');
 Route::get('/sep/{name}', [OfficeController::class, 'seps'])->name('seps');
 Route::get('/sep-customers/{name}', [OfficeController::class, 'customer_seps'])->name('customer_seps');
 Route::get('/sep_customer/{id}', [OfficeController::class, 'customer'])->name('sep_customer');
@@ -155,3 +153,5 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [OfficeController::class, 'search_customer'])->name('search');
 
 Route::post('/post_withdrawal', [OfficeController::class, 'post_withdrawal'])->name('post_withdrawal');
+    
+});
