@@ -50,15 +50,29 @@ class SalesController extends Controller
         $expected_current_capital = $diff_in_months * ($loan->amount / $loan->duration);
         $expected_current_interest = ($loan->amount * ($loan->interest_percentage / 100)) * $diff_in_months;
 
-        $expected_total_payment = $expected_current_capital + $expected_current_interest;
+        $expected_total_payment_todate = $expected_current_capital + $expected_current_interest;
 
+        $extra_pay = $repayed - $expected_total_payment_todate;
+        $mon_interest = 0;
+        $mon_cap = $extra_pay - ($loan->amount * ($loan->interest_percentage / 100));
+
+        if ($mon_cap <= 0) {
+            $mon_interest = $extra_pay;
+        } else {
+            $mon_interest = $extra_pay - $mon_cap;
+        }
+        
+        $total_cap = $mon_cap + $expected_current_capital;
+        $total_int = $mon_interest  + $expected_current_interest;
 
         $progress = round($repayed / $total_exp_repayment * 100);
         $balance = $total_exp_repayment - $repayed;
 
         return view('sales.loan_card')->with([
             'customer' => $customer, 'loan' => $loan,
-            'payments' => $payments, 'progress' => $progress, 'balance' => $balance
+            'payments' => $payments, 'progress' => $progress, 'balance' => $balance,
+            'mon_interest' => $mon_interest, 'mon_cap'=>$mon_cap, 'total_cap' => $total_cap,
+            'total_int' => $total_int
         ]);
     }
 
