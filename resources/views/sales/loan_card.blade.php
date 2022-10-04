@@ -80,27 +80,37 @@
                             <form>
                                
                                 <div class="row">
-                                    <div class="col-md-6 col-sm-12">
+                                    <div class="col-md-3 col-sm-6">
                                         <div class="form-group">
                                             <label for="">Expected Total Capital</label>
                                             <input type="text" class="form-control" value="{{number_format($loan->amount, 2)}}" disabled />
                                         </div>
                                     </div>
-                                    <div class="col-md-6 col-sm-12">
+                                    <div class="col-md-3 col-sm-6">
+                                        <label for="">Paid Capital</label>
+                                        <input type="text" class="form-control" value="{{number_format(($loan->amount*(5.5/100)*$loan->duration), 2)}}" disabled />
+                                    </div>
+                                      <div class="col-md-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label for="">Expected Total Capital</label>
+                                            <input type="text" class="form-control" value="{{number_format($loan->amount, 2)}}" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6">
                                         <label for="">Expected Total Interest</label>
                                         <input type="text" class="form-control" value="{{number_format(($loan->amount*(5.5/100)*$loan->duration), 2)}}" disabled />
                                     </div>
                                 </div>
 
-                                <div class="row">
+                                <div class="row mt-3">
                                     <div class="col-md-6 col-sm-12">
                                         <div class="form-group">
-                                            <label for="">Monthly Capital Repayment</label>
+                                            <label for="">Expected Monthly Capital Repayment</label>
                                             <input type="text" class="form-control" value="{{number_format(($loan->amount)/$loan->duration, 2)}}" disabled />
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-sm-12">
-                                        <label for="">Monthly Interest Payment</label>
+                                        <label for="">Expected Monthly Interest Payment</label>
                                         <input type="text" class="form-control" value="{{number_format($loan->amount*(5.5/100), 2)}}" disabled />
                                     </div>
                                 </div>

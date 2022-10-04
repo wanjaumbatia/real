@@ -36,10 +36,22 @@ class SalesController extends Controller
         //get customer details
         $customer = Customer::where('id', $loan->customer_id)->first();
         $payments = LoanRepayment::where('loan_number', $loan->id)->get();
+
         $repayed = $loan->paid + LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
+        $total_exp_repayment = $loan->amount + (($loan->amount * ($loan->interest_percentage / 100)) * $loan->duration);
 
+        //check paid capital
+        //get start to now month number
+        $to = \Carbon\Carbon::now();
+        $from = $loan->date_posted;
+        $diff_in_months = $to->diffInMonths($from);
 
-        $total_exp_repayment = $loan->amount + (($loan->amount * (5.5 / 100)) * $loan->duration);
+        //get interest = paid capital - total        
+        $expected_current_capital = $diff_in_months * ($loan->amount / $loan->duration);
+        $expected_current_interest = ($loan->amount * ($loan->interest_percentage / 100)) * $diff_in_months;
+
+        $expected_total_payment = $expected_current_capital + $expected_current_interest;
+
 
         $progress = round($repayed / $total_exp_repayment * 100);
         $balance = $total_exp_repayment - $repayed;
@@ -638,7 +650,7 @@ class SalesController extends Controller
             foreach ($loans as $loan) {
                 $repayed = $loan->paid + LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
                 $total_exp_repayment = $loan->amount + (($loan->amount * (5.5 / 100)) * $loan->duration);
-                
+
                 $balance = $total_exp_repayment - $repayed;
                 $loan['balance'] = $balance;
             }

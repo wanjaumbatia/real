@@ -14,11 +14,6 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 
 class LoanImport implements ToModel, WithHeadingRow, WithChunkReading, WithBatchInserts
 {
-    /**
-     * @param array $row
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
     public function model(array $row)
     {
         $customer = Customer::where('username', $row['username'])->first();
