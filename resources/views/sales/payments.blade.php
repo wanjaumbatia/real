@@ -21,7 +21,7 @@
                         <td>{{$item->created_at}}</td>
                         <td>{{$item->customer_name}}</td>
                         <td>{{$item->plan}}</td>
-                        <td>{{number_format($item->debit, 2)}}</td>
+                        <td>{{$item->amount}}</td>
                         <td>{{$item->status}}</td>
                         <td>{{$item->remarks}}</td>
                     </tr>

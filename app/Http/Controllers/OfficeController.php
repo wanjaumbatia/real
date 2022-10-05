@@ -157,6 +157,9 @@ class OfficeController extends Controller
     public function delete_payment($id)
     {
         $payment = Payments::where('id', $id)->first();
+        // if($payment->transaction_type == 'withdrawal'){
+        //     $charge = Payments::where('id', $id)->first();
+        // }
         $customer = Customer::where('id', $payment->customer_id)->first();
         $payment->delete();
         $url = '/sep_customer/' . $customer->id;
