@@ -713,4 +713,12 @@ class SalesController extends Controller
 
         return redirect()->to('/customer/' . $customer->id);
     }
+
+    public function withdrawal_by_date($date)
+    {
+        //get withdrawals by date
+        $withdrawals = Payments::where('status', 'confirmed')->whereBetween('reservation_from', [$date, $date])->where('transaction_type', 'withdrawal')->get();
+        dd($withdrawals);
+        return view('sales.withdrawal_report');
+    }
 }

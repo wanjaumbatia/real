@@ -148,7 +148,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/delete_payment/{id}', [OfficeController::class, 'delete_payment'])->name('delete_payment');
 
     Route::get('/collection', [SalesController::class, 'show_collection'])->name('show_collection');
-
+    Route::get('/withdrawal_by_date/{date}', [SalesController::class, 'withdrawal_by_date'])->name('show_collection');
+    
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/search', [OfficeController::class, 'search_customer'])->name('search');
 

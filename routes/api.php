@@ -1043,7 +1043,7 @@ Route::get("/create_account", function (Request $request) {
 
 Route::middleware('auth:sanctum')->post("/verify_withdrawal", function (Request $request) {
 
-    $payments = Payments::where('batch_number', $request->otp)->get();
+    $payments = Payments::where('batch_number', $request->otp)->where('status', 'open')->get();
     $reference = rand(100000000, 999999999);
     foreach ($payments as $item) {
         if ($request->payment == "Pay On Field") {
@@ -1081,8 +1081,8 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
     $plan = Plans::where('id', $account->plans_id)->first();
 
     $total_credit = $request->amount + $request->commission;
-    $otp = rand(000000, 999999);
-
+    //$otp = rand(000000, 999999);
+    $otp = $request->user()->email;
 
     if ($plan->outward == true) {
         //check when account was created
@@ -1229,7 +1229,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
 
             $msg = 'Thanks for your patronage, use ' . $otp . ' to complete  the withdrawal of ' . number_format($request->amount, 0) . ' from REAL COOPERATIVE REALdoe. For enquiries call 09021417778';
 
-            $resp = sendSMS($customer->phone, $msg);
+            //$resp = sendSMS($customer->phone, $msg);
             return response([
                 'success' => true,
                 "code" => $otp,
@@ -1322,7 +1322,7 @@ Route::middleware('auth:sanctum')->post("/withdrawal_post", function (Request $r
 
     $msg = 'Thanks for your patronage, use ' . $otp . ' to complete  the withdrawal of ' . number_format($request->amount, 0) . ' from REAL COOPERATIVE REALdoe. For enquiries call 09021417778';
 
-    $resp = sendSMS($customer->phone, $msg);
+    //$resp = sendSMS($customer->phone, $msg);
 
 
     return response([
