@@ -60,120 +60,253 @@
                 payment,
             };
 
+            if (amount * 0.03 > commission) {
+                swal({
+                        title: "Are you sure?",
+                        text: "This withdrawal will under go approval since the commission is below the expected minimum.",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                    })
+                    .then((willDelete) => {
+                        if (willDelete) {
 
-            fetch("/post_withdrawal", {
-                    method: 'post',
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Accept": "application/json, text-plain, */*",
-                        "X-Requested-With": "XMLHttpRequest",
-                        "X-CSRF-TOKEN": csrfToken
-                    },
-                    body: JSON.stringify(data),
-                })
-                .then(results => results.json())
-                .then((data) => {
-                    if (data.success == true) {
-                        swal("Enter OTP:", {
-                                content: "input",
-                            })
-                            .then((value) => {
-                                var data1 = {
-                                    payment: payment,
-                                    otp: value.trim()
-                                }
-                                fetch("/verify", {
-                                        method: 'post',
-                                        headers: {
-                                            "Content-Type": "application/json",
-                                            "Accept": "application/json, text-plain, */*",
-                                            "X-Requested-With": "XMLHttpRequest",
-                                            "X-CSRF-TOKEN": csrfToken
-                                        },
-                                        body: JSON.stringify(data1),
-                                    })
-                                    .then(results => results.json())
-                                    .then((data) => {
-                                        if (data.success = true) {
-                                            swal("Success!", "Withdrawal completed successfully", "success", {
-                                                buttons: {
-                                                    catch: {
-                                                        text: "Ok",
-                                                        value: "ok",
-                                                    },
-                                                },
-                                            }).then((value) => {
-                                                switch (value) {
-                                                    case "ok":
-                                                        window.location.replace("/customer/" + dt);
-                                                        break;
+                            fetch("/post_withdrawal", {
+                                    method: 'post',
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "Accept": "application/json, text-plain, */*",
+                                        "X-Requested-With": "XMLHttpRequest",
+                                        "X-CSRF-TOKEN": csrfToken
+                                    },
+                                    body: JSON.stringify(data),
+                                })
+                                .then(results => results.json())
+                                .then((data) => {
+                                    if (data.success == true) {
+                                        swal("Enter OTP:", {
+                                                content: "input",
+                                            })
+                                            .then((value) => {
+                                                var data1 = {
+                                                    payment: payment,
+                                                    otp: value.trim()
                                                 }
-                                            });;
-                                        } else {
-                                            swal("Invalid OTP:", {
-                                                    content: "input",
-                                                })
-                                                .then((value) => {
-                                                    var data2 = {
-                                                        payment: payment,
-                                                        otp: value.trim()
-                                                    }
-                                                    fetch("/verify", {
-                                                            method: 'post',
-                                                            headers: {
-                                                                "Content-Type": "application/json",
-                                                                "Accept": "application/json, text-plain, */*",
-                                                                "X-Requested-With": "XMLHttpRequest",
-                                                                "X-CSRF-TOKEN": csrfToken
-                                                            },
-                                                            body: JSON.stringify(data2),
-                                                        })
-                                                        .then(results => results.json())
-                                                        .then((data) => {
-                                                            if (data.success = true) {
-                                                                swal("Success!", "Withdrawal completed successfully", "success", {
-                                                                    buttons: {
-                                                                        catch: {
-                                                                            text: "Ok",
-                                                                            value: "ok",
-                                                                        },
+                                                fetch("/verify", {
+                                                        method: 'post',
+                                                        headers: {
+                                                            "Content-Type": "application/json",
+                                                            "Accept": "application/json, text-plain, */*",
+                                                            "X-Requested-With": "XMLHttpRequest",
+                                                            "X-CSRF-TOKEN": csrfToken
+                                                        },
+                                                        body: JSON.stringify(data1),
+                                                    })
+                                                    .then(results => results.json())
+                                                    .then((data) => {
+                                                        if (data.success = true) {
+                                                            swal("Success!", "Withdrawal completed successfully", "success", {
+                                                                buttons: {
+                                                                    catch: {
+                                                                        text: "Ok",
+                                                                        value: "ok",
                                                                     },
-                                                                }).then((value) => {
-                                                                    switch (value) {
-                                                                        case "ok":
-                                                                            window.location.replace("/customer/" + dt);
-                                                                            break;
+                                                                },
+                                                            }).then((value) => {
+                                                                switch (value) {
+                                                                    case "ok":
+                                                                        window.location.replace("/customer/" + dt);
+                                                                        break;
+                                                                }
+                                                            });;
+                                                        } else {
+                                                            swal("Invalid OTP:", {
+                                                                    content: "input",
+                                                                })
+                                                                .then((value) => {
+                                                                    var data2 = {
+                                                                        payment: payment,
+                                                                        otp: value.trim()
                                                                     }
-                                                                });;
-                                                            } else {
-                                                                swal("Failed!", "An error occured, please again later.", "error");
-                                                            }
-                                                        })
-                                                        .catch(error => console.error(error));
-                                                });
-                                        }
-                                    })
-                                    .catch(error => console.error(error));
-                            });
-                        // swal("Success!", "Withdrawal posted successfully", "success", {
-                        //     buttons: {
-                        //         catch: {
-                        //             text: "Ok",
-                        //             value: "ok",
-                        //         },
-                        //     },
-                        // }).then((value) => {
-                        //     switch (value) {
-                        //         case "ok":
-                        //             window.location.replace("/customer/" + id);
-                        //             break;
-                        //     }
-                        // });;
-                    } else {
-                        swal("Failed!", data.message, "error");
-                    }
-                })
-                .catch(error => console.error(error));
+                                                                    fetch("/verify", {
+                                                                            method: 'post',
+                                                                            headers: {
+                                                                                "Content-Type": "application/json",
+                                                                                "Accept": "application/json, text-plain, */*",
+                                                                                "X-Requested-With": "XMLHttpRequest",
+                                                                                "X-CSRF-TOKEN": csrfToken
+                                                                            },
+                                                                            body: JSON.stringify(data2),
+                                                                        })
+                                                                        .then(results => results.json())
+                                                                        .then((data) => {
+                                                                            if (data.success = true) {
+                                                                                swal("Success!", "Withdrawal completed successfully", "success", {
+                                                                                    buttons: {
+                                                                                        catch: {
+                                                                                            text: "Ok",
+                                                                                            value: "ok",
+                                                                                        },
+                                                                                    },
+                                                                                }).then((value) => {
+                                                                                    switch (value) {
+                                                                                        case "ok":
+                                                                                            window.location.replace("/customer/" + dt);
+                                                                                            break;
+                                                                                    }
+                                                                                });;
+                                                                            } else {
+                                                                                swal("Failed!", "An error occured, please again later.", "error");
+                                                                            }
+                                                                        })
+                                                                        .catch(error => console.error(error));
+                                                                });
+                                                        }
+                                                    })
+                                                    .catch(error => console.error(error));
+                                            });
+                                        // swal("Success!", "Withdrawal posted successfully", "success", {
+                                        //     buttons: {
+                                        //         catch: {
+                                        //             text: "Ok",
+                                        //             value: "ok",
+                                        //         },
+                                        //     },
+                                        // }).then((value) => {
+                                        //     switch (value) {
+                                        //         case "ok":
+                                        //             window.location.replace("/customer/" + id);
+                                        //             break;
+                                        //     }
+                                        // });;
+                                    } else {
+                                        swal("Failed!", data.message, "error");
+                                    }
+                                })
+                                .catch(error => console.error(error));
+
+                        } else {
+
+                        }
+                    });
+            } else {
+
+                fetch("/post_withdrawal", {
+                        method: 'post',
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Accept": "application/json, text-plain, */*",
+                            "X-Requested-With": "XMLHttpRequest",
+                            "X-CSRF-TOKEN": csrfToken
+                        },
+                        body: JSON.stringify(data),
+                    })
+                    .then(results => results.json())
+                    .then((data) => {
+                        if (data.success == true) {
+                            swal("Enter OTP:", {
+                                    content: "input",
+                                })
+                                .then((value) => {
+                                    var data1 = {
+                                        payment: payment,
+                                        otp: value.trim()
+                                    }
+                                    fetch("/verify", {
+                                            method: 'post',
+                                            headers: {
+                                                "Content-Type": "application/json",
+                                                "Accept": "application/json, text-plain, */*",
+                                                "X-Requested-With": "XMLHttpRequest",
+                                                "X-CSRF-TOKEN": csrfToken
+                                            },
+                                            body: JSON.stringify(data1),
+                                        })
+                                        .then(results => results.json())
+                                        .then((data) => {
+                                            if (data.success = true) {
+                                                swal("Success!", "Withdrawal completed successfully", "success", {
+                                                    buttons: {
+                                                        catch: {
+                                                            text: "Ok",
+                                                            value: "ok",
+                                                        },
+                                                    },
+                                                }).then((value) => {
+                                                    switch (value) {
+                                                        case "ok":
+                                                            window.location.replace("/customer/" + dt);
+                                                            break;
+                                                    }
+                                                });;
+                                            } else {
+                                                swal("Invalid OTP:", {
+                                                        content: "input",
+                                                    })
+                                                    .then((value) => {
+                                                        var data2 = {
+                                                            payment: payment,
+                                                            otp: value.trim()
+                                                        }
+                                                        fetch("/verify", {
+                                                                method: 'post',
+                                                                headers: {
+                                                                    "Content-Type": "application/json",
+                                                                    "Accept": "application/json, text-plain, */*",
+                                                                    "X-Requested-With": "XMLHttpRequest",
+                                                                    "X-CSRF-TOKEN": csrfToken
+                                                                },
+                                                                body: JSON.stringify(data2),
+                                                            })
+                                                            .then(results => results.json())
+                                                            .then((data) => {
+                                                                if (data.success = true) {
+                                                                    swal("Success!", "Withdrawal completed successfully", "success", {
+                                                                        buttons: {
+                                                                            catch: {
+                                                                                text: "Ok",
+                                                                                value: "ok",
+                                                                            },
+                                                                        },
+                                                                    }).then((value) => {
+                                                                        switch (value) {
+                                                                            case "ok":
+                                                                                window.location.replace("/customer/" + dt);
+                                                                                break;
+                                                                        }
+                                                                    });;
+                                                                } else {
+                                                                    swal("Failed!", "An error occured, please again later.", "error");
+                                                                }
+                                                            })
+                                                            .catch(error => console.error(error));
+                                                    });
+                                            }
+                                        })
+                                        .catch(error => console.error(error));
+                                });
+                            // swal("Success!", "Withdrawal posted successfully", "success", {
+                            //     buttons: {
+                            //         catch: {
+                            //             text: "Ok",
+                            //             value: "ok",
+                            //         },
+                            //     },
+                            // }).then((value) => {
+                            //     switch (value) {
+                            //         case "ok":
+                            //             window.location.replace("/customer/" + id);
+                            //             break;
+                            //     }
+                            // });;
+                        } else {
+                            swal("Failed!", data.message, "error");
+                        }
+                    })
+                    .catch(error => console.error(error));
+            }
+
+
         });
     });
 </script>

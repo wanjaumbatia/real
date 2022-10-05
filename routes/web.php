@@ -118,38 +118,37 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/branch_approve_loan/{id}', [BranchController::class, 'branch_approve_loan'])->name('branch_approve_loan');
     Route::get('/approved_branch_loans', [BranchController::class, 'approved_branch_loans'])->name('approved_branch_loans');
     Route::get('/disburse/{id}', [BranchController::class, 'disburse_loan'])->name('disburse_loan');
-    
+
     Route::get('/statement/{id}', [SalesController::class, 'statement'])->name('statement');
     Route::get('/loan_status/{id}', [SalesController::class, 'loan_card'])->name('sales.loan_card');
     Route::get('/recon_statement', [OfficeController::class, 'recon_statement'])->name('recon_statement');
-    
+
     Route::post('/loan_officer_approval/{id}', [LoanController::class, 'loan_officer_approval'])->name('loan_officer_approval');
-    
+
     Route::post('/branch_reject_loan/{id}', [BranchController::class, 'branch_reject_loan'])->name('branch_reject_loan');
 
-    
+
     Route::get('/backend', [OfficeController::class, 'backend'])->name('backend');
-Route::get('/sep/{name}', [OfficeController::class, 'seps'])->name('seps');
-Route::get('/sep-customers/{name}', [OfficeController::class, 'customer_seps'])->name('customer_seps');
-Route::get('/sep_customer/{id}', [OfficeController::class, 'customer'])->name('sep_customer');
-Route::post('/change_phone', [OfficeController::class, 'change_phone'])->name('change_phone');
-Route::post('/migrate_plan', [OfficeController::class, 'migrate_plan'])->name('migrate_plan');
-Route::get('/loans', [SalesController::class, 'loans'])->name('sep_loans');
-Route::post('/change_amount', [OfficeController::class, 'change_amount'])->name('change_amount');
-Route::post('/change_loan_amount', [OfficeController::class, 'change_loan_amount'])->name('change_loan_amount');
-Route::post('/change_plan', [OfficeController::class, 'change_plan'])->name('change_plan');
-Route::post('/handler_change/{id}', [OfficeController::class, 'handler_change'])->name('handler_change');
-Route::get('/upload_accounts', [BranchController::class, 'upload_accounts'])->name('upload_accounts');
+    Route::get('/sep/{name}', [OfficeController::class, 'seps'])->name('seps');
+    Route::get('/sep-customers/{name}', [OfficeController::class, 'customer_seps'])->name('customer_seps');
+    Route::get('/sep_customer/{id}', [OfficeController::class, 'customer'])->name('sep_customer');
+    Route::post('/change_phone', [OfficeController::class, 'change_phone'])->name('change_phone');
+    Route::post('/migrate_plan', [OfficeController::class, 'migrate_plan'])->name('migrate_plan');
+    Route::get('/loans', [SalesController::class, 'loans'])->name('sep_loans');
+    Route::post('/change_amount', [OfficeController::class, 'change_amount'])->name('change_amount');
+    Route::post('/change_loan_amount', [OfficeController::class, 'change_loan_amount'])->name('change_loan_amount');
+    Route::post('/change_plan', [OfficeController::class, 'change_plan'])->name('change_plan');
+    Route::post('/handler_change/{id}', [OfficeController::class, 'handler_change'])->name('handler_change');
+    Route::get('/upload_accounts', [BranchController::class, 'upload_accounts'])->name('upload_accounts');
 
-Route::get('/delete_loan_payment/{id}', [OfficeController::class, 'delete_loan_payment'])->name('delete_loan_payment');
-Route::get('/delete_saving_account/{id}', [OfficeController::class, 'delete_saving_account'])->name('delete_saving_account');
-Route::get('/delete_payment/{id}', [OfficeController::class, 'delete_payment'])->name('delete_payment');
+    Route::get('/delete_loan_payment/{id}', [OfficeController::class, 'delete_loan_payment'])->name('delete_loan_payment');
+    Route::get('/delete_saving_account/{id}', [OfficeController::class, 'delete_saving_account'])->name('delete_saving_account');
+    Route::get('/delete_payment/{id}', [OfficeController::class, 'delete_payment'])->name('delete_payment');
 
-Route::get('/collection', [SalesController::class, 'show_collection'])->name('show_collection');
+    Route::get('/collection', [SalesController::class, 'show_collection'])->name('show_collection');
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/search', [OfficeController::class, 'search_customer'])->name('search');
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/search', [OfficeController::class, 'search_customer'])->name('search');
 
-Route::post('/post_withdrawal', [OfficeController::class, 'post_withdrawal'])->name('post_withdrawal');
-    
+    Route::post('/post_withdrawal', [OfficeController::class, 'post_withdrawal'])->name('post_withdrawal');
 });
