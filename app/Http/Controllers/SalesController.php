@@ -419,7 +419,7 @@ class SalesController extends Controller
 
         //$msg = "Dear " . $cust->name . ". Your payment of NGN " . number_format($total, 0) . " has been received. Thank you for saving with us.";
         $msg = "Thanks for your patronage we rec'vd " . number_format($total, 0) . " your bal is " . number_format($balance, 0) . " for inquires call 09021417778";
-        //$res = sendSMS($phone, $msg);
+        $res = sendSMS($phone, $msg);
 
         $location = PaymentLocation::create([
             '' => $reference,
@@ -618,7 +618,7 @@ class SalesController extends Controller
 
             $msg = "Thanks for your patronage we rec'vd " . number_format($request->amount, 0) . " as loan repayment. for inquires call 09021417778";
             $customer = Customer::where('customer_id', $loan->customer_id)->first();
-            //sendSMS($customer->phone, $msg);
+            sendSMS($customer->phone, $msg);
         }
 
         return response([

@@ -1486,12 +1486,11 @@ function sendSMS($phone, $message)
     Log::warning('sending');
     $url = 'http://pro.strongsmsportal.com/api/?username=neodream&password=Prayer12&message=' . $message . '&sender=Reliance&mobiles=234' . formatNumber($phone);
 
-    // $response =  Http::get($url)->json();
+    $response =  Http::get($url)->json();
 
-    // Log::info($response);
+    Log::info($response);
 
-    // return $response;
-    return 'sent';
+    return $response;
 }
 
 function formatNumber($phone)
