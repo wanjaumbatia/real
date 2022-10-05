@@ -60,6 +60,7 @@
                 payment,
             };
 
+
             fetch("/post_withdrawal", {
                     method: 'post',
                     headers: {

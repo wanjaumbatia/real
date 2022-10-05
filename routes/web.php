@@ -52,8 +52,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/ios/pay', [IosController::class, 'pay'])->name('pay');
     Route::post('/ios/withdraw', [IosController::class, 'withdraw'])->name('ios.withdraw');
 
-
-
     Route::get('/contributions', [TransactionsController::class, 'index'])->name('contributions.list');
     Route::get('/contributions/create', [TransactionsController::class, 'create'])->name('contributions.create');
 
@@ -107,7 +105,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/withdrawal/{id}', [SalesController::class, 'withdrawal'])->name('sales.withdrawal');
     Route::post('/post_withdrawal', [SalesController::class, 'post_withdrawal'])->name('sales.post_withdrawal');
     Route::post('/verify', [SalesController::class, 'verify_withdrawal'])->name('sales.verify');
-
+    Route::post('/create_account/{id}', [SalesController::class, 'create_plan'])->name('sales.create_plan');
 
     //Branch Managers
     Route::get('/branch_loans', [BranchController::class, 'loans'])->name('branch_loans');

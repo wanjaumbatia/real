@@ -108,10 +108,17 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="exampleModalLabel">Create Plan</h5>
-
                                 </div>
                                 <div class="modal-body">
-
+                                    <form action="/create_account/{{$customer->id}}" method="POST">
+                                        @csrf
+                                        <select name="plan" id="plan" class="form-control">
+                                            @foreach($plans as $item)
+                                            <option value="{{$item->id}}">{{$item->name}}</option>>
+                                            @endforeach
+                                        </select>
+                                        <button class="btn btn-primary w-100 mt-2" type="submit">Create</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>

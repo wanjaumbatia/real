@@ -982,7 +982,7 @@ class OfficeController extends Controller
                 'customer_id' => $account->customer_id,
                 'customer_name' => $account->customer,
                 'transaction_type' => 'withdrawal',
-                'status' => 'confirmed',
+                'status' => 'open',
                 'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
                 'debit' => 0,
                 'credit' => $request->amount,
@@ -1002,7 +1002,7 @@ class OfficeController extends Controller
                 'customer_id' => $account->customer_id,
                 'customer_name' => $account->customer,
                 'transaction_type' => 'charge',
-                'status' => 'confirmed',
+                'status' => 'open',
                 'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->commission, 2) . " On " . $account->plan . " account.",
                 'debit' => 0,
                 'credit' => $request->commission,
@@ -1016,6 +1016,10 @@ class OfficeController extends Controller
             ]);
         }
 
-        return redirect()->to('/sep_customer/' . $customer->id);
+        //return redirect()->to('/sep_customer/' . $customer->id);
+
+        return response([
+            'success'=>true
+        ]);
     }
 }

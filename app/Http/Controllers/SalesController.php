@@ -61,7 +61,7 @@ class SalesController extends Controller
         } else {
             $mon_interest = $extra_pay - $mon_cap;
         }
-        
+
         $total_cap = $mon_cap + $expected_current_capital;
         $total_int = $mon_interest  + $expected_current_interest;
 
@@ -71,7 +71,7 @@ class SalesController extends Controller
         return view('sales.loan_card')->with([
             'customer' => $customer, 'loan' => $loan,
             'payments' => $payments, 'progress' => $progress, 'balance' => $balance,
-            'mon_interest' => $mon_interest, 'mon_cap'=>$mon_cap, 'total_cap' => $total_cap,
+            'mon_interest' => $mon_interest, 'mon_cap' => $mon_cap, 'total_cap' => $total_cap,
             'total_int' => $total_int
         ]);
     }
@@ -249,6 +249,7 @@ class SalesController extends Controller
             ]);
         }
     }
+
 
 
     public function pay(Request $request)
@@ -683,5 +684,32 @@ class SalesController extends Controller
         $payments = Payments::where('savings_account_id', $id)->get();
 
         return view('sales.statement')->with(['payments' => $payments, 'customer' => $customer]);
+    }
+
+    public function create_plan(Request $request, $id)
+    {
+        $plan = Plans::where('id', $request->plan)->first();
+        $customer = Customer::where('id', $id)->first();
+
+        $name = $request->name;
+        if ($name == null) {
+            $name = $plan->name . ".";
+        }
+
+        $account = SavingsAccount::create([
+            'customer_id' => $customer->id,
+            'customer_number' => $customer->no,
+            'pledge' => 0,
+            'plans_id' => $plan->id,
+            'name' => $name,
+            'created_by' => "Admin",
+            'active' => true,
+            'branch' => 'test',
+            'handler' => $customer->name,
+            'customer' => $customer->name,
+            'plan' => $plan->name
+        ]);
+
+        return redirect()->to('/customer/' . $customer->id);
     }
 }
