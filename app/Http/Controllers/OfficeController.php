@@ -13,6 +13,7 @@ use App\Models\LoanRepayment;
 use App\Models\NewBalances;
 use App\Models\Payments;
 use App\Models\Plans;
+use App\Models\ReconciliationRecord;
 use App\Models\SavingsAccount;
 use App\Models\ShortageLine;
 use App\Models\Transactions;
@@ -50,12 +51,41 @@ class OfficeController extends Controller
         return redirect()->route('home')->with('success', 'Balances Imported Successfully');
     }
 
-    public function recon_statement(Request $request)
+    public function recon_report_by_date()
+    {
+        $data = DB::table('reconciliation_records as w')
+            ->select(array(DB::Raw('sum(w.submited) as amount'), DB::Raw('DATE(w.created_at) day')))
+            ->groupBy('day')
+            ->orderBy('w.created_at')
+            ->get();
+
+        return view('office.recon_report_by_date')->with(['data' => $data]);
+    }
+
+    public function recon_statement(Request $request, $date)
     {
         $branch = auth()->user()->branch;
-        $data = DB::select("select created_by as handler, sum(debit) as amount from payments where branch = '".$branch."' and remarks!='Opening Balance' and status='confirmed' group by created_by;");
-        
-        return view('office.recon_statement')->with(['data' => $data]);
+        $data = DB::select("select created_by as handler, sum(debit) as amount from payments where branch = '" . $branch . "' and remarks!='Opening Balance' and status='confirmed' group by created_by;");
+
+        //get date
+        $recon = ReconciliationRecord::all();
+        return view('office.recon_statement')->with(['data' => $data, 'recon' => $recon]);
+    }
+
+    public function recon_per_ref($id)
+    {
+        $payments = Payments::where('reconciliation_reference', $id)->get();
+        $loans = LoanRepayment::where('reconciliation_reference', $id)->get();
+
+        $payments_sum = Payments::where('reconciliation_reference', $id)->sum('amount');
+        $loans_sum = LoanRepayment::where('reconciliation_reference', $id)->sum('amount');
+
+        return view('office.recon_per_ref')->with([
+            'payments' => $payments,
+            'loans' => $loans,
+            'payments_sum' => $payments_sum,
+            'loans_sum' => $loans_sum
+        ]);
     }
 
     public function backend()
@@ -187,7 +217,7 @@ class OfficeController extends Controller
     public function change_phone(Request $request)
     {
         $customer = Customer::where('id', $request->id)->first();
-        
+
         $cust = Customer::where('id', $customer->id)->update([
             'phone' => $request->new_phone,
         ]);
@@ -284,13 +314,15 @@ class OfficeController extends Controller
 
     public function receive(Request $request)
     {
+        $reference = rand(100000000, 999999999);
         $handler = $request->handler;
         $amount = $request->amount;
         $whole = 0;
         $total_loans = LoanRepayment::where('handler', $handler)->where('status', 'pending')->sum('amount');
+        $loans = LoanRepayment::where('handler', $handler)->where('status', 'pending')->get();
 
         $pof = Payments::where("remarks", "POF")->where('reconciled', false)->where("status", "confirmed")->where('transaction_type', 'withdrawal')->where('created_by', $handler)->sum("credit");
-        $transactions = Payments::where('created_by', $handler)->where('transaction_type', 'savings')->orWhere('transaction_type', 'registration')->where('status', 'pending')->get();
+        $transactions = Payments::where('created_by', $handler)->where('transaction_type', 'savings')->where('status', 'pending')->get();
 
         $total_transactions = Payments::where('created_by', $handler)->where('transaction_type', 'savings')->where('status', 'pending')->sum('debit');
         $total_regfee = Payments::where('created_by', $handler)->where('transaction_type', 'registration')->where('status', 'pending')->sum('debit');
@@ -299,13 +331,23 @@ class OfficeController extends Controller
             return back()->withErrors(['You can not reconcile more than the required amount of ₦.' . number_format(($total_transactions + $total_regfee - $pof))]);
         } else if (($total_transactions + $total_regfee - $pof + $total_loans) > $amount) {
             // handle shortages
+            $rec = ReconciliationRecord::create([
+                'handler' => $handler,
+                'reconciled_by' => auth()->user()->name,
+                'expected' => $total_transactions + $total_regfee - $pof + $total_loans,
+                'submited' => $amount,
+                'shortage' => true,
+                'branch' => auth()->user()->branch,
+                'reconciliation_reference' => $reference,
+            ]);
 
             $short = ($total_transactions + $total_regfee - $pof) - $amount;
-            $reference = rand(100000000, 999999999);
             foreach ($transactions as $item) {
                 $tt = Payments::where('id', $item->id)->update([
                     'status' => 'confirmed',
-                    'recon_reference' => $reference
+                    'reconciliation_reference' => $reference,
+                    'reconciled_by' => auth()->user()->name,
+                    'admin_reconciled' => true
                 ]);
 
                 //create commission line
@@ -321,6 +363,15 @@ class OfficeController extends Controller
                 //     'approved' => true,
                 //     // 'transaction_type'=>'commission'
                 // ]);
+            }
+
+            foreach ($loans as $item) {
+                $tt = LoanRepayment::where('id', $item->id)->update([
+                    'status' => 'confirmed',
+                    'reconciliation_reference' => $reference,
+                    'reconciled_by' => auth()->user()->name,
+                    'admin_reconciled' => true
+                ]);
             }
 
             $shortage_line = ShortageLine::create([
@@ -358,12 +409,22 @@ class OfficeController extends Controller
             return redirect()->route('office.list');
         } else {
             //clear sales executive
-            $reference = rand(100000000, 999999999);
+            $rec = ReconciliationRecord::create([
+                'handler' => $handler,
+                'reconciled_by' => auth()->user()->name,
+                'expected' => $total_transactions + $total_regfee - $pof + $total_loans,
+                'submited' => $amount,
+                'shortage' => false,
+                'branch' => auth()->user()->branch,
+                'reconciliation_reference' => $reference,
+            ]);
+
             foreach ($transactions as $item) {
                 $tt = Payments::where('id', $item->id)->update([
                     'status' => 'confirmed',
-                    'reconciled' => true,
-                    'reference' => $reference
+                    'reconciliation_reference' => $reference,
+                    'reconciled_by' => auth()->user()->name,
+                    'admin_reconciled' => true
                 ]);
 
                 $pof = Payments::where("remarks", "POF")->where("status", "confirmed")->where('transaction_type', 'withdrawal')->where('created_by', $handler)->get();
@@ -371,7 +432,10 @@ class OfficeController extends Controller
                 foreach ($pof as $item) {
                     Payments::where('id', $item->id)->update([
                         'status' => 'confirmed',
-                        'reconciled' => true
+                        'reconciled' => true,
+                        'reconciliation_reference' => $reference,
+                        'reconciled_by' => auth()->user()->name,
+                        'admin_reconciled' => true
                     ]);
                 }
                 //create commission line
@@ -381,11 +445,12 @@ class OfficeController extends Controller
                 ]);
             }
 
-            $loans = LoanRepayment::where('handler', $handler)->where('status', 'pending')->get();
-
             foreach ($loans as $item) {
-                $comm = LoanRepayment::where('id', $item->id)->update([
+                $tt = LoanRepayment::where('id', $item->id)->update([
                     'status' => 'confirmed',
+                    'reconciliation_reference' => $reference,
+                    'reconciled_by' => auth()->user()->name,
+                    'admin_reconciled' => true
                 ]);
             }
 
@@ -1019,7 +1084,7 @@ class OfficeController extends Controller
         //return redirect()->to('/sep_customer/' . $customer->id);
 
         return response([
-            'success'=>true
+            'success' => true
         ]);
     }
 }

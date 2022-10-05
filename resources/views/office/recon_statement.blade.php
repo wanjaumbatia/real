@@ -17,23 +17,39 @@
                     </div>
                     @endif
 
-                    <table class="table table-striped">
+                    <table class="table table-stripped">
                         <thead>
                             <tr>
+                                <th>Date</th>
                                 <th>Sales Executive</th>
-                                <th>Amount</th>
+                                <th>Expected Amount</th>
+                                <th>Submited Amount</th>
+                                <th>Shortage</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($data as $item)
+                            @foreach($recon as $item)
                             <tr>
+                                <td>{{$item->created_at}}</td>
                                 <td>{{$item->handler}}</td>
-                                <td>{{number_format($item->amount,2)}}</td>
-                            </tr>
+                                <td>{{number_format($item->expected, 2)}}</td>
+                                <td>{{number_format($item->submited, 2)}}</td>
+                                <td>
+                                    @if($item->shortage==1)
+                                    Yes
+                                    @else
+                                    No
+                                    @endif
+                                </td>
+                                <td>
+                                    <a href="/recon_per_ref/{{$item->reconciliation_reference}}" class="btn btn-primary btn-sm">View</a>
+                                </td>
+                            </tr>                                
                             @endforeach
                         </tbody>
                     </table>
-                   
+
                 </div>
             </div>
         </div>

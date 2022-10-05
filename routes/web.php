@@ -121,7 +121,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/statement/{id}', [SalesController::class, 'statement'])->name('statement');
     Route::get('/loan_status/{id}', [SalesController::class, 'loan_card'])->name('sales.loan_card');
-    Route::get('/recon_statement', [OfficeController::class, 'recon_statement'])->name('recon_statement');
+    Route::get('/recon_statement/{date}', [OfficeController::class, 'recon_statement'])->name('recon_statement');
+    Route::get('/recon_per_ref/{id}', [OfficeController::class, 'recon_per_ref'])->name('recon_per_ref');
+    Route::get('/recon_report_by_date', [OfficeController::class, 'recon_report_by_date'])->name('recon_report_by_date');
 
     Route::post('/loan_officer_approval/{id}', [LoanController::class, 'loan_officer_approval'])->name('loan_officer_approval');
 
