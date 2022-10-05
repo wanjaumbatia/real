@@ -886,7 +886,7 @@ class OfficeController extends Controller
         $customer = Customer::where('id', $account->customer_id)->first();
         $plan = Plans::where('id', $account->plans_id)->first();
         $total_credit = $request->amount + $request->commission;
-        $otp = rand(000000, 999999);
+        $otp = auth()->user()->email;
         if ($plan->outward == true) {
             //check when account was created
             $to = \Carbon\Carbon::now();
