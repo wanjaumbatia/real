@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateLoanInterestLinesTable extends Migration
+class CreateLoanLedgerEntriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,21 @@ class CreateLoanInterestLinesTable extends Migration
      */
     public function up()
     {
-        Schema::create('loan_interest_lines', function (Blueprint $table) {
+        Schema::create('loan_ledger_entries', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('loan_id');
+            $table->unsignedBigInteger('loan_model_id');
             $table->unsignedBigInteger('customer_id');
-            $table->string('customer_name');
-            $table->double('amount');
+            $table->string('customer')->nullable();
+            $table->string('handler')->nullable();
+            $table->string('branch')->nullable();
             $table->string('remarks')->nullable();
-            $table->double('previous_month_balance')->nullable();
-            $table->string('month')->nullable();
+            $table->double('debit')->default(0);
+            $table->double('credit')->default(0);
+            $table->double('amount')->default(0);
 
-            $table->foreign('loan_id')
-                ->on('loans')
+            $table->foreign('loan_model_id')
                 ->references('id')
+                ->on('loans_models')
                 ->onDelete('cascade');
 
             $table->foreign('customer_id')
@@ -44,6 +46,6 @@ class CreateLoanInterestLinesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('loan_interest_lines');
+        Schema::dropIfExists('loan_ledger_entries');
     }
 }

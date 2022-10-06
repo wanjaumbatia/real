@@ -125,6 +125,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/recon_per_ref/{id}', [OfficeController::class, 'recon_per_ref'])->name('recon_per_ref');
     Route::get('/recon_report_by_date', [OfficeController::class, 'recon_report_by_date'])->name('recon_report_by_date');
 
+    Route::get('/charge_interest', [LoanController::class, 'charge_interest'])->name('charge_interest');
+    //Route::get('/loan_repayment', [LoanController::class, 'loan_repayment'])->name('loan_repayment');
     Route::post('/loan_officer_approval/{id}', [LoanController::class, 'loan_officer_approval'])->name('loan_officer_approval');
 
     Route::post('/branch_reject_loan/{id}', [BranchController::class, 'branch_reject_loan'])->name('branch_reject_loan');
@@ -154,4 +156,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/search', [OfficeController::class, 'search_customer'])->name('search');
 
     Route::post('/post_withdrawal', [OfficeController::class, 'post_withdrawal'])->name('post_withdrawal');
+
+    Route::post('/import_loans_new', [LoanController::class, 'ImportLoans'])->name('import_loans_new');
+    Route::get('/new_customer', [SalesController::class, 'new_customer'])->name('new_customer');
+    Route::post('/new_customer', [SalesController::class, 'save_customer'])->name('save_customer');
 });

@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BankAccounts;
 use App\Models\CommissionLines;
 use App\Models\Customer;
 use App\Models\Loan;
+use App\Models\LoanLedgerEntries;
 use App\Models\LoanRepayment;
+use App\Models\LoanRepaymentModel;
+use App\Models\LoansModel;
 use App\Models\OtpCode;
 use App\Models\PaymentLocation;
 use App\Models\Payments;
@@ -30,49 +34,127 @@ class SalesController extends Controller
         return view('sales.customers')->with(['customers' => $customers]);
     }
 
+    public function new_customer()
+    {
+
+        $banks =  [
+            '',
+            'Access Bank Plc',
+            'Citibank Nigeria Limited',
+            'Ecobank Nigeria Plc',
+            'Fidelity Bank Plc',
+            'FIRST BANK NIGERIA LIMITED',
+            'First City Monument Bank Plc',
+            'Globus Bank Limited',
+            'Guaranty Trust Bank Plc',
+            'Heritage Banking Company Ltd.',
+            'Keystone Bank Limited',
+            'Parallex Bank Ltd',
+            'Polaris Bank Plc',
+            'Premium Trust Bank',
+            'Providus Bank',
+            'STANBIC IBTC BANK PLC',
+            'Standard Chartered Bank Nigeria Ltd.',
+            'Sterling Bank Plc',
+            'SunTrust Bank Nigeria Limited',
+            'Titan Trust Bank Ltd',
+            'Union Bank of Nigeria Plc',
+            'United Bank For Africa Plc',
+            'Unity Bank Plc',
+            'Wema Bank Plc',
+            'Zenith Bank Plc'
+        ];
+
+        return view('sales.new_customer')->with(['banks' => $banks]);
+    }
+
+    public function save_customer(Request $request){
+        $phone_check = Customer::where('phone', $request->phone)->get();
+
+        if (count($phone_check) > 0) {
+            return back()->withErrors(['Phone number is already registed.']);
+        }
+    
+    
+        $customer = Customer::create([
+            'name' => $request->name,
+            'address' => $request->address,
+            'gender' => $request->gender,
+            'town' => $request->town,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'posted' => false,
+            'no' => get_customer_number(),
+            'handler' => $request->user()->name,
+            'branch' => $request->user()->branch,
+            'business' => $request->business,
+            'created_by' => $request->user()->name,
+        ]);
+    
+        if ($request->bank!=null) {
+            BankAccounts::create([
+                'bank_name' => $request->bank,
+                'bank_account' => $request->account,
+                'bank_branch' => $request->bank_branch,
+                'created_by' => $request->user()->name,
+                'customer_id' => $customer->id
+            ]);
+        }
+    
+        $customer = Customer::where('id', $customer->id)->first();
+    
+        //create default account
+        $plans = Plans::where('default', true)->where('active', true)->get();
+    
+        foreach ($plans as $plan) {
+            //create savings account
+            $account = SavingsAccount::create([
+                'customer_id' => $customer->id,
+                'customer_number' => $customer->no,
+                'plans_id' => $plan->id,
+                'name' => 'Regular',
+                'pledge' => 0,
+                'created_by' => auth()->user()->name,
+                'active' => true,
+                'branch' => auth()->user()->branch,
+                'handler' => auth()->user()->name,
+                'customer' => $customer->name,
+                'plan' => $plan->name
+            ]);
+        }
+    
+        //send sms
+        $phone = $customer->phone;
+        $msg = "Dear " . $customer->name . ". Your registration to Reliance Economic Advancement LTD has been approved. Your unique customer number is " . $customer->no . ".";
+        $res = sendSMS($phone, $msg);
+    
+        return redirect()->to('/customer/'.$customer->id);
+    }
+
     public function loan_card($id)
     {
-        $loan = Loan::where('id', $id)->first();
+        $loan = LoansModel::where('id', $id)->first();
         //get customer details
         $customer = Customer::where('id', $loan->customer_id)->first();
-        $payments = LoanRepayment::where('loan_number', $loan->id)->get();
-
-        $repayed = $loan->paid + LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
-        $total_exp_repayment = $loan->amount + (($loan->amount * ($loan->interest_percentage / 100)) * $loan->duration);
-
-        //check paid capital
-        //get start to now month number
-        $to = \Carbon\Carbon::now();
-        $from = $loan->date_posted;
-        $diff_in_months = $to->diffInMonths($from);
-
-        //get interest = paid capital - total        
-        $expected_current_capital = $diff_in_months * ($loan->amount / $loan->duration);
-        $expected_current_interest = ($loan->amount * ($loan->interest_percentage / 100)) * $diff_in_months;
-
-        $expected_total_payment_todate = $expected_current_capital + $expected_current_interest;
-
-        $extra_pay = $repayed - $expected_total_payment_todate;
-        $mon_interest = 0;
-        $mon_cap = $extra_pay - ($loan->amount * ($loan->interest_percentage / 100));
-
-        if ($mon_cap <= 0) {
-            $mon_interest = $extra_pay;
-        } else {
-            $mon_interest = $extra_pay - $mon_cap;
-        }
-
-        $total_cap = $mon_cap + $expected_current_capital;
-        $total_int = $mon_interest  + $expected_current_interest;
-
-        $progress = round($repayed / $total_exp_repayment * 100);
-        $balance = $total_exp_repayment - $repayed;
+        $statement = LoanLedgerEntries::where('loan_model_id', $loan->id)->get();
+        //generate ledger entries
+        // $loans = LoansModel::all();
+        // foreach ($loans as $item) {
+        //     LoanLedgerEntries::create([
+        //         'loan_model_id'=>$item->id,
+        //         'customer_id'=>$customer->id,
+        //         'customer'=>$customer->name,
+        //         'handler'=>$customer->handler,
+        //         'branch'=>$customer->branch,
+        //         'remarks'=>'Opening Balance From Old System',
+        //         'debit'=>$item->total_balance,
+        //         'credit'=>0,
+        //         'amount'=>$item->total_balance,
+        //     ]);
+        // }
 
         return view('sales.loan_card')->with([
-            'customer' => $customer, 'loan' => $loan,
-            'payments' => $payments, 'progress' => $progress, 'balance' => $balance,
-            'mon_interest' => $mon_interest, 'mon_cap' => $mon_cap, 'total_cap' => $total_cap,
-            'total_int' => $total_int
+            'customer' => $customer, 'loan' => $loan, 'statement' => $statement
         ]);
     }
 
@@ -472,19 +554,8 @@ class SalesController extends Controller
                 $total_balance = $total_balance + $confirmed_transaction;
             }
 
-            $loan = Loan::where('customer_id', $customer->id)->first();
-            if ($loan != null) {
-                $loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
-                $loan_balance = $loan->amount - $loan_repayment - $loan->paid;
-                $principle = $loan->amount / $loan->duration;
-                $interest = $loan->amount * ((float)$loan->interest_percentage / 100);
-                $loan['monthly_paid'] = $loan_repayment;
-                $loan['balance'] = number_format($loan_balance + $interest, 2);
-                $loan['monthly_balance'] = number_format($principle + $interest - $loan_repayment, 2);
-                $loan['repayment'] = number_format($principle + $interest, 2); // plus 
-                $pending_loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'pending')->sum('amount');
-                $loan['pending_loan_repayment'] = $pending_loan_repayment;
-            }
+            $loan = LoansModel::where('customer_id', $customer->id)->first();
+
 
             $result = array();
             $result['customer'] = $customer;
@@ -577,19 +648,19 @@ class SalesController extends Controller
     public function repay_loan($id)
     {
         $customer = Customer::where('id', $id)->first();
-        $loan = Loan::where('customer_id', $customer->id)->first();
-        if ($loan != null) {
-            $loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
-            $loan_balance = $loan->amount - $loan_repayment - $loan->paid;
-            $principle = $loan->amount / $loan->duration;
-            $interest = $loan->amount * ((float)$loan->interest_percentage / 100);
-            $loan['monthly_paid'] = $loan_repayment;
-            $loan['balance'] = number_format($loan_balance + $interest, 2);
-            $loan['monthly_balance'] = number_format($principle + $interest - $loan_repayment, 2);
-            $loan['repayment'] = number_format($principle + $interest, 2); // plus 
-            $pending_loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'pending')->sum('amount');
-            $loan['pending_loan_repayment'] = $pending_loan_repayment;
-        }
+        $loan = LoansModel::where('customer_id', $customer->id)->first();
+        // if ($loan != null) {
+        //     $loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
+        //     $loan_balance = $loan->amount - $loan_repayment - $loan->paid;
+        //     $principle = $loan->amount / $loan->duration;
+        //     $interest = $loan->amount * ((float)$loan->interest_percentage / 100);
+        //     $loan['monthly_paid'] = $loan_repayment;
+        //     $loan['balance'] = number_format($loan_balance + $interest, 2);
+        //     $loan['monthly_balance'] = number_format($principle + $interest - $loan_repayment, 2);
+        //     $loan['repayment'] = number_format($principle + $interest, 2); // plus 
+        //     $pending_loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'pending')->sum('amount');
+        //     $loan['pending_loan_repayment'] = $pending_loan_repayment;
+        // }
         return view('sales.repay')->with(['customer' => $customer, 'loan' => $loan]);
     }
 
@@ -598,26 +669,23 @@ class SalesController extends Controller
         $loan_no = $request->loan_no;
         $amount = $request->amount;
 
-        Log::warning($request);
-
-        $loan = Loan::where('id', $loan_no)->first();
+        $loan = LoansModel::where('id', $loan_no)->first();
 
         if ($loan != null) {
-            $repayment = LoanRepayment::create([
-                'no' => $loan->no,
+            $repayment = LoanRepaymentModel::create([
                 'loan_number' => $loan->id,
-                'name' => $loan->name,
+                'name' => $loan->customer,
                 'amount' => $request->amount,
                 'handler' => auth()->user()->name,
                 'branch' => auth()->user()->branch,
-                'description' => 'Loan repayment of ' . $request->amount . ' for ' . $loan->name,
+                'description' => 'Loan repayment of ' . $request->amount . ' for ' . $loan->customer,
                 'status' => 'pending',
                 'posted' => false,
                 'document_number' => rand(1000000, 9999999)
             ]);
 
             $msg = "Thanks for your patronage we rec'vd " . number_format($request->amount, 0) . " as loan repayment. for inquires call 09021417778";
-            $customer = Customer::where('customer_id', $loan->customer_id)->first();
+            $customer = Customer::where('id', $loan->customer_id)->first();
             sendSMS($customer->phone, $msg);
         }
 
@@ -657,19 +725,21 @@ class SalesController extends Controller
     {
 
         if (auth()->user()->sales_executive == true) {
-            if ($request->status == null || $request->status == 'all') {
-                $loans = Loan::where('handler', auth()->user()->name)->get();
-            } else {
-                $loans = Loan::where('handler', auth()->user()->name)->where('status', $request->status)->get();
-            }
+            // if ($request->status == null || $request->status == 'all') {
+            //     $loans = Loan::where('handler', auth()->user()->name)->get();
+            // } else {
+            //     $loans = Loan::where('handler', auth()->user()->name)->where('status', $request->status)->get();
+            // }
 
-            foreach ($loans as $loan) {
-                $repayed = $loan->paid + LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
-                $total_exp_repayment = $loan->amount + (($loan->amount * (5.5 / 100)) * $loan->duration);
+            // foreach ($loans as $loan) {
+            //     $repayed = $loan->paid + LoanRepayment::where('loan_number', $loan->id)->where('status', 'confirmed')->sum('amount');
+            //     $total_exp_repayment = $loan->amount + (($loan->amount * (5.5 / 100)) * $loan->duration);
 
-                $balance = $total_exp_repayment - $repayed;
-                $loan['balance'] = $balance;
-            }
+            //     $balance = $total_exp_repayment - $repayed;
+            //     $loan['balance'] = $balance;
+            // }
+
+            $loans = LoansModel::where('handler', auth()->user()->name)->where('loan_status', $request->status)->get();
 
             return view('sales.loans')->with(['loans' => $loans, 'status' => $request->status]);
         } else {

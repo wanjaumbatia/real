@@ -9,81 +9,29 @@
                     Loans
                 </div>
                 <div class="card-body">
-                    <form method="get" action="/loans">
-                        <div class="row w-100">
-                            <div class="col-9">
-                                <select class="form-control w-100" name="status">
-                                    <option value="all">All</option>
-                                    <option value="pending">Pending</option>
-                                    <option value="processing">Processing</option>
-                                    <option value="approved">Approved</option>
-                                    <option value="running">Running</option>
-                                    <option value="bad_loan">Bad Loan</option>
-                                    <option value="rejected">Rejected</option>
-                                </select>
-                            </div>
-                            <div class="col-3">
-                                <button class="btn btn-primary w-100">
-                                    Search
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                    <hr />
+                   
                     <table id='table' class="table table-striped mt-2">
                         <thead>
                             <tr>
                                 <th>Customer</th>
-                                <th>Appliaction Date</th>
+                                <th>Start date</th>
+                                <th>Exit date</th>
                                 <th>Amount</th>
-                                <th>Interest</th>
-                                <th>Duration</th>
-                                @if($status=='running')
                                 <th>Paid Amount</th>
-                                @endif
-                                @if($status=='running')
                                 <th>Balance</th>
-                                @endif
-                                <th>Status</th>
-                                @if($status=='running')
-                                <th>Open</th>
-                                @endif
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($loans as $item)
                             <tr>
-                                <td>{{$item->name}}</td>
-                                <td>{{$item->application_date}}</td>
-                                <td>{{number_format($item->amount, 2)}}</td>
-                                <td>{{$item->interest_percentage}} %</td>
-                                <td>{{$item->duration}} Months</td>
-                                @if($status=='running')
-                                <td>{{number_format($item->paid, 2)}}</td>
-                                @endif
-                                @if($status=='running')
-                                <td>{{number_format($item->balance, 2)}}</td>
-                                @endif
-                                <td>
-                                    @if($item->status=='running')
-                                    <span class="btn btn-success p-1">Running</span>
-                                    @endif
-                                    @if($item->status=='pending')
-                                    <span class="btn btn-info p-1 text-white">Pending</span>
-                                    @endif
-                                    @if($item->status=='processing')
-                                    <span class="btn btn-warning p-1">Processing</span>
-                                    @endif
-                                    @if($item->status=='processing')
-                                    <span class="btn btn-default p-1">Approved</span>
-                                    @endif
-                                    @if($item->status=='bad_loan')
-                                    <span class="btn btn-danger p-1">Bad Loan</span>
-                                    @endif
-                                </td>
-                                @if($status=='running')
-                                <td><a href="/loan_status/{{$item->id}}" class="btn btn-primary">Open</a></td>
-                                @endif
+                                <td>{{$item->customer}}</td>
+                                <td>{{date('d-m-Y', strtotime($item->start_date))}}</td>
+                                <td>{{date('d-m-Y', strtotime($item->exit_date))}}</td>
+                                <td>{{number_format($item->loan_amount,0)}}</td>
+                                <td>{{number_format($item->total_amount_paid, 0)}}</td>
+                                <td>{{number_format($item->total_balance, 0)}}</td>   
+                                <td><a href="/loan_status/{{$item->id}}" class="btn btn-sm btn-primary">open</a></td>                             
                             </tr>
                             @endforeach
                         </tbody>

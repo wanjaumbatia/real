@@ -136,7 +136,7 @@
                                                 <td>{{number_format($item->pending, 2)}}</td>
                                                 <td>{{$item->created_at}}</td>
                                                 <td>
-                                                    <!-- <form action="/change_plan" method="post">
+                                                    <form action="/change_plan" method="post">
                                                         @csrf
                                                         <input type="number" name="id" value="{{$item->id}}" hidden>
                                                         <div class="row">
@@ -150,8 +150,8 @@
                                                             </div>
                                                             <div class="col-4"><button class="btn btn-primary w-100">Edit</button></div>
                                                         </div>
-                                                    </form> -->
-                                                    <form action="/post_withdrawal" method="POST">
+                                                    </form>
+                                                    <!-- <form action="/post_withdrawal" method="POST">
                                                         @csrf
                                                         <input type="number" name="id" value="{{$item->id}}" hidden>
                                                         <div class="row">
@@ -170,7 +170,7 @@
                                                             </div>
                                                             <div class="col-4"><button class="btn btn-primary w-100" type="submit">Post</button></div>
                                                         </div>
-                                                    </form>
+                                                    </form> -->
                                                 </td>
                                                 <td><a href="/delete_saving_account/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
                                             </tr>

@@ -79,16 +79,16 @@
                             <form>
                                 <div class="form-group">
                                     <label for="">Amount</label>
-                                    <input type="text" class="form-control" value=" {{number_format($result['loan']->amount, 2)}}" disabled />
+                                    <input type="text" class="form-control" value=" {{number_format($result['loan']->total_balance, 2)}}" disabled />
                                 </div>
-                                @if($result['loan']->status=='pending')
+                                @if($result['loan']->loan_status=='pending')
                                 <div class="form-group">
                                     <label for="">Status</label>
                                     <input type="text" class="form-control" value="Pending" disabled />
                                 </div>
                                 @endif
 
-                                @if($result['loan']->status=='running')
+                                @if($result['loan']->loan_status=='ACTIVE')
                                 <a href="/repay/{{$customer->id}}" class="btn btn-primary btn-sm mt-2 w-100">Repay</a>
                                 @endif
                             </form>

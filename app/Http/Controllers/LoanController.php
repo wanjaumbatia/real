@@ -2,13 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\LoansModelImport;
 use App\Models\Customer;
 use App\Models\Loan;
 use App\Models\LoanDeduction;
 use App\Models\LoanForm;
+use App\Models\LoanLedgerEntries;
+use App\Models\LoanRepayment;
+use App\Models\LoanRepaymentModel;
+use App\Models\LoansModel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LoanController extends Controller
 {
@@ -60,6 +67,49 @@ class LoanController extends Controller
 
         return view('loans.index')->with(['loans' => $data, 'status' => $request->status]);
     }
+
+    public function charge_interest(Request $request)
+    {
+        //get loan
+        $loans = LoansModel::where('loan_status', 'active')->get();
+        foreach ($loans as $loan) {
+            $customer = Customer::where('id', $loan->customer_id)->first();
+            //check if its charge date
+            if (Carbon::now()->startOfDay()->gte($loan->next_charge_date) || $loan->next_charge_date == null) {
+                $interest = $loan->loan_amount * $loan->percentage / 100;
+                LoanLedgerEntries::create([
+                    'loan_model_id' => $loan->id,
+                    'customer_id' => $customer->id,
+                    'customer' => $customer->name,
+                    'handler' => $customer->handler,
+                    'branch' => $customer->branch,
+                    'remarks' => 'Interest Charge',
+                    'debit' => $interest,
+                    'credit' => 0,
+                    'amount' => $interest
+                ]);
+
+                $dt = LoansModel::where('id', $loan->id)->update([
+                    'total_interest' => $loan->total_interest + $interest,
+                    'total_balance' => $loan->total_balance + $interest,
+                    'next_charge_date' => Carbon::now()->addMonth()
+                ]);
+            }
+        }
+
+        $loan = LoansModel::where('id', '858')->first();
+        $statement = LoanLedgerEntries::where('loan_model_id', $loan->id)->get();
+        return view('sales.loan_card')->with([
+            'customer' => $customer, 'loan' => $loan, 'statement' => $statement
+        ]);
+    }
+
+    public function loan_repayment(Request $request){
+        //go to loan repayment table and pick confirmed but not posted loans
+        $repayment = LoanRepaymentModel::where('status', 'confirmed')->where('posted', false)->get();
+        dd($repayment);
+    }
+
 
     public function request(Request $request)
     {
@@ -146,5 +196,11 @@ class LoanController extends Controller
         ]);
 
         return redirect()->to('/home');
+    }
+
+    public function ImportLoans(Request $request)
+    {
+        Excel::import(new LoansModelImport, $request->file);
+        return "done";
     }
 }

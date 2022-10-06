@@ -11,10 +11,10 @@
                             <p class="font-weight-bold">{{ $customer->name }} </p>
                         </div>
                         <div class="col-12">
-                            Monthy Balance : {{$loan->monthly_balance}}
+                            Monthy Balance : {{number_format(($loan->total_monthly_payment - $loan->total_monthly_paid), 0)}}
                         </div>
                         <div class="col-12">
-                            Total Balance : {{$loan->balance}}
+                            Total Balance : {{number_format($loan->total_balance, 0)}}
                         </div>
                     </div>
                 </div>

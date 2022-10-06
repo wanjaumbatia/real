@@ -10,6 +10,7 @@ use App\Models\CommissionLines;
 use App\Models\Customer;
 use App\Models\Loan;
 use App\Models\LoanRepayment;
+use App\Models\LoanRepaymentModel;
 use App\Models\NewBalances;
 use App\Models\Payments;
 use App\Models\Plans;
@@ -157,9 +158,10 @@ class OfficeController extends Controller
     public function delete_payment($id)
     {
         $payment = Payments::where('id', $id)->first();
-        // if($payment->transaction_type == 'withdrawal'){
-        //     $charge = Payments::where('id', $id)->first();
-        // }
+        if ($payment->transaction_type == 'withdrawal') {
+            $charge = Payments::where('created_at', $payment->created_at)->where('batch_number', $payment->batch_number)->where('transaction_type', 'charge')->first();
+            $charge->delete();
+        }
         $customer = Customer::where('id', $payment->customer_id)->first();
         $payment->delete();
         $url = '/sep_customer/' . $customer->id;
@@ -288,7 +290,8 @@ class OfficeController extends Controller
             IFNULL((select sum(credit) from payments where status = 'pending' and transaction_type='withdrawal' and created_by=u.name),0) as withdrawals,
             IFNULL((select sum(credit) from payments where status = 'pending' and transaction_type='withdrawal' and remarks='POF' and created_by=u.name),0) as unconfirmed_pof,
             IFNULL((select sum(credit) from payments where status = 'confirmed' and reconciled='0' and transaction_type='withdrawal' and remarks='POF' and created_by=u.name),0) as pof,
-            IFNULL((select sum(amount) from loan_repayments where status = 'pending' and handler=u.name), 0) as loan_collection
+            IFNULL((select sum(amount) from loan_repayments where status = 'pending' and handler=u.name), 0) as loan_collection,
+            select sum(amount) from loan_repayment_models where status = 'pending' and handler=u.name), 0) as loan_collection2
             from users u where sales_executive='1' and branch='" . auth()->user()->branch . "' order by savings desc;");
 
             $total_expected = 0;
@@ -322,7 +325,9 @@ class OfficeController extends Controller
         $amount = $request->amount;
         $whole = 0;
         $total_loans = LoanRepayment::where('handler', $handler)->where('status', 'pending')->sum('amount');
+        $total_loans2 = LoanRepayment::where('handler', $handler)->where('status', 'pending')->sum('amount');
         $loans = LoanRepayment::where('handler', $handler)->where('status', 'pending')->get();
+        $loans2 = LoanRepaymentModel::where('handler', $handler)->where('status', 'pending')->get();
 
         $pof = Payments::where("remarks", "POF")->where('reconciled', false)->where("status", "confirmed")->where('transaction_type', 'withdrawal')->where('created_by', $handler)->sum("credit");
         $transactions = Payments::where('created_by', $handler)->where('transaction_type', 'savings')->where('status', 'pending')->get();
@@ -370,6 +375,15 @@ class OfficeController extends Controller
 
             foreach ($loans as $item) {
                 $tt = LoanRepayment::where('id', $item->id)->update([
+                    'status' => 'confirmed',
+                    'reconciliation_reference' => $reference,
+                    'reconciled_by' => auth()->user()->name,
+                    'admin_reconciled' => true
+                ]);
+            }
+
+            foreach ($loans2 as $item) {
+                $tt = LoanRepaymentModel::where('id', $item->id)->update([
                     'status' => 'confirmed',
                     'reconciliation_reference' => $reference,
                     'reconciled_by' => auth()->user()->name,
@@ -449,6 +463,15 @@ class OfficeController extends Controller
             }
 
             foreach ($loans as $item) {
+                $tt = LoanRepayment::where('id', $item->id)->update([
+                    'status' => 'confirmed',
+                    'reconciliation_reference' => $reference,
+                    'reconciled_by' => auth()->user()->name,
+                    'admin_reconciled' => true
+                ]);
+            }
+
+            foreach ($loans2 as $item) {
                 $tt = LoanRepayment::where('id', $item->id)->update([
                     'status' => 'confirmed',
                     'reconciliation_reference' => $reference,

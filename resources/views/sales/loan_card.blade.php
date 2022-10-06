@@ -25,7 +25,7 @@
                             </div>
                         </div>
 
-                        <div class="row mt-1">
+                        <div class="row">
                             <div class="col-md-6 col-sm-12">
                                 <div class="form-group">
                                     <label for="">Address</label>
@@ -40,22 +40,22 @@
                             </div>
                         </div>
 
-                        <div class="row mt-3">
+                        <div class="row">
                             <div class="col-md-6 col-sm-12">
                                 <div class="form-group">
                                     <label for="">Loan Amount</label>
-                                    <input type="text" class="form-control" value="{{number_format($loan->amount, 0)}}" disabled>
+                                    <input type="text" class="form-control" value="{{number_format($loan->loan_amount, 0)}}" disabled>
                                 </div>
                             </div>
                             <div class="col-md-6 col-sm-12">
                                 <div class="form-group">
                                     <label for="">Interest</label>
-                                    <input type="text" class="form-control" value="{{$loan->interest_percentage}}" disabled>
+                                    <input type="text" class="form-control" value="{{$loan->percentage}}" disabled>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row mt-1">
+                        <div class="row">
                             <div class="col-md-6 col-sm-12">
                                 <div class="form-group">
                                     <label for="">Duration</label>
@@ -65,96 +65,90 @@
                             <div class="col-md-6 col-sm-12">
                                 <div class="form-group">
                                     <label for="">Balance</label>
-                                    <input type="text" class="form-control" value="{{number_format($balance, 2)}}" disabled>
+                                    <input type="text" class="form-control" value="{{number_format($loan->total_balance, 2)}}" disabled>
                                 </div>
                             </div>
                         </div>
                     </form>
 
-                    <div class="card mt-3">
-                        <div class="card-header">Repayment Details</div>
-                        <div class="progress mx-3 mt-2">
-                            <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: <?php echo $progress ?>%" aria-valuenow="{{$progress}}" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <div class="card-body">
-                            <form>
-                               
-                                <div class="row">
-                                    <div class="col-md-3 col-sm-6">
-                                        <div class="form-group">
-                                            <label for="">Expected Total Capital</label>
-                                            <input type="text" class="form-control" value="{{number_format($loan->amount, 2)}}" disabled />
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 col-sm-6">
-                                        <label for="">Total Paid Capital</label>
-                                        <input type="text" class="form-control" value="{{number_format($total_cap, 2)}}" disabled />
-                                    </div>
-                                      <div class="col-md-3 col-sm-6">
-                                        <div class="form-group">
-                                            <label for="">Expected Total Interest</label>
-                                            <input type="text" class="form-control" value="{{number_format($loan->amount, 2)}}" disabled />
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 col-sm-6">
-                                        <label for="">Total Paid Interest</label>
-                                        <input type="text" class="form-control" value="{{number_format($total_int, 2)}}" disabled />
-                                    </div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="col-md-3 col-sm-6">
-                                        <div class="form-group">
-                                            <label for="">Expected Monthly Capital Repayment</label>
-                                            <input type="text" class="form-control" value="{{number_format(($loan->amount)/$loan->duration, 2)}}" disabled />
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 col-sm-6">
-                                        <div class="form-group">
-                                            <label for="">Paid Monthly Capital Repayment</label>
-                                            <input type="text" class="form-control" value="{{number_format($mon_cap, 2)}}" disabled />
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 col-sm-6">
-                                        <label for="">Expected Monthly Interest Payment</label>
-                                        <input type="text" class="form-control" value="{{number_format($loan->amount*(5.5/100), 2)}}" disabled />
-                                    </div>
-                                    <div class="col-md-3 col-sm-6">
-                                        <label for="">Paid Monthly Interest Payment</label>
-                                        <input type="text" class="form-control" value="{{number_format($mon_interest, 2)}}" disabled />
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div class="card mt-3">
-                        <div class="card-header">Repayment Statement</div>
-                        <div class="card-body">
-                            <table id="table" class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Description</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($payments as $item)
-                                    <tr>
-                                        <td>{{$item->created_at}}</td>
-                                        <td>{{$item->description}}</td>
-                                        <td>{{$item->amount}}</td>
-                                        <td>{{$item->status}}</td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
                 </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-header">Repayment Details</div>
+                <div class="card-body">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-group">
+                                    <label for="">Expected Total Capital</label>
+                                    <input type="text" class="form-control" value="{{number_format($loan->loan_amount, 2)}}" disabled />
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <label for="">Total Paid Capital</label>
+                                <input type="text" class="form-control" value="{{number_format(($loan->total_amount_paid - $loan->total_interest_paid), 2)}}" disabled />
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-group">
+                                    <label for="">Expected Total Interest</label>
+                                    <input type="text" class="form-control" value="{{number_format($loan->total_interest, 2)}}" disabled />
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <label for="">Total Paid Interest</label>
+                                <input type="text" class="form-control" value="{{number_format($loan->total_interest_paid, 2)}}" disabled />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-group">
+                                    <label for="">Expected Monthly Capital Repayment</label>
+                                    <input type="text" class="form-control" value="{{number_format($loan->monthly_principle, 2)}}" disabled />
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="form-group">
+                                    <label for="">Paid Monthly Capital Repayment</label>
+                                    <input type="text" class="form-control" value="{{number_format($loan->monthly_principle_paid, 2)}}" disabled />
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <label for="">Expected Monthly Interest Payment</label>
+                                <input type="text" class="form-control" value="{{number_format($loan->monthly_interest, 2)}}" disabled />
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <label for="">Paid Monthly Interest Payment</label>
+                                <input type="text" class="form-control" value="{{number_format($loan->monthly_interest_paid, 2)}}" disabled />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
+            <div class="card mt-3">
+                <div class="card-header">Loan Statement</div>
+                <div class="card-body">
+                    <table id="table" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Remarks</th>
+                                <th>Debit</th>
+                                <th>Credit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($statement as $item)
+                            <tr>
+                                <td>{{date('d-m-Y', strtotime($item->created_at))}}</td>
+                                <td>{{$item->remarks}}</td>
+                                <td>{{$item->debit}}</td>
+                                <td>{{$item->credit}}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
