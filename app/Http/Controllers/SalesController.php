@@ -23,6 +23,13 @@ use Illuminate\Support\Facades\Log;
 
 class SalesController extends Controller
 {
+
+    public function __construct()
+    {
+        ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', '12000');
+        ini_set('request_terminate_time', '12000');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -68,13 +75,14 @@ class SalesController extends Controller
         return view('sales.new_customer')->with(['banks' => $banks]);
     }
 
-    public function save_customer(Request $request){
+    public function save_customer(Request $request)
+    {
         //$phone_check = Customer::where('phone', $request->phone)->get();
 
         // if (count($phone_check) > 0) {
         //     return back()->withErrors(['Phone number is already registed.']);
         // }
-    
+
         $customer = Customer::create([
             'name' => $request->name,
             'address' => $request->address,
@@ -89,8 +97,8 @@ class SalesController extends Controller
             'business' => $request->business,
             'created_by' => $request->user()->name,
         ]);
-    
-        if ($request->bank!=null) {
+
+        if ($request->bank != null) {
             BankAccounts::create([
                 'bank_name' => $request->bank,
                 'bank_account' => $request->account,
@@ -99,35 +107,35 @@ class SalesController extends Controller
                 'customer_id' => $customer->id
             ]);
         }
-    
+
         $customer = Customer::where('id', $customer->id)->first();
-    
-        // //create default account
-        // $plans = Plans::where('default', true)->where('active', true)->get();
-    
-        // foreach ($plans as $plan) {
-        //     //create savings account
-        //     $account = SavingsAccount::create([
-        //         'customer_id' => $customer->id,
-        //         'customer_number' => $customer->no,
-        //         'plans_id' => $plan->id,
-        //         'name' => 'Regular',
-        //         'pledge' => 0,
-        //         'created_by' => auth()->user()->name,
-        //         'active' => true,
-        //         'branch' => auth()->user()->branch,
-        //         'handler' => auth()->user()->name,
-        //         'customer' => $customer->name,
-        //         'plan' => $plan->name
-        //     ]);
-        // }
-    
+
+        //create default account
+        $plans = Plans::where('default', true)->where('active', true)->get();
+
+        foreach ($plans as $plan) {
+            //create savings account
+            $account = SavingsAccount::create([
+                'customer_id' => $customer->id,
+                'customer_number' => $customer->no,
+                'plans_id' => $plan->id,
+                'name' => 'Regular',
+                'pledge' => 0,
+                'created_by' => auth()->user()->name,
+                'active' => true,
+                'branch' => auth()->user()->branch,
+                'handler' => auth()->user()->name,
+                'customer' => $customer->name,
+                'plan' => $plan->name
+            ]);
+        }
+
         //send sms
         $phone = $customer->phone;
         $msg = "Dear " . $customer->name . ". Your registration to Reliance Economic Advancement LTD has been approved. Your unique customer number is " . $customer->no . ".";
         $res = sendSMS($phone, $msg);
-    
-        return redirect()->to('/customer/'.$customer->id);
+
+        return redirect()->to('/customer/' . $customer->id);
     }
 
     public function loan_card($id)
