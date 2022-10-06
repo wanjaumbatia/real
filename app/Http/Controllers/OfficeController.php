@@ -292,8 +292,7 @@ class OfficeController extends Controller
             IFNULL((select sum(credit) from payments where status = 'pending' and transaction_type='withdrawal' and created_by=u.name),0) as withdrawals,
             IFNULL((select sum(credit) from payments where status = 'pending' and transaction_type='withdrawal' and remarks='POF' and created_by=u.name),0) as unconfirmed_pof,
             IFNULL((select sum(credit) from payments where status = 'confirmed' and reconciled='0' and transaction_type='withdrawal' and remarks='POF' and created_by=u.name),0) as pof,
-            IFNULL((select sum(amount) from loan_repayments where status = 'pending' and handler=u.name), 0) as loan_collection,
-            select sum(amount) from loan_repayment_models where status = 'pending' and handler=u.name), 0) as loan_collection2
+            IFNULL((select sum(amount) from loan_repayments where status = 'pending' and handler=u.name), 0) as loan_collection
             from users u where sales_executive='1' and branch='" . auth()->user()->branch . "' order by savings desc;");
 
             $total_expected = 0;

@@ -68,7 +68,6 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/new_customer">{{ __('New Customer') }}</a>
                         </li>
-
                         
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -78,6 +77,7 @@
                                 <a class="dropdown-item" href="/loans?status=pending">Pending</a>
                                 <a class="dropdown-item" href="/loans?status=processing">Processing</a>
                                 <a class="dropdown-item" href="/loans?status=active">Active</a>
+                                <a class="dropdown-item" href="/loans?status=expired">Active</a>
                                 <a class="dropdown-item" href="/loans?status=bad">Bad/Doubtful</a>
                             </div>
                         </li>

@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
 use Faker\Provider\ar_EG\Payment;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;;
 
 
@@ -566,6 +567,20 @@ Route::middleware('auth:sanctum')->get("/accounts/{id}", function ($id) {
 Route::middleware('auth:sanctum')->get("/loans/{id}", function ($id) {
     $loan = Loan::where('customer_id', $id)->where('status', 'pending')->get();
     return response($loan);
+});
+
+Route::get('/delete_double', function (Request $request){
+    $accounts = SavingsAccount::get();
+
+    foreach ($accounts as $acc) {
+        $payments = Payments::where('savings_account_id', $acc->id)->get();
+        if($payments!=null){
+            
+        }
+        return response($payments);
+    }
+
+   // return response("Test");
 });
 
 Route::middleware('auth:sanctum')->get("/account/{id}", function ($id) {
