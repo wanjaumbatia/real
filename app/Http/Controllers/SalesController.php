@@ -69,12 +69,11 @@ class SalesController extends Controller
     }
 
     public function save_customer(Request $request){
-        $phone_check = Customer::where('phone', $request->phone)->get();
+        //$phone_check = Customer::where('phone', $request->phone)->get();
 
-        if (count($phone_check) > 0) {
-            return back()->withErrors(['Phone number is already registed.']);
-        }
-    
+        // if (count($phone_check) > 0) {
+        //     return back()->withErrors(['Phone number is already registed.']);
+        // }
     
         $customer = Customer::create([
             'name' => $request->name,

@@ -159,5 +159,5 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/import_loans_new', [LoanController::class, 'ImportLoans'])->name('import_loans_new');
     Route::get('/new_customer', [SalesController::class, 'new_customer'])->name('new_customer');
-    Route::post('/new_customer', [SalesController::class, 'save_customer'])->name('save_customer');
+    Route::post('/save_customer', [SalesController::class, 'save_customer'])->name('save_customer');
 });

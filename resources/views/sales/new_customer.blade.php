@@ -12,7 +12,7 @@
                 </div>
 
                 <div class="card-body">
-                    <form action="/new_customer" method="POST">
+                    <form action="/save_customer" method="POST">
                         @csrf
                         <div class="form-group">
                             <label for="">Customer Name</label>
@@ -33,13 +33,6 @@
                         <div class="form-group">
                             <label for="">Address</label>
                             <input type="text" class="form-control" name="address" />
-                        </div>
-                        <div class="form-group">
-                            <label for="">Gender</label>
-                            <select name="gender" id="gender" class="form-control">
-                                <option value="Male">Male</option>
-                                <option value="Male">Female</option>
-                            </select>
                         </div>
 
                         <div class="form-group">
