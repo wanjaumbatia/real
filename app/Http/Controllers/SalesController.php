@@ -41,6 +41,77 @@ class SalesController extends Controller
         return view('sales.customers')->with(['customers' => $customers]);
     }
 
+    public function new_customer_api(Request $request)
+    {
+        //check dublicate number
+        $phone_check = Customer::where('phone', $request->phone)->get();
+
+        if (count($phone_check) > 0) {
+            return response([
+                'success' => false,
+                'message' => 'Phone number is already in use by another customer'
+            ]);
+        }
+
+
+        $customer = Customer::create([
+            'name' => $request->name,
+            'address' => $request->address,
+            'gender' => $request->gender,
+            'town' => $request->town,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'posted' => false,
+            'no' => get_customer_number(),
+            'handler' => $request->user()->name,
+            'branch' => $request->user()->branch,
+            'business' => $request->business,
+            'created_by' => $request->user()->name,
+        ]);
+
+        foreach ($request->bank_details as $bank) {
+            BankAccounts::create([
+                'bank_name' => $bank['name'],
+                'bank_account' => $bank['account_number'],
+                'bank_branch' => $bank['branch'],
+                'created_by' => $request->user()->name,
+                'customer_id' => $customer->id
+            ]);
+        }
+
+        $customer = Customer::where('id', $customer->id)->first();
+
+        //create default account
+        $plans = Plans::where('default', true)->where('active', true)->get();
+
+        foreach ($plans as $plan) {
+            //create savings account
+            $account = SavingsAccount::create([
+                'customer_id' => $customer->id,
+                'customer_number' => $customer->no,
+                'plans_id' => $plan->id,
+                'name' => 'Regular',
+                'pledge' => 0,
+                'created_by' => auth()->user()->name,
+                'active' => true,
+                'branch' => auth()->user()->branch,
+                'handler' => auth()->user()->name,
+                'customer' => $customer->name,
+                'plan' => $plan->name
+            ]);
+        }
+
+        //send sms
+        $phone = $customer->phone;
+        $msg = "Dear " . $customer->name . ". Your registration to Reliance Economic Advancement LTD has been approved. Your unique customer number is " . $customer->no . ".";
+        $res = sendSMS($phone, $msg);
+
+        return response([
+            'success' => true,
+            'data' => $customer
+        ]);
+    }
+
     public function new_customer()
     {
 
