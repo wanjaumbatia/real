@@ -113,7 +113,7 @@
                             </h2>
                             <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
-                                    <table class="table table-striped">
+                                    <table class="table table-striped table-responsive-sm">
                                         <thead>
                                             <tr>
                                                 <th>Plan</th>
@@ -122,7 +122,8 @@
                                                 <th>Balance</th>
                                                 <th>Pending</th>
                                                 <th>Date</th>
-                                                <th></th>
+                                                <th>Change Plan</th>
+                                                <th>Withdrawal</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -151,7 +152,9 @@
                                                             <div class="col-4"><button class="btn btn-primary w-100">Edit</button></div>
                                                         </div>
                                                     </form>
-                                                    <!-- <form action="/post_withdrawal" method="POST">
+                                                </td>
+                                                <td>
+                                                    <form action="/post_withdrawal" method="POST">
                                                         @csrf
                                                         <input type="number" name="id" value="{{$item->id}}" hidden>
                                                         <div class="row">
@@ -170,7 +173,7 @@
                                                             </div>
                                                             <div class="col-4"><button class="btn btn-primary w-100" type="submit">Post</button></div>
                                                         </div>
-                                                    </form> -->
+                                                    </form>
                                                 </td>
                                                 <td><a href="/delete_saving_account/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
                                             </tr>
