@@ -160,7 +160,9 @@ class OfficeController extends Controller
         $payment = Payments::where('id', $id)->first();
         if ($payment->transaction_type == 'withdrawal') {
             $charge = Payments::where('created_at', $payment->created_at)->where('batch_number', $payment->batch_number)->where('transaction_type', 'charge')->first();
-            $charge->delete();
+            if ($charge != null) {
+                $charge->delete();
+            }
         }
         $customer = Customer::where('id', $payment->customer_id)->first();
         $payment->delete();
