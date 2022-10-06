@@ -102,25 +102,25 @@ class SalesController extends Controller
     
         $customer = Customer::where('id', $customer->id)->first();
     
-        //create default account
-        $plans = Plans::where('default', true)->where('active', true)->get();
+        // //create default account
+        // $plans = Plans::where('default', true)->where('active', true)->get();
     
-        foreach ($plans as $plan) {
-            //create savings account
-            $account = SavingsAccount::create([
-                'customer_id' => $customer->id,
-                'customer_number' => $customer->no,
-                'plans_id' => $plan->id,
-                'name' => 'Regular',
-                'pledge' => 0,
-                'created_by' => auth()->user()->name,
-                'active' => true,
-                'branch' => auth()->user()->branch,
-                'handler' => auth()->user()->name,
-                'customer' => $customer->name,
-                'plan' => $plan->name
-            ]);
-        }
+        // foreach ($plans as $plan) {
+        //     //create savings account
+        //     $account = SavingsAccount::create([
+        //         'customer_id' => $customer->id,
+        //         'customer_number' => $customer->no,
+        //         'plans_id' => $plan->id,
+        //         'name' => 'Regular',
+        //         'pledge' => 0,
+        //         'created_by' => auth()->user()->name,
+        //         'active' => true,
+        //         'branch' => auth()->user()->branch,
+        //         'handler' => auth()->user()->name,
+        //         'customer' => $customer->name,
+        //         'plan' => $plan->name
+        //     ]);
+        // }
     
         //send sms
         $phone = $customer->phone;
