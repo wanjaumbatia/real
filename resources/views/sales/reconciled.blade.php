@@ -26,7 +26,7 @@
                                 <td>{{$item->submited}}</td>
                                 <td>{{$item->reconciliation_reference}}</td>
                                 <td>{{$item->reconciled_by}}</td>
-                                <td><a href="#" class="btn btn-primary btn-sm">Open</a></td>
+                                <td><a href="/reconciliation/{{$item->reconciliation_reference}}" class="btn btn-primary btn-sm">Open</a></td>
                             </tr>
                             @endforeach
                         </tbody>

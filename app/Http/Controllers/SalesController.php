@@ -250,6 +250,13 @@ class SalesController extends Controller
         return view('sales.reconciled')->with(['data' => $collections]);
     }
 
+    public function show_recon_data($reference)
+    {
+        $payment = Payments::get();
+
+        return view('sales.recon_statement')->with(['data'=>$payment]);
+    }
+
     public function collection($id)
     {
         $customer = Customer::where('id', $id)->first();
@@ -672,7 +679,7 @@ class SalesController extends Controller
         ]);
 
         $customer = Customer::where('id', $request->json('id'))->first();
-        
+
         $balance = get_total_balance($customer->id);
 
         $amount = $request->json('amount');
@@ -701,7 +708,7 @@ class SalesController extends Controller
             }
 
             $running_loan = LoansModel::where('customer_id', $customer->id)->where('loan_status', '!=', 'closed')->get();
-            
+
             if (count($running_loan) > 0) {
                 return response([
                     'success' => false,
@@ -722,7 +729,7 @@ class SalesController extends Controller
                 'purpose' => $request->purpose,
                 'remarks' => 'New Loan',
                 'disbursed' => false,
-                'disbursement_mode'=>''
+                'disbursement_mode' => ''
             ]);
 
             return response()->json([
@@ -860,9 +867,9 @@ class SalesController extends Controller
             'pledge' => 0,
             'plans_id' => $plan->id,
             'name' => $name,
-            'created_by' => "Admin",
+            'created_by' => auth()->user()->name,
             'active' => true,
-            'branch' => auth()->user()->name,
+            'branch' => auth()->user()->branch,
             'handler' => $customer->name,
             'customer' => $customer->name,
             'plan' => $plan->name

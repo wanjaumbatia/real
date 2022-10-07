@@ -157,6 +157,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/collection', [SalesController::class, 'show_collection'])->name('show_collection');
     Route::get('/reconciled', [SalesController::class, 'show_recon'])->name('show_recon');
+    Route::get('/reconciliation/{reference}', [SalesController::class, 'show_recon_data'])->name('show_recon_data');
     Route::get('/withdrawal_by_date/{date}', [SalesController::class, 'withdrawal_by_date'])->name('show_collection');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
