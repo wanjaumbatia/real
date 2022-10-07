@@ -238,6 +238,12 @@ class SalesController extends Controller
         ]);
     }
 
+    public function withdrawal_list(){
+        $payments = Payments::where('created_by', auth()->user()->name)->where('transaction_type','withdrawal')->get();
+        
+        return view('sales.withdrawal_list')->with(['data'=>$payments]);
+    }
+
     public function show_collection()
     {
         $collections = Payments::where('created_by', auth()->user()->name)->orderBy('created_at', 'DESC')->where('remarks', '!=', 'Opening Balance')->where('status', '!=', 'open')->get();

@@ -20,6 +20,8 @@ use App\Models\ShortageLine;
 use App\Models\Transactions;
 use App\Models\User;
 use App\Models\Withdrawal;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Faker\Provider\ar_EG\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -170,6 +172,11 @@ class OfficeController extends Controller
         $payment->delete();
         $url = '/sep_customer/' . $customer->id;
         return redirect()->to($url);
+    }
+
+    public function grouped_by_date()
+    {
+       
     }
 
     public function delete_loan_payment($id)

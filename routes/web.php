@@ -101,6 +101,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/withdrawal_list', [SalesController::class, 'withdrawal_list'])->name('sales.withdrawal_list');
     Route::get('/customers', [SalesController::class, 'customers'])->name('sales.customers');
     Route::get('/customer/{id}', [SalesController::class, 'customer'])->name('sales.customer');
     Route::get('/loan/{id}', [SalesController::class, 'loan'])->name('sales.loan');
