@@ -14,7 +14,7 @@
                 <div class="card-body">
 
                     <input value="{{$customer->id}}" hidden name="id" id="id" />
-                    <form id='collection-form' method="post">
+                    <form id='collection-form1' method="post">
                         @foreach ($accounts as $acc)
                         <div class="form-group">
                             <label for="">{{$acc->name}}</label>

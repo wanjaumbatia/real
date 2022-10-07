@@ -9,7 +9,7 @@
                     {{ __('Import Loans') }}
                 </div>
             </div>
-        </div>
+        </div>  
         <div class="card-body">
             <form method="post" action="/import_loans_new" enctype="multipart/form-data">
                 @csrf
