@@ -62,13 +62,9 @@
                         @endif
 
                         <li class="nav-item">
-                            <a class="nav-link" href="/collection">{{ __('Collections') }}</a>
-                        </li>
-
-                        <li class="nav-item">
                             <a class="nav-link" href="/new_customer">{{ __('New Customer') }}</a>
                         </li>
-                        
+
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Loans
@@ -80,6 +76,14 @@
                                 <a class="dropdown-item" href="/loans?status=expired">Expired</a>
                                 <a class="dropdown-item" href="/loans?status=bad">Bad/Doubtful</a>
                             </div>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/collection">{{ __('Collection') }}</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/reconciled">{{ __('Reconciled') }}</a>
                         </li>
                         @endguest
                     </ul>

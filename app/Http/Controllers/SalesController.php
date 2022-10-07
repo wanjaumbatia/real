@@ -14,6 +14,7 @@ use App\Models\OtpCode;
 use App\Models\PaymentLocation;
 use App\Models\Payments;
 use App\Models\Plans;
+use App\Models\ReconciliationRecord;
 use App\Models\SavingsAccount;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -240,8 +241,13 @@ class SalesController extends Controller
     public function show_collection()
     {
         $collections = Payments::where('created_by', auth()->user()->name)->orderBy('created_at', 'DESC')->where('remarks', '!=', 'Opening Balance')->where('status', '!=', 'open')->get();
-
         return view('sales.payments')->with(['data' => $collections]);
+    }
+
+    public function show_recon()
+    {
+        $collections = ReconciliationRecord::where('handler', auth()->user()->name)->orderBy('created_at', 'DESC')->get();
+        return view('sales.reconciled')->with(['data' => $collections]);
     }
 
     public function collection($id)
@@ -856,7 +862,7 @@ class SalesController extends Controller
             'name' => $name,
             'created_by' => "Admin",
             'active' => true,
-            'branch' => 'test',
+            'branch' => auth()->user()->name,
             'handler' => $customer->name,
             'customer' => $customer->name,
             'plan' => $plan->name
