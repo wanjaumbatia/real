@@ -17,7 +17,7 @@
                     </div>
                     @endif
 
-                    <table class="table table-stripped">
+                    <table id="table" class="table table-stripped">
                         <thead>
                             <tr>
                                 <th>Date</th>

@@ -244,6 +244,7 @@
                                                 <th>Transaction</th>
                                                 <th>Branch</th>
                                                 <th>Amount</th>
+                                                <th>Status</th>
                                                 <th>Date</th>
                                             </tr>
                                         </thead>
@@ -255,6 +256,13 @@
                                                 <td>{{$item->branch}}</td>
                                                 <td>{{number_format($item->credit, 2)}}</td>
                                                 <td>{{$item->created_at}}</td>
+                                                <th>
+                                                    @if($item->status=='confirmed')
+                                                    <p class="text-success">{{$item->status}}</p>
+                                                    @else
+                                                    <p class="text-danger">{{$item->status}}</p>
+                                                    @endif
+                                                </th>
                                                 <td><a href="/delete_payment/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
                                             </tr>
                                             @endforeach
