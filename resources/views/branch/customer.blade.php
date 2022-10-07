@@ -1,4 +1,4 @@
-@extends('layouts.sales')
+@extends('layouts.branch')
 
 @section('content')
 <div class="container">

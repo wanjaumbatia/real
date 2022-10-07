@@ -42,6 +42,12 @@ Route::middleware(['auth'])->name('admin.')->prefix('admin')->group(function () 
     Route::post('/branch_targets/store', [TargetsController::class, 'store'])->name('targets.store');
 });
 
+Route::middleware(['auth'])->name('branch')->prefix('branch')->group(function () {
+    Route::get('/clients', [BranchController::class, 'all_clients'])->name('all_clients');
+    Route::get('/customer/{id}', [BranchController::class, 'customer'])->name('customer');
+    Route::get('/sales_executives', [BranchController::class, 'sales_executives'])->name('sales_executives');
+});
+
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/ios/customers', [IosController::class, 'index'])->name('ios.customers');

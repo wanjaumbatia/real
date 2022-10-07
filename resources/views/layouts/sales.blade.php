@@ -77,7 +77,7 @@
                                 <a class="dropdown-item" href="/loans?status=pending">Pending</a>
                                 <a class="dropdown-item" href="/loans?status=processing">Processing</a>
                                 <a class="dropdown-item" href="/loans?status=active">Active</a>
-                                <a class="dropdown-item" href="/loans?status=expired">Active</a>
+                                <a class="dropdown-item" href="/loans?status=expired">Expired</a>
                                 <a class="dropdown-item" href="/loans?status=bad">Bad/Doubtful</a>
                             </div>
                         </li>

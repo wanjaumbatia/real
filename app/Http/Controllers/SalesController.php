@@ -15,6 +15,7 @@ use App\Models\PaymentLocation;
 use App\Models\Payments;
 use App\Models\Plans;
 use App\Models\SavingsAccount;
+use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Faker\Provider\ar_EG\Payment;
 use Illuminate\Http\Request;
@@ -665,7 +666,7 @@ class SalesController extends Controller
         ]);
 
         $customer = Customer::where('id', $request->json('id'))->first();
-
+        
         $balance = get_total_balance($customer->id);
 
         $amount = $request->json('amount');
@@ -677,7 +678,7 @@ class SalesController extends Controller
                 'message' => 'Customer does not have enough fund to apply for this loan.'
             ]);
         } else {
-            $pending_loan = Loan::where('no', $customer->no)->where('status', 'pending')->get();
+            $pending_loan = LoansModel::where('customer_id', $customer->id)->where('loan_status', 'pending')->get();
             if (count($pending_loan) > 0) {
                 return response([
                     'success' => false,
@@ -685,7 +686,7 @@ class SalesController extends Controller
                 ]);
             }
 
-            $open_loan = Loan::where('no', $customer->no)->where('status', 'open')->get();
+            $open_loan = LoansModel::where('customer_id', $customer->id)->where('loan_status', 'open')->get();
             if (count($open_loan) > 0) {
                 return response([
                     'success' => false,
@@ -693,27 +694,29 @@ class SalesController extends Controller
                 ]);
             }
 
-            $running_loan = Loan::where('no', $customer->no)->where('status', 'running')->get();
+            $running_loan = LoansModel::where('customer_id', $customer->id)->where('loan_status', '!=', 'closed')->get();
+            
             if (count($running_loan) > 0) {
                 return response([
                     'success' => false,
-                    'message' => 'This member has a running loan.'
+                    'message' => 'This member has another loan.'
                 ]);
             }
 
-            $loan = Loan::Create([
-                'no' => $customer->no,
-                'name' => $customer->name,
-                'application_date' => now(),
-                'amount' => $request->amount,
+            $loan = LoansModel::Create([
+                'application_date' => \Carbon\Carbon::now(),
+                'customer' => $customer->name,
                 'customer_id' => $customer->id,
-                'purpose' => $request->purpose,
-                'interest_percentage' => 5.5,
+                'handler' => $customer->handler,
+                'branch' => $customer->branch,
+                'loan_amount' => $request->amount,
+                'percentage' => 5.5,
                 'duration' => $request->duration,
-                'current_savings' => $balance,
-                'handler' => auth()->user()->name,
-                'status' => 'pending',
-                'posted' => false
+                'loan_status' => 'pending',
+                'purpose' => $request->purpose,
+                'remarks' => 'New Loan',
+                'disbursed' => false,
+                'disbursement_mode'=>''
             ]);
 
             return response()->json([

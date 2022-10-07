@@ -14,7 +14,7 @@
 
                 <div class="card-body">
                     <form id='loan-form' action="/loan/{{$customer->id}}" method="post">
-                        <input value="{{$customer->id}}" hidden name="id" id="id"  />
+                        <input value="{{$customer->id}}" hidden name="id" id="id" />
                         <div class="form-group">
                             <label for="">Amount</label>
                             <input type="number" class="form-control" name="amount" id="amount" required>
@@ -73,7 +73,7 @@
                 })
                 .then(results => results.json())
                 .then((data) => {
-                    if (data.success = true) {
+                    if (data.success == true) {
                         swal("Success!", data.message, "success", {
                             buttons: {
                                 catch: {
@@ -84,7 +84,7 @@
                         }).then((value) => {
                             switch (value) {
                                 case "ok":
-                                    window.location.replace("/customer/"+id);
+                                    window.location.replace("/customer/" + id);
                                     break;
                             }
                         });;

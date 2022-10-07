@@ -7,7 +7,9 @@ use App\Models\Customer;
 use App\Models\Loan;
 use App\Models\LoanDeduction;
 use App\Models\LoanForm;
+use App\Models\LoanRepayment;
 use App\Models\LoanSecurityType;
+use App\Models\LoansModel;
 use App\Models\NewBalances;
 use App\Models\Payments;
 use App\Models\Plans;
@@ -16,6 +18,7 @@ use App\Models\User;
 use Error;
 use Faker\Provider\ar_EG\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -29,50 +32,124 @@ class BranchController extends Controller
         ini_set('request_terminate_time', '12000');
     }
 
+    public function all_clients(Request $request)
+    {
+        //$customers = //->get();
+        $customers = Cache::remember('customers', 120, function () {
+            return Customer::where('branch', auth()->user()->branch)->paginate(20000); //->get('id', 'name', 'phone', 'address', 'hanlder');
+        });
+        return view('branch.all_clients')->with('customers', $customers);
+    }
+
+    public function sales_executives(Request $request)
+    {
+        if (auth()->user()->branch_manager == false) {
+            return abort(401);
+        } else {
+            $seps = User::where('sales_executive', true)->where('branch', auth()->user()->branch)->get();            
+            return view('branch.seps')->with(['seps' => $seps]);
+        }
+    }
+    public function customer($id)
+    {
+        if (auth()->user()->branch_manager == false) {
+            return abort(401);
+        } else {
+            //get customer details
+            $customer = Customer::where('handler', auth()->user()->name)->where('id', $id)->first();
+
+            //get customer accounts
+            $customer = Customer::where('id', $id)->first();
+            $plans = Plans::where('active', true)->get();
+            //get accounts
+            $accounts = SavingsAccount::where('customer_id', $customer->id)->orderBy('id', 'ASC')->where('active', true)->get();
+
+            $data = array();
+            $total_balance = 0;
+            foreach ($accounts as $acc) {
+                $confirmed_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'confirmed')->sum('amount') - Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'registration')->where('status', 'confirmed')->sum('amount');
+                $pending_transaction = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'savings')->where('status', 'pending')->sum('amount');
+                $pending_withdrawal = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'withdrawal')->where('status', 'pending')->sum('amount');
+                $pending_penalty = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'penalty')->where('status', 'pending')->sum('amount');
+                $plan = Plans::where('id', $acc->plans_id)->first();
+                $saving_accounts = array();
+                $saving_accounts['details'] = $acc;
+                $saving_accounts['plan'] = $plan;
+                $saving_accounts['confirmed'] = number_format($confirmed_transaction, 2);
+                $saving_accounts['pending_withdrawal'] = number_format(($pending_withdrawal + $pending_penalty) * -1, 2);
+                if ($acc->plan == "Regular") {
+                    $loan = Loan::where('customer_id', $customer->id)->first();
+                    if ($loan != null) {
+                        $pend_loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'pending')->sum('amount');
+                        $pending_transaction = $pending_transaction + $pend_loan_repayment;
+                    }
+                }
+                $saving_accounts['pending'] = number_format($pending_transaction, 2);
+                $data[] = $saving_accounts;
+                $total_balance = $total_balance + $confirmed_transaction;
+            }
+
+            $loan = LoansModel::where('customer_id', $customer->id)->first();
+
+
+            $result = array();
+            $result['customer'] = $customer;
+            $result['accounts'] = $data;
+            $result['plans'] = $plans;
+            $result['loan'] = $loan;
+            $result['total_balance'] = $total_balance;
+
+            $plans = Plans::all();
+
+            return view('branch.customer')->with(['customer' => $customer, 'result' => $result, 'plans' => $plans]);
+        }
+    }
+
     public function loans(Request $request)
     {
         if (auth()->user()->branch_manager == true) {
             $branch = auth()->user()->branch;
-            if ($request->status == null || $request->status == 'all') {
-                $data = DB::select("
-                select 
-                        loans.id, 
-                        loans.name, 
-                        loans.application_date,
-                        loans.customer_id,
-                        loans.amount, 
-                        loans.paid,
-                        loans.interest_percentage,
-                        loans.duration,
-                        loans.handler,
-                        loans.status,
-                        loans.remarks,
-                        users.branch,
-                        loans.current_savings
-                    from loans inner join users on  loans.handler = users.name where branch='" . $branch . "';
-                ");
-            } else {
-                $data = DB::select("
-                select 
-                        loans.id, 
-                        loans.name, 
-                        loans.application_date,
-                        loans.customer_id,
-                        loans.amount, 
-                        loans.paid,
-                        loans.interest_percentage,
-                        loans.duration,
-                        loans.handler,
-                        loans.status,
-                        loans.remarks,
-                        users.branch ,
-                        loans.current_savings
-                    from loans inner join users on  loans.handler = users.name where branch='" . $branch . "' and status = '" . $request->status . "';
-                ");
-            }
+            // if ($request->status == null || $request->status == 'all') {
+            //     $data = DB::select("
+            //     select 
+            //             loans.id, 
+            //             loans.name, 
+            //             loans.application_date,
+            //             loans.customer_id,
+            //             loans.amount, 
+            //             loans.paid,
+            //             loans.interest_percentage,
+            //             loans.duration,
+            //             loans.handler,
+            //             loans.status,
+            //             loans.remarks,
+            //             users.branch,
+            //             loans.current_savings
+            //         from loans inner join users on  loans.handler = users.name where branch='" . $branch . "';
+            //     ");
+            // } else {
+            //     $data = DB::select("
+            //     select 
+            //             loans.id, 
+            //             loans.name, 
+            //             loans.application_date,
+            //             loans.customer_id,
+            //             loans.amount, 
+            //             loans.paid,
+            //             loans.interest_percentage,
+            //             loans.duration,
+            //             loans.handler,
+            //             loans.status,
+            //             loans.remarks,
+            //             users.branch ,
+            //             loans.current_savings
+            //         from loans inner join users on  loans.handler = users.name where branch='" . $branch . "' and status = '" . $request->status . "';
+            //     ");
+            // }
 
+            $loans = LoansModel::where('branch', auth()->user()->branch)->where('loan_status', $request->status)->get();
 
-            return view('branch.loans')->with(['loans' => $data, 'status' => $request->status, 'branch' => $branch]);
+            return view('branch.loans')->with(['loans' => $loans, 'status' => $request->status, 'branch' => $branch]);
         } else {
             return abort(401);
         }
@@ -651,6 +728,6 @@ class BranchController extends Controller
             'status' => 'running',
         ]);
 
-        return redirect('/branch_loan/'.$loan->id);
+        return redirect('/branch_loan/' . $loan->id);
     }
 }
