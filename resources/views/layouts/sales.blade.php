@@ -85,6 +85,10 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/reconciled">{{ __('Reconciled') }}</a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/withdrawal_list">{{ __('Withdrawal List') }}</a>
+                        </li>
                         @endguest
                     </ul>
 
