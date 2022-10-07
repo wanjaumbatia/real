@@ -1433,9 +1433,9 @@ function sendSMS($phone, $message)
 {
     $url = 'http://pro.strongsmsportal.com/api/?username=neodream&password=Prayer12&message=' . $message . '&sender=Reliance&mobiles=234' . formatNumber($phone);
 
-    //$response =  Http::get($url)->json();
+    $response =  Http::get($url)->json();
 
-    return '$response';
+    return $response;
 }
 
 function formatNumber($phone)
