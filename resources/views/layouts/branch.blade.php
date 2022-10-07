@@ -87,6 +87,7 @@
                                 <a class="dropdown-item" href="/approved_branch_loans">{{ __('Approved Loans') }}</a>
                             </div>
                         </li>
+                        
                         @endguest
                     </ul>
 

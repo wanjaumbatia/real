@@ -46,6 +46,8 @@ Route::middleware(['auth'])->name('branch')->prefix('branch')->group(function ()
     Route::get('/clients', [BranchController::class, 'all_clients'])->name('all_clients');
     Route::get('/customer/{id}', [BranchController::class, 'customer'])->name('customer');
     Route::get('/sales_executives', [BranchController::class, 'sales_executives'])->name('sales_executives');
+
+    Route::get('/sep_ollection', [BranchController::class, 'sep_ollection'])->name('sep_ollection');
 });
 
 
