@@ -919,7 +919,8 @@ Route::middleware('auth:sanctum')->post("/pay", function (Request $request) {
     $balance = get_total_balance($customer_id);
 
     //$msg = "Dear " . $cust->name . ". Your payment of NGN " . number_format($total, 0) . " has been received. Thank you for saving with us.";
-    $msg = "Thanks for your patronage we rec'vd " . number_format($total, 0) . " your bal is " . number_format($balance, 0) . " for inquires call 09021417778";
+    //$msg = "Thanks for your patronage we rec'vd " . number_format($total, 0) . " your bal is " . number_format($balance, 0) . " for inquires call 09021417778";
+    $msg = "Thanks for your patronage we rec'vd " . number_format($total, 0) . ". for inquires call 09021417778";
     $res = sendSMS($phone, $msg);
 
     $location = PaymentLocation::create([
