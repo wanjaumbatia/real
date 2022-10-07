@@ -69,7 +69,7 @@ class OfficeController extends Controller
         $data = DB::select("select created_by as handler, sum(debit) as amount from payments where branch = '" . $branch . "' and remarks!='Opening Balance' and status='confirmed' group by created_by;");
 
         //get date
-        $recon = ReconciliationRecord::all();
+        $recon = ReconciliationRecord::where('branch', $branch)->get();
         return view('office.recon_statement')->with(['data' => $data, 'recon' => $recon]);
     }
 
