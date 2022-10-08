@@ -23,7 +23,7 @@
                                     <td>{{$item->created_at}}</td>
                                     <td>{{$item->customer_name}}</td>
                                     <td>{{$item->plan}}</td>
-                                    <td>{{$item->credit}}</td>
+                                    <td>{{$item->amount}}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
