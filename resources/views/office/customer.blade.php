@@ -113,73 +113,89 @@
                             </h2>
                             <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
-                                    <table class="table table-striped table-responsive-sm">
-                                        <thead>
-                                            <tr>
-                                                <th>Plan</th>
-                                                <th>Created</th>
-                                                <th>Branch</th>
-                                                <th>Balance</th>
-                                                <th>Pending</th>
-                                                <th>Date</th>
-                                                <th>Change Plan</th>
-                                                <th>Withdrawal</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($accounts as $item)
-                                            <tr>
-                                                <td>{{$item->plan}}</td>
-                                                <td>{{$item->created_by}}</td>
-                                                <td>{{$item->branch}}</td>
-                                                <td>{{number_format($item->balance, 2)}}</td>
-                                                <td>{{number_format($item->pending, 2)}}</td>
-                                                <td>{{$item->created_at}}</td>
-                                                <td>
-                                                    <form action="/change_plan" method="post">
-                                                        @csrf
-                                                        <input type="number" name="id" value="{{$item->id}}" hidden>
-                                                        <div class="row">
-                                                            <div class="col-8">
-                                                                <select name="plan" id="plan" class="form-control">
-                                                                    @foreach($plans as $plan)
-                                                                    <option></option>
-                                                                    <option value="{{$plan->id}}">{{$plan->name}}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-4"><button class="btn btn-primary w-100">Edit</button></div>
-                                                        </div>
-                                                    </form>
-                                                </td>
-                                                <td>
-                                                    <form action="/post_withdrawal" method="POST">
-                                                        @csrf
-                                                        <input type="number" name="id" value="{{$item->id}}" hidden>
-                                                        <div class="row">
-                                                            <div class="col-8">
-                                                                <input type="text" name="id" value="{{$item->id}}" hidden>
-                                                                <input value="{{$customer->id}}" hidden name="dt" id="dt" />
-                                                                <div class="col-6">
-                                                                    <input class="form-input" name='amount' type="number" placeholder="Amount" />
-                                                                </div>
-                                                                <div class="col-6">
-                                                                    <input class="form-input" name='commission' type="number" placeholder="Commission" />
-                                                                </div>
-                                                                <div class="col-6">
-                                                                    <input class="form-input" name='payment' type="number" value="Office Admin" hidden />
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-responsive-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Plan</th>
+                                                    <th>Created</th>
+                                                    <th>Branch</th>
+                                                    <th>Balance</th>
+                                                    <th>Pending</th>
+                                                    <th>Date</th>
+                                                    <th>Registration Fee</th>
+                                                    <th>Change Plan</th>
+                                                    <th>Withdrawal</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($accounts as $item)
+                                                <tr>
+                                                    <td>{{$item->plan}}</td>
+                                                    <td>{{$item->created_by}}</td>
+                                                    <td>{{$item->branch}}</td>
+                                                    <td>{{number_format($item->balance, 2)}}</td>
+                                                    <td>{{number_format($item->pending, 2)}}</td>
+                                                    <td>{{$item->created_at}}</td>
+                                                    @if($customer->id > 73382)
+                                                    @if($item->reefee != 1000)
+                                                    <td>
+                                                        <form action="/withdrawal_fix" method="Post">
+                                                            @csrf
+                                                            <input type="text" hidden value='{{$item->id}}' class="form-control" name="id" />
+                                                            <button class="form-control btn btn-primary mt-1" type="submit">Create Reg Fee</button>
+                                                        </form>
+                                                    </td>
+                                                    @else
+                                                    <td>{{number_format($item->reefee, 0)}}</td>
+                                                    @endif
+                                                    @endif
+                                                    <td>
+                                                        <form action="/change_plan" method="post">
+                                                            @csrf
+                                                            <input type="number" name="id" value="{{$item->id}}" hidden>
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <select name="plan" id="plan" class="form-control">
+                                                                        @foreach($plans as $plan)
+                                                                        <option></option>
+                                                                        <option value="{{$plan->id}}">{{$plan->name}}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                    <button class="btn btn-primary w-100 mt-1">Edit</button>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-4"><button class="btn btn-primary w-100" type="submit">Post</button></div>
-                                                        </div>
-                                                    </form>
-                                                </td>
-                                                <td><a href="/delete_saving_account/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                                        </form>
+                                                    </td>
+                                                    <td>
+                                                        <form action="/post_withdrawal" method="POST">
+                                                            @csrf
+                                                            <input type="number" name="id" value="{{$item->id}}" hidden>
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <input type="text" name="id" value="{{$item->id}}" hidden>
+                                                                    <input value="{{$customer->id}}" hidden name="dt" id="dt" />
+                                                                    <div class="form-group">
+                                                                        <input class="form-control" name='amount' type="number" placeholder="Amount" />
+                                                                    </div>
+                                                                    <div class="form-group my-1">
+                                                                        <input class="form-control" name='commission' type="number" placeholder="Commission" />
+                                                                    </div>
+                                                                    <div class="col-12">
+                                                                        <input class="form-control" name='payment' type="number" value="Office Admin" hidden />
+                                                                    </div>
+                                                                    <button class="btn btn-primary w-100" type="submit">Post</button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </td>
+                                                    <td><a href="/delete_saving_account/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -192,39 +208,41 @@
                             </h2>
                             <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Plan</th>
-                                                <th>Transaction</th>
-                                                <th>Branch</th>
-                                                <th>Amount</th>
-                                                <th>Date</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($savings as $item)
-                                            <tr>
-                                                <td>{{$item->plan}}</td>
-                                                <td>{{$item->transaction_type}}</td>
-                                                <td>{{$item->branch}}</td>
-                                                <td>{{number_format($item->amount, 2)}}</td>
-                                                <td>{{$item->created_at}}</td>
-                                                <td>
-                                                    <form action="/change_amount" method="post">
-                                                        @csrf
-                                                        <input type="number" name="id" value="{{$item->id}}" hidden>
-                                                        <div class="row">
-                                                            <div class="col-8"><input type="number" class="form-control" required name="amount" /></div>
-                                                            <div class="col-4"><button class="btn btn-primary w-100">Edit</button></div>
-                                                        </div>
-                                                    </form>
-                                                </td>
-                                                <td><a href="/delete_payment/{{$item->id}}" class="btn btn-danger w-100">DELETE</a></td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                    <div class="table-response">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Plan</th>
+                                                    <th>Transaction</th>
+                                                    <th>Branch</th>
+                                                    <th>Amount</th>
+                                                    <th>Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($savings as $item)
+                                                <tr>
+                                                    <td>{{$item->plan}}</td>
+                                                    <td>{{$item->transaction_type}}</td>
+                                                    <td>{{$item->branch}}</td>
+                                                    <td>{{number_format($item->amount, 2)}}</td>
+                                                    <td>{{$item->created_at}}</td>
+                                                    <td>
+                                                        <form action="/change_amount" method="post">
+                                                            @csrf
+                                                            <input type="number" name="id" value="{{$item->id}}" hidden>
+                                                            <div class="row">
+                                                                <div class="col-8"><input type="number" class="form-control" required name="amount" /></div>
+                                                                <div class="col-4"><button class="btn btn-primary w-100">Edit</button></div>
+                                                            </div>
+                                                        </form>
+                                                    </td>
+                                                    <td><a href="/delete_payment/{{$item->id}}" class="btn btn-danger w-100">DELETE</a></td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -237,37 +255,39 @@
                             </h2>
                             <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Plan</th>
-                                                <th>Transaction</th>
-                                                <th>Branch</th>
-                                                <th>Amount</th>
-                                                <th>Status</th>
-                                                <th>Date</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($withdrawals as $item)
-                                            <tr>
-                                                <td>{{$item->plan}}</td>
-                                                <td>{{$item->transaction_type}}</td>
-                                                <td>{{$item->branch}}</td>
-                                                <td>{{number_format($item->credit, 2)}}</td>
-                                                <td>{{$item->created_at}}</td>
-                                                <th>
-                                                    @if($item->status=='confirmed')
-                                                    <p class="text-success">{{$item->status}}</p>
-                                                    @else
-                                                    <p class="text-danger">{{$item->status}}</p>
-                                                    @endif
-                                                </th>
-                                                <td><a href="/delete_payment/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                    <div class="table-reponsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Plan</th>
+                                                    <th>Transaction</th>
+                                                    <th>Branch</th>
+                                                    <th>Amount</th>
+                                                    <th>Status</th>
+                                                    <th>Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($withdrawals as $item)
+                                                <tr>
+                                                    <td>{{$item->plan}}</td>
+                                                    <td>{{$item->transaction_type}}</td>
+                                                    <td>{{$item->branch}}</td>
+                                                    <td>{{number_format($item->credit, 2)}}</td>
+                                                    <td>{{$item->created_at}}</td>
+                                                    <th>
+                                                        @if($item->status=='confirmed')
+                                                        <p class="text-success">{{$item->status}}</p>
+                                                        @else
+                                                        <p class="text-danger">{{$item->status}}</p>
+                                                        @endif
+                                                    </th>
+                                                    <td><a href="/delete_payment/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -280,39 +300,41 @@
                             </h2>
                             <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Loan Number</th>
-                                                <th>Amount</th>
-                                                <th>Handler</th>
-                                                <th>Branch</th>
-                                                <th>Date</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($loan_repayments as $item)
-                                            <tr>
-                                                <td>{{$item->loan_number}}</td>
-                                                <td>{{$item->amount}}</td>
-                                                <td>{{$item->handler}}</td>
-                                                <td>{{$item->branch}}</td>
-                                                <td>{{$item->created_at}}</td>
-                                                <td>
-                                                    <form action="/change_loan_amount" method="post">
-                                                        @csrf
-                                                        <input type="number" name="id" value="{{$item->id}}" hidden>
-                                                        <div class="row">
-                                                            <div class="col-8"><input type="number" class="form-control" required name="amount" /></div>
-                                                            <div class="col-4"><button class="btn btn-primary w-100">Edit</button></div>
-                                                        </div>
-                                                    </form>
-                                                </td>
-                                                <td><a href="/delete_loan_payment/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Loan Number</th>
+                                                    <th>Amount</th>
+                                                    <th>Handler</th>
+                                                    <th>Branch</th>
+                                                    <th>Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($loan_repayments as $item)
+                                                <tr>
+                                                    <td>{{$item->loan_number}}</td>
+                                                    <td>{{$item->amount}}</td>
+                                                    <td>{{$item->handler}}</td>
+                                                    <td>{{$item->branch}}</td>
+                                                    <td>{{$item->created_at}}</td>
+                                                    <td>
+                                                        <form action="/change_loan_amount" method="post">
+                                                            @csrf
+                                                            <input type="number" name="id" value="{{$item->id}}" hidden>
+                                                            <div class="row">
+                                                                <div class="col-8"><input type="number" class="form-control" required name="amount" /></div>
+                                                                <div class="col-4"><button class="btn btn-primary w-100">Edit</button></div>
+                                                            </div>
+                                                        </form>
+                                                    </td>
+                                                    <td><a href="/delete_loan_payment/{{$item->id}}" class="btn btn-danger bt-sm">DELETE</a></td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>

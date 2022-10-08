@@ -153,6 +153,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/change_plan', [OfficeController::class, 'change_plan'])->name('change_plan');
     Route::post('/handler_change/{id}', [OfficeController::class, 'handler_change'])->name('handler_change');
     Route::get('/upload_accounts', [BranchController::class, 'upload_accounts'])->name('upload_accounts');
+    Route::post('/withdrawal_fix', [SalesController::class, 'withdrawal_fix'])->name('withdrawal_fix');
 
     Route::get('/delete_loan_payment/{id}', [OfficeController::class, 'delete_loan_payment'])->name('delete_loan_payment');
     Route::get('/delete_saving_account/{id}', [OfficeController::class, 'delete_saving_account'])->name('delete_saving_account');

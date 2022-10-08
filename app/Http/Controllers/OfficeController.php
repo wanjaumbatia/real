@@ -132,6 +132,7 @@ class OfficeController extends Controller
         foreach ($accounts as $item) {
             $item['balance'] = Payments::where('status', 'confirmed')->where('transaction_type', 'savings')->where('savings_account_id', $item->id)->sum('amount');
             $item['pending'] = Payments::where('status', 'pending')->where('transaction_type', 'savings')->where('savings_account_id', $item->id)->sum('amount');
+            $item['reefee'] = Payments::where('transaction_type', 'registration')->where('savings_account_id', $item->id)->sum('amount');
         }
 
         $seps = User::where('sales_executive', true)->where('branch', $customer->branch)->get();
