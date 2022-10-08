@@ -63,7 +63,8 @@ class OfficeController extends Controller
 
     public function recon_report_by_date()
     {
-        $recons = ReconciliationRecord::latest()->get()->groupBy(function ($item) {
+        $branch = auth()->user()->branch;
+        $recons = ReconciliationRecord::where('branch', $branch)->latest()->get()->groupBy(function ($item) {
             return $item->created_at->format('d-M-y');
         });
 
@@ -82,13 +83,12 @@ class OfficeController extends Controller
         return view('office.recon_report_by_date')->with(['data' => $result]);
     }
 
-    public function recon_statement(Request $request)
+    public function recon_statement(Request $request, $date)
     {
         $branch = auth()->user()->branch;
-        $data = DB::select("select created_by as handler, sum(debit) as amount from payments where branch = '" . $branch . "' and remarks!='Opening Balance' and status='confirmed' group by created_by;");
-
-        //get date
-        $recon = ReconciliationRecord::where('branch', $branch)->get();
+        //$data = DB::select("select created_by as handler, sum(debit) as amount from payments where branch = '" . $branch . "' and remarks!='Opening Balance' and status='confirmed' group by created_by;");
+        $data = [];
+        $recon = ReconciliationRecord::where('branch', $branch)->whereDate('created_at', Carbon::parse($date))->get();
         return view('office.recon_statement')->with(['data' => $data, 'recon' => $recon]);
     }
 

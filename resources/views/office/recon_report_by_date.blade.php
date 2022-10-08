@@ -62,7 +62,7 @@
                             <tr>
                                 <td>{{$item['date']}}</td>
                                 <td>{{number_format($item['amount'], 2)}}</td>
-                                <td><a style="text-decoration: none;" href="/recon_statement?date= {{$item['date']}}">Open</a></td>
+                                <td><a style="text-decoration: none;" href="/recon_statement/{{$item['date']}}">Open</a></td>
                             </tr>
                             @endforeach
                         </tbody>
