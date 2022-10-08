@@ -23,7 +23,7 @@
                                 <tr>
                                     <td>{{$item->created_at}}</td>
                                     <td>{{$item->customer_name}}</td>                                    
-                                    <th>{{item->created_by}}</th>
+                                    <th>{{$item->created_by}}</th>
                                     <td>{{$item->plan}}</td>
                                     <td>{{$item->amount}}</td>
                                 </tr>
