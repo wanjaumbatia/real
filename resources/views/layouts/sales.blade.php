@@ -79,19 +79,21 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="/collection">{{ __('Collection') }}</a>
-                        </li>
-
-                        <li class="nav-item">
                             <a class="nav-link" href="/reconciled_group">{{ __('Reconciled') }}</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="/withdrawal_list">{{ __('Withdrawal List') }}</a>
+                            <a class="nav-link" href="/reg_fee_collection">{{ __('Registration Commision') }}</a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="/reg_fee_collection">{{ __('Registration Commision') }}</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Posting Logs
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/collection">Collections</a>
+                                <a class="dropdown-item" href="/withdrawal_list">Withdrawals</a>
+                            </div>
                         </li>
                         @endguest
                     </ul>
