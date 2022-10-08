@@ -251,9 +251,32 @@ class SalesController extends Controller
         return view('sales.payments')->with(['data' => $collections]);
     }
 
-    public function show_recon()
+    public function show_recon_group()
     {
-        $collections = ReconciliationRecord::where('handler', auth()->user()->name)->orderBy('created_at', 'DESC')->get();
+        $branch = auth()->user()->branch;
+        $recons = ReconciliationRecord::where('handler', auth()->user()->name)->latest()->get()->groupBy(function ($item) {
+            return $item->created_at->format('d-M-y');
+        });
+
+        $result = array();
+        foreach ($recons as $item) {
+            $sum = 0;
+            $data = array();
+            $data['date'] = $item[0]->created_at->format('d-m-Y');;
+            foreach ($item as $it) {
+                $sum = $sum + $it->submited;
+            }
+            $data['amount'] = $sum;
+
+            $result[] = $data;
+        }
+
+        return view('sales.reconciled_group')->with(['data' => $result]);
+    }
+
+    public function show_recon($date)
+    {
+        $collections = ReconciliationRecord::where('handler', auth()->user()->name)->whereDate('created_at', Carbon::parse($date))->orderBy('created_at', 'DESC')->get();
         return view('sales.reconciled')->with(['data' => $collections]);
     }
 
@@ -951,5 +974,11 @@ class SalesController extends Controller
         $withdrawals = Payments::where('status', 'confirmed')->whereBetween('reservation_from', [$date, $date])->where('transaction_type', 'withdrawal')->get();
         dd($withdrawals);
         return view('sales.withdrawal_report');
+    }
+
+    public function reg_fee_collection(Request $request){
+        $data = Payments::where('transaction_type', 'registration')->where('created_by', auth()->user()->name)->get();
+        
+        return view ('sales.reg_fee_collection')->with(['data'=>$data]);
     }
 }

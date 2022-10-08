@@ -89,6 +89,10 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/withdrawal_list">{{ __('Withdrawal List') }}</a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/reg_fee_collection">{{ __('Registration Commision') }}</a>
+                        </li>
                         @endguest
                     </ul>
 

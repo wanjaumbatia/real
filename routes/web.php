@@ -160,10 +160,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/delete_payment/{id}', [OfficeController::class, 'delete_payment'])->name('delete_payment');
 
     Route::get('/collection', [SalesController::class, 'show_collection'])->name('show_collection');
-    Route::get('/reconciled', [SalesController::class, 'show_recon'])->name('show_recon');
+    Route::get('/reconciled/{date}', [SalesController::class, 'show_recon'])->name('show_recon');
+    Route::get('/reconciled_group', [SalesController::class, 'show_recon_group'])->name('show_recon_group');
     Route::get('/reconciliation/{reference}', [SalesController::class, 'show_recon_data'])->name('show_recon_data');
     Route::get('/withdrawal_by_date/{date}', [SalesController::class, 'withdrawal_by_date'])->name('show_collection');
-
+    Route::get('/reg_fee_collection', [SalesController::class, 'reg_fee_collection'])->name('reg_fee_collection');
+    
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/search', [OfficeController::class, 'search_customer'])->name('search');
 
