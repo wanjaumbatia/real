@@ -13,6 +13,7 @@
                                 <tr>
                                     <th>Posting Date</th>
                                     <th>Customer</th>
+                                    <th>Sales Executive</th>
                                     <th>Plan</th>
                                     <th>Amount</th>
                                 </tr>
@@ -21,7 +22,8 @@
                                 @foreach($data as $item)
                                 <tr>
                                     <td>{{$item->created_at}}</td>
-                                    <td>{{$item->customer_name}}</td>
+                                    <td>{{$item->customer_name}}</td>                                    
+                                    <th>{{item->created_by}}</th>
                                     <td>{{$item->plan}}</td>
                                     <td>{{$item->amount}}</td>
                                 </tr>

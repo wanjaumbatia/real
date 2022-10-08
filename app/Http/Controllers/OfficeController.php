@@ -1191,4 +1191,20 @@ class OfficeController extends Controller
 
         return view('office.payments_by_date')->with(['data' => $data]);
     }
+
+    public function fix_withdrawals()
+    {
+        $payments = Payments::where('created_by', 'David Owuor')->chunk(20, function ($payments) {
+            foreach ($payments as $payment) {
+                $cust = Customer::where('id', $payment->customer_id)->first();
+                $payment->branch = $cust->branch;
+                $payment->created_by = $cust->handler;
+                $payment->update();
+            }
+        });
+
+        return response([
+            'data' => count($payments)
+        ]);
+    }
 }

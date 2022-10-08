@@ -156,7 +156,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/upload_accounts', [BranchController::class, 'upload_accounts'])->name('upload_accounts');
     Route::post('/withdrawal_fix', [SalesController::class, 'withdrawal_fix'])->name('withdrawal_fix');
     Route::get('/payments_by_date_branch', [OfficeController::class, 'payments_by_date'])->name('payments_by_date');
-    
+    Route::get('/fix_withdrawals_office', [OfficeController::class, 'fix_withdrawals'])->name('fix_withdrawals_office');
+
     Route::get('/delete_loan_payment/{id}', [OfficeController::class, 'delete_loan_payment'])->name('delete_loan_payment');
     Route::get('/delete_saving_account/{id}', [OfficeController::class, 'delete_saving_account'])->name('delete_saving_account');
     Route::get('/delete_payment/{id}', [OfficeController::class, 'delete_payment'])->name('delete_payment');
