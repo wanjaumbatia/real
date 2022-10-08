@@ -139,7 +139,7 @@
                                                     <td>{{number_format($item->pending, 2)}}</td>
                                                     <td>{{$item->created_at}}</td>
                                                     @if($customer->id > 73382)
-                                                    @if($item->reefee != 1000)
+                                                    @if($item->reefee == 0)
                                                     <td>
                                                         <form action="/withdrawal_fix" method="Post">
                                                             @csrf
