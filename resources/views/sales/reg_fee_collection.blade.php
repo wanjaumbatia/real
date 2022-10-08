@@ -22,7 +22,7 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="table-responsive">
                     <table id="table" class="table table-striped mt-3">
                         <thead>
                             <tr>
@@ -43,6 +43,7 @@
                             @endforeach
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </div>
