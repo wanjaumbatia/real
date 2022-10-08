@@ -23,10 +23,10 @@
                                 @foreach($data as $item)
                                 <tr>
                                     <td>{{$item['date']}}</td>
-                                    <td><a href="/payments_by_date?type=savings&&date={{$item['date']}}">{{number_format($item['deposits'], 2)}}</a></td>
-                                    <td><a href="/payments_by_date?type=withdrawal&&date={{$item['date']}}">{{number_format($item['withdrawals'], 2)}}</a></td>
-                                    <td><a href="/payments_by_date?type=charge&&date={{$item['date']}}">{{number_format($item['charges'], 2)}}</a></td>
-                                    <td><a href="/payments_by_date?type=registration&&date={{$item['date']}}">{{number_format($item['regfees'], 2)}}</a></td>
+                                    <td><a href="/payments_by_date_branch?type=savings&&date={{$item['date']}}">{{number_format($item['deposits'], 0)}}</a></td>
+                                    <td><a href="/payments_by_date_branch?type=withdrawal&&date={{$item['date']}}">{{number_format($item['withdrawals'], 0)}}</a></td>
+                                    <td><a href="/payments_by_date_branch?type=charge&&date={{$item['date']}}">{{number_format($item['charges'], 0)}}</a></td>
+                                    <td><a href="/payments_by_date_branch?type=registration&&date={{$item['date']}}">{{number_format($item['regfees'], 0)}}</a></td>
                                     <!-- <td><a style="text-decoration: none;" href="/reconciled/{{$item['date']}}">Open</a></td> -->
                                 </tr>
                                 @endforeach

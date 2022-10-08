@@ -1180,4 +1180,15 @@ class OfficeController extends Controller
 
         return view('office.reg_fee_collection')->with(['data' => $data]);
     }
+
+    public function payments_by_date(Request $request)
+    {
+        $data = Payments::where('transaction_type', $request->type)
+            ->where('status', 'confirmed')
+            ->whereDate('created_at', Carbon::parse($request->date))
+            ->where('branch', auth()->user()->branch)
+            ->get();
+
+        return view('office.payments_by_date')->with(['data' => $data]);
+    }
 }
