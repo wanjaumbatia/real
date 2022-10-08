@@ -1140,4 +1140,11 @@ class OfficeController extends Controller
             'success' => true
         ]);
     }
+
+    public function reg_fee_collection(Request $request)
+    {
+        $data = Payments::where('transaction_type', 'registration')->where('branch', auth()->user()->branch)->get();
+
+        return view('office.reg_fee_collection')->with(['data' => $data]);
+    }
 }

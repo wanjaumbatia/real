@@ -83,7 +83,7 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="/reconciled">{{ __('Reconciled') }}</a>
+                            <a class="nav-link" href="/reconciled_group">{{ __('Reconciled') }}</a>
                         </li>
 
                         <li class="nav-item">
