@@ -38,6 +38,10 @@
 <script>
     $(document).ready(function() {
         $('#table').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'print'
+            ],
             "paging": true,
             "ordering": true,
             "info": true
