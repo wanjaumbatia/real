@@ -113,7 +113,7 @@ class OfficeController extends Controller
     public function search_customer(Request $request)
     {
         if ($request->userid !== null) {
-            $customer = Customer::where('username', $request->userid)->first();
+            $customer = Customer::where('id', $request->userid)->first();
             return view('search')->with(['customer' => $customer]);
         }
         return view('search')->with(['customer' => null]);
