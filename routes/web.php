@@ -108,7 +108,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/loan', [SalesController::class, 'apply_loan'])->name('sales.apply_loan');
     Route::get('/repay/{id}', [SalesController::class, 'repay_loan'])->name('sales.repay_loan');
     Route::post('/loan_repayment', [SalesController::class, 'post_loan_repay'])->name('sales.post_loan_repay');
-
+    Route::get('/payments_by_date', [SalesController::class, 'payments_by_date'])->name('payments_by_date');
+    
     Route::get('/collection/{id}', [SalesController::class, 'collection'])->name('sales.collection');
     Route::post('/pay', [SalesController::class, 'pay'])->name('sales.pay');
     Route::get('/withdrawal/{id}', [SalesController::class, 'withdrawal'])->name('sales.withdrawal');

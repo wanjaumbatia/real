@@ -254,20 +254,37 @@ class SalesController extends Controller
     public function show_recon_group()
     {
         $branch = auth()->user()->branch;
-        $recons = ReconciliationRecord::where('handler', auth()->user()->name)->latest()->get()->groupBy(function ($item) {
+
+        $recons = Payments::where('created_by', auth()->user()->name)->where('status', 'confirmed')->where('remarks', '!=', 'Opening Balance')->latest()->get()->groupBy(function ($item) {
             return $item->created_at->format('d-M-y');
         });
 
         $result = array();
         foreach ($recons as $item) {
-            $sum = 0;
+            $deposits = 0;
+            $withdrawals = 0;
+            $charges = 0;
+            $regfees = 0;
             $data = array();
             $data['date'] = $item[0]->created_at->format('d-m-Y');;
             foreach ($item as $it) {
-                $sum = $sum + $it->submited;
+                if ($it->transaction_type == 'savings') {
+                    $deposits = $deposits + $it->debit;
+                }
+                if ($it->transaction_type == 'withdrawal') {
+                    $withdrawals = $withdrawals + $it->credit;
+                }
+                if ($it->transaction_type == 'charge') {
+                    $charges = $charges + $it->credit;
+                }
+                if ($it->transaction_type == 'registration') {
+                    $regfees = $regfees + $it->debit;
+                }
             }
-            $data['amount'] = $sum;
-
+            $data['deposits'] = $deposits;
+            $data['withdrawals'] = $withdrawals;
+            $data['charges'] = $charges;
+            $data['regfees'] = $regfees;
             $result[] = $data;
         }
 
@@ -976,9 +993,21 @@ class SalesController extends Controller
         return view('sales.withdrawal_report');
     }
 
-    public function reg_fee_collection(Request $request){
+    public function reg_fee_collection(Request $request)
+    {
         $data = Payments::where('transaction_type', 'registration')->where('created_by', auth()->user()->name)->get();
-        
-        return view ('sales.reg_fee_collection')->with(['data'=>$data]);
+
+        return view('sales.reg_fee_collection')->with(['data' => $data]);
+    }
+
+    public function payments_by_date(Request $request)
+    {
+        $data = Payments::where('transaction_type', $request->type)
+            ->where('status', 'confirmed')
+            ->whereDate('created_at', Carbon::parse($request->date))
+            ->where('created_by', auth()->user()->name)
+            ->get();
+
+        return view('sales.payments_by_date')->with(['data' => $data]);
     }
 }
