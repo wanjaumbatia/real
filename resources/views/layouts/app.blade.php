@@ -55,7 +55,7 @@
 
                         @if(Auth::user()->office_admin == true)
                         <li class="nav-item">
-                            <a class="nav-link" href="/recon_statement">{{ __('Reconciliation Report') }}</a>
+                            <a class="nav-link" href="/recon_report_by_date">{{ __('Reconciliation Report') }}</a>
                         </li>
                         @endif
 

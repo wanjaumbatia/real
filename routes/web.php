@@ -133,7 +133,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/recon_statement', [OfficeController::class, 'recon_statement'])->name('recon_statement');
     Route::get('/recon_per_ref/{id}', [OfficeController::class, 'recon_per_ref'])->name('recon_per_ref');
     Route::get('/recon_report_by_date', [OfficeController::class, 'recon_report_by_date'])->name('recon_report_by_date');
-
+    Route::get('/recon_val/{date}', [OfficeController::class, 'recon_val'])->name('recon_val');
     Route::get('/charge_interest', [LoanController::class, 'charge_interest'])->name('charge_interest');
     //Route::get('/loan_repayment', [LoanController::class, 'loan_repayment'])->name('loan_repayment');
     Route::post('/loan_officer_approval/{id}', [LoanController::class, 'loan_officer_approval'])->name('loan_officer_approval');

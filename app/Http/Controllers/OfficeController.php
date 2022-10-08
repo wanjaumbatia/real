@@ -54,15 +54,32 @@ class OfficeController extends Controller
         return redirect()->route('home')->with('success', 'Balances Imported Successfully');
     }
 
+    public function recon_val($date)
+    {
+        return response([
+            'data' => $date
+        ]);
+    }
+
     public function recon_report_by_date()
     {
-        $data = DB::table('reconciliation_records as w')
-            ->select(array(DB::Raw('sum(w.submited) as amount'), DB::Raw('DATE(w.created_at) day')))
-            ->groupBy('day')
-            ->orderBy('w.created_at')
-            ->get();
+        $recons = ReconciliationRecord::latest()->get()->groupBy(function ($item) {
+            return $item->created_at->format('d-M-y');
+        });
 
-        return view('office.recon_report_by_date')->with(['data' => $data]);
+        $result = array();
+        foreach ($recons as $item) {
+            $sum = 0;
+            $data = array();
+            $data['date'] = $item[0]->created_at->format('d-m-Y');;
+            foreach ($item as $it) {
+                $sum = $sum + $it->submited;
+            }
+            $data['amount'] = $sum;
+
+            $result[] = $data;
+        }
+        return view('office.recon_report_by_date')->with(['data' => $result]);
     }
 
     public function recon_statement(Request $request)
@@ -177,7 +194,6 @@ class OfficeController extends Controller
 
     public function grouped_by_date()
     {
-       
     }
 
     public function delete_loan_payment($id)
