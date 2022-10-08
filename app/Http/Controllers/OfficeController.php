@@ -64,20 +64,53 @@ class OfficeController extends Controller
     public function recon_report_by_date()
     {
         $branch = auth()->user()->branch;
-        $recons = ReconciliationRecord::where('branch', $branch)->latest()->get()->groupBy(function ($item) {
+        // $recons = ReconciliationRecord::where('branch', $branch)->latest()->get()->groupBy(function ($item) {
+        //     return $item->created_at->format('d-M-y');
+        // });
+
+        // $result = array();
+        // foreach ($recons as $item) {
+        //     $sum = 0;
+        //     $data = array();
+        //     $data['date'] = $item[0]->created_at->format('d-m-Y');;
+        //     foreach ($item as $it) {
+        //         $sum = $sum + $it->submited;
+        //     }
+        //     $data['amount'] = $sum;
+
+        //     $result[] = $data;
+        // }
+
+        $recons = Payments::where('branch', auth()->user()->branch)->where('status', 'confirmed')->where('remarks', '!=', 'Opening Balance')->latest()->get()->groupBy(function ($item) {
             return $item->created_at->format('d-M-y');
         });
 
         $result = array();
         foreach ($recons as $item) {
-            $sum = 0;
+            $deposits = 0;
+            $withdrawals = 0;
+            $charges = 0;
+            $regfees = 0;
             $data = array();
             $data['date'] = $item[0]->created_at->format('d-m-Y');;
             foreach ($item as $it) {
-                $sum = $sum + $it->submited;
+                if ($it->transaction_type == 'savings') {
+                    $deposits = $deposits + $it->debit;
+                }
+                if ($it->transaction_type == 'withdrawal') {
+                    $withdrawals = $withdrawals + $it->credit;
+                }
+                if ($it->transaction_type == 'charge') {
+                    $charges = $charges + $it->credit;
+                }
+                if ($it->transaction_type == 'registration') {
+                    $regfees = $regfees + $it->debit;
+                }
             }
-            $data['amount'] = $sum;
-
+            $data['deposits'] = $deposits;
+            $data['withdrawals'] = $withdrawals;
+            $data['charges'] = $charges;
+            $data['regfees'] = $regfees;
             $result[] = $data;
         }
         return view('office.recon_report_by_date')->with(['data' => $result]);
