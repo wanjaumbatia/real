@@ -806,72 +806,72 @@ Route::middleware('auth:sanctum')->post("/pay", function (Request $request) {
             $total = $total + $item['amount'];
             if ($regfee < 1000) {
 
-                $payment = Payments::create([
-                    'savings_account_id' => $acc->id,
-                    'plan' => $acc->plan,
-                    'customer_id' => $acc->customer_id,
-                    'customer_name' => $acc->customer,
-                    'transaction_type' => 'savings',
-                    'status' => 'pending',
-                    'remarks' => 'Collection from ' . $acc->customer . ' of ₦' . number_format($item['amount'], 2),
-                    'debit' => $item['amount'] - 1000,
-                    'credit' => 0,
-                    'amount' => $item['amount'] - 1000,
-                    'requires_approval' => false,
-                    'approved' => false,
-                    'posted' => false,
-                    'created_by' => $request->user()->name,
-                    'branch' => $request->user()->branch,
-                    'batch_number' => $batch_number,
-                    'reference' => $reference
-                ]);
+                // $payment = Payments::create([
+                //     'savings_account_id' => $acc->id,
+                //     'plan' => $acc->plan,
+                //     'customer_id' => $acc->customer_id,
+                //     'customer_name' => $acc->customer,
+                //     'transaction_type' => 'savings',
+                //     'status' => 'pending',
+                //     'remarks' => 'Collection from ' . $acc->customer . ' of ₦' . number_format($item['amount'], 2),
+                //     'debit' => $item['amount'] - 1000,
+                //     'credit' => 0,
+                //     'amount' => $item['amount'] - 1000,
+                //     'requires_approval' => false,
+                //     'approved' => false,
+                //     'posted' => false,
+                //     'created_by' => $request->user()->name,
+                //     'branch' => $request->user()->branch,
+                //     'batch_number' => $batch_number,
+                //     'reference' => $reference
+                // ]);
 
-                $payment = Payments::create([
-                    'savings_account_id' => $acc->id,
-                    'plan' => $acc->plan,
-                    'customer_id' => $acc->customer_id,
-                    'customer_name' => $acc->customer,
-                    'transaction_type' => 'registration',
-                    'status' => 'pending',
-                    'remarks' => 'Registration Fee from ' . $acc->customer . ' of ₦' . number_format($item['amount'], 2),
-                    'debit' => 1000,
-                    'credit' => 0,
-                    'amount' => 1000,
-                    'requires_approval' => false,
-                    'approved' => false,
-                    'posted' => false,
-                    'created_by' => $request->user()->name,
-                    'branch' => $request->user()->branch,
-                    'batch_number' => $batch_number,
-                    'reference' => $reference
-                ]);
+                // $payment = Payments::create([
+                //     'savings_account_id' => $acc->id,
+                //     'plan' => $acc->plan,
+                //     'customer_id' => $acc->customer_id,
+                //     'customer_name' => $acc->customer,
+                //     'transaction_type' => 'registration',
+                //     'status' => 'pending',
+                //     'remarks' => 'Registration Fee from ' . $acc->customer . ' of ₦' . number_format($item['amount'], 2),
+                //     'debit' => 1000,
+                //     'credit' => 0,
+                //     'amount' => 1000,
+                //     'requires_approval' => false,
+                //     'approved' => false,
+                //     'posted' => false,
+                //     'created_by' => $request->user()->name,
+                //     'branch' => $request->user()->branch,
+                //     'batch_number' => $batch_number,
+                //     'reference' => $reference
+                // ]);
 
-                $sep_commision = 0.0025 * ($item['amount'] - 1000);
-                $comm_line = CommissionLines::create([
-                    'handler' => $request->user()->name,
-                    'amount' => $sep_commision,
-                    'description' => '2Commission for sales of ₦' . number_format(($item['amount'] - 1000), 2) . ' for ' . $acc->customer,
-                    'batch_number' => $batch_number,
-                    'payment_id' => $payment->id,
-                    'disbursed' => false,
-                    'branch' => $request->user()->branch,
-                    'transaction_type' => 'savings',
-                    'approved' => false,
-                    // 'transaction_type'=>'commission'
-                ]);
-                $comm_line = CommissionLines::create([
-                    'handler' => $request->user()->name,
-                    'amount' => 250,
-                    'description' => 'Registration Fee for sales of ₦' . number_format($item['amount'], 2) . ' for ' . $acc->customer,
-                    'batch_number' => $batch_number,
-                    'payment_id' => $payment->id,
-                    'disbursed' => false,
-                    'branch' => $request->user()->branch,
-                    'transaction_type' => 'registration',
-                    'approved' => false,
-                    // 'transaction_type'=>'commission'
-                ]);
-                $total = $total + $item['amount'];
+                // $sep_commision = 0.0025 * ($item['amount'] - 1000);
+                // $comm_line = CommissionLines::create([
+                //     'handler' => $request->user()->name,
+                //     'amount' => $sep_commision,
+                //     'description' => '2Commission for sales of ₦' . number_format(($item['amount'] - 1000), 2) . ' for ' . $acc->customer,
+                //     'batch_number' => $batch_number,
+                //     'payment_id' => $payment->id,
+                //     'disbursed' => false,
+                //     'branch' => $request->user()->branch,
+                //     'transaction_type' => 'savings',
+                //     'approved' => false,
+                //     // 'transaction_type'=>'commission'
+                // ]);
+                // $comm_line = CommissionLines::create([
+                //     'handler' => $request->user()->name,
+                //     'amount' => 250,
+                //     'description' => 'Registration Fee for sales of ₦' . number_format($item['amount'], 2) . ' for ' . $acc->customer,
+                //     'batch_number' => $batch_number,
+                //     'payment_id' => $payment->id,
+                //     'disbursed' => false,
+                //     'branch' => $request->user()->branch,
+                //     'transaction_type' => 'registration',
+                //     'approved' => false,
+                //     // 'transaction_type'=>'commission'
+                // ]);
+                // $total = $total + $item['amount'];
             } else {
 
             }

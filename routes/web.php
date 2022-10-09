@@ -178,4 +178,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/import_loans_new', [LoanController::class, 'ImportLoans'])->name('import_loans_new');
     Route::get('/new_customer', [SalesController::class, 'new_customer'])->name('new_customer');
     Route::post('/save_customer', [SalesController::class, 'save_customer'])->name('save_customer');
+
+    Route::get('/fix_reg_fee', [OfficeController::class, 'fix_reg_fee'])->name('fix_reg_fee');
 });

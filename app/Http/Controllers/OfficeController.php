@@ -1254,4 +1254,10 @@ class OfficeController extends Controller
             'data' => count($payments)
         ]);
     }
+
+    public function fix_reg_fee(){
+        $data = Payments::get();
+        dd($data);
+        return view('regfee_fix')->with(['data', $data]);
+    }
 }
