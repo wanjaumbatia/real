@@ -158,24 +158,27 @@ class BranchController extends Controller
     public function pending_branch_loans(Request $request)
     {
         $branch = auth()->user()->branch;
-        $data = DB::select("
-        select 
-                loans.id, 
-                loans.name, 
-                loans.application_date,
-                loans.customer_id,
-                loans.amount, 
-                loans.paid,
-                loans.interest_percentage,
-                loans.duration,
-                loans.handler,
-                loans.status,
-                loans.remarks,
-                users.branch,
-                loans.current_savings
-            from loans inner join users on  loans.handler = users.name where branch='" . $branch . "' and loans.status ='pending';
-        ");
+        // $data = DB::select("
+        // select 
+        //         loans.id, 
+        //         loans.name, 
+        //         loans.application_date,
+        //         loans.customer_id,
+        //         loans.amount, 
+        //         loans.paid,
+        //         loans.interest_percentage,
+        //         loans.duration,
+        //         loans.handler,
+        //         loans.status,
+        //         loans.remarks,
+        //         users.branch,
+        //         loans.current_savings
+        //     from loans inner join users on  loans.handler = users.name where branch='" . $branch . "' and loans.status ='pending';
+        // ");
 
+        $data = LoansModel::where('loan_status', 'pending')->where('branch', $branch)->get();
+
+        
         return view('branch.applied_loans')->with(['loans' => $data,]);
     }
 
@@ -266,7 +269,7 @@ class BranchController extends Controller
     public function loan_card($id)
     {
         //get loan details
-        $loan = Loan::where('id', $id)->first();
+        $loan = LoansModel::where('id', $id)->first();
         //get customer details
         $customer = Customer::where('id', $loan->customer_id)->first();
         $identity = false;

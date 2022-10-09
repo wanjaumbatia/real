@@ -21,6 +21,7 @@ use Carbon\CarbonPeriod;
 use Faker\Provider\ar_EG\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class SalesController extends Controller
@@ -1009,5 +1010,10 @@ class SalesController extends Controller
             ->get();
 
         return view('sales.payments_by_date')->with(['data' => $data]);
+    }
+
+    public function customer_balances(){
+        $data = DB::select("select customers.id, customers.name, sum(payments.amount) as balance from payments inner join customers on payments.customer_id=customers.id where payments.created_by = '". auth()->user()->name ."' group by customer_id");
+        return view('sales.customer_balances')->with(['data'=>$data]);
     }
 }

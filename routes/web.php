@@ -116,7 +116,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/post_withdrawal', [SalesController::class, 'post_withdrawal'])->name('sales.post_withdrawal');
     Route::post('/verify', [SalesController::class, 'verify_withdrawal'])->name('sales.verify');
     Route::post('/create_account/{id}', [SalesController::class, 'create_plan'])->name('sales.create_plan');
-
+    Route::get('/customer_balances', [SalesController::class, 'customer_balances'])->name('customer_balances');
+    
     //Branch Managers
     Route::get('/branch_loans', [BranchController::class, 'loans'])->name('branch_loans');
     Route::get('/pending_branch_loans', [BranchController::class, 'pending_branch_loans'])->name('pending_branch_loans');

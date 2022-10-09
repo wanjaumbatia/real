@@ -17,19 +17,17 @@
                                 <th>Amount</th>
                                 <th>Interest</th>
                                 <th>Duration</th>
-                                <th>Currenct Savings</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($loans as $item)
                             <tr>
-                                <td>{{$item->name}}</td>
-                                <td>{{$item->application_date}}</td>
-                                <td>{{number_format($item->amount, 2)}}</td>
-                                <td>{{$item->interest_percentage}} %</td>
+                                <td>{{$item->customer}}</td>
+                                <td>{{$item->created_at}}</td>
+                                <td>{{number_format($item->loan_amount, 2)}}</td>
+                                <td>{{$item->percentage}} %</td>
                                 <td>{{$item->duration}} Months</td>
-                                <th>{{number_format($item->current_savings, 2)}}</th>
                                 <td><a href="/branch_loan/{{$item->id}}" class="btn btn-primary btn-block">Open</a></td>
                             </tr>
                             @endforeach

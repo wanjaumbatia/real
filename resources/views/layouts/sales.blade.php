@@ -51,10 +51,15 @@
                     <ul class="navbar-nav me-auto">
                         @guest
                         @else
-                        <li class="nav-item">
-                            <a class="nav-link" href="/customers">{{ __('Customers') }}</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Customers
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/customers">All Customers</a>
+                                <a class="dropdown-item" href="/customer_balances">Customer Balances</a>
+                            </div>
                         </li>
-
                         @if(Auth::user()->office_admin == true)
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('office.list') }}">{{ __('Reconciliation') }}</a>
