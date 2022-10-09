@@ -20,7 +20,6 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Balance</th>
-                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
