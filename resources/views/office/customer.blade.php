@@ -72,6 +72,8 @@
                         </div>
                     </form>
 
+                    <a href="/customer/{{$customer->id}}" class="btn btn-primary w-100">Open Card</a>
+
                     <div class="accordion mt-4" id="accordionExample">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingTwo">

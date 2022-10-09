@@ -116,13 +116,51 @@ class OfficeController extends Controller
         return view('office.recon_report_by_date')->with(['data' => $result]);
     }
 
-    public function recon_statement(Request $request, $date)
+    public function recon_statement(Request $request)
     {
         $branch = auth()->user()->branch;
         //$data = DB::select("select created_by as handler, sum(debit) as amount from payments where branch = '" . $branch . "' and remarks!='Opening Balance' and status='confirmed' group by created_by;");
         $data = [];
-        $recon = ReconciliationRecord::where('branch', $branch)->whereDate('created_at', Carbon::parse($date))->get();
-        return view('office.recon_statement')->with(['data' => $data, 'recon' => $recon]);
+        $recons = Payments::where('branch', $branch)
+            ->whereDate('created_at', Carbon::parse($request->date))
+            ->where('status', 'confirmed')
+            ->where('remarks', '!=', 'Opening Balance')
+            ->latest()->get()->groupBy(function ($item) {
+                return $item->created_by;
+            });
+
+        $result = array();
+        foreach ($recons as $item) {
+            $deposits = 0;
+            $withdrawals = 0;
+            $charges = 0;
+            $regfees = 0;
+            $data = array();
+            $data['date'] = $item[0]->created_at->format('d-m-Y');
+            $data['sep'] = $item[0]->created_by;
+
+            foreach ($item as $it) {
+                if ($it->transaction_type == 'savings') {
+                    $deposits = $deposits + $it->debit;
+                }
+                if ($it->transaction_type == 'withdrawal') {
+                    $withdrawals = $withdrawals + $it->credit;
+                }
+                if ($it->transaction_type == 'charge') {
+                    $charges = $charges + $it->credit;
+                }
+                if ($it->transaction_type == 'registration') {
+                    $regfees = $regfees + $it->debit;
+                }
+            }
+            $data['deposits'] = $deposits;
+            $data['withdrawals'] = $withdrawals;
+            $data['charges'] = $charges;
+            $data['regfees'] = $regfees;
+            $result[] = $data;
+        }
+
+        return view('office.recon_statement')->with(['data' => $result]);
     }
 
     public function recon_per_ref($id)
@@ -1183,11 +1221,20 @@ class OfficeController extends Controller
 
     public function payments_by_date(Request $request)
     {
-        $data = Payments::where('transaction_type', $request->type)
-            ->where('status', 'confirmed')
-            ->whereDate('created_at', Carbon::parse($request->date))
-            ->where('branch', auth()->user()->branch)
-            ->get();
+        if ($request->sep != null) {
+            $data = Payments::where('transaction_type', $request->type)
+                ->where('status', 'confirmed')
+                ->where('created_by', $request->sep)
+                ->whereDate('created_at', Carbon::parse($request->date))
+                ->where('branch', auth()->user()->branch)
+                ->get();
+        } else {
+            $data = Payments::where('transaction_type', $request->type)
+                ->where('status', 'confirmed')
+                ->whereDate('created_at', Carbon::parse($request->date))
+                ->where('branch', auth()->user()->branch)
+                ->get();
+        }
 
         return view('office.payments_by_date')->with(['data' => $data]);
     }

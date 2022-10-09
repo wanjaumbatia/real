@@ -3,53 +3,36 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-12">
+        <div class="col-md-10">
             <div class="card">
-                <div class="card-header">
-                    <div class="row font-weight-bold">
-                        Reconciliantion Report
-                    </div>
-                </div>
+                <div class="card-header">Reconciled Records</div>
                 <div class="card-body">
-                    @if (session('status'))
-                    <div class="alert alert-success" role="alert">
-                        {{ session('status') }}
+                    <div class="table-responsive">
+                        <table class="table table-stripped">
+                            <thead>
+                                <tr>
+                                    <th>Sales Executive</th>
+                                    <th>Deposits</th>
+                                    <th>Withdrawals</th>
+                                    <th>Commission</th>
+                                    <th>Registration</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($data as $item)
+                                <tr>
+                                    <td>{{$item['sep']}}</td>
+                                    <td><a href="/payments_by_date_branch?type=savings&&date={{$item['date']}}&&sep={{$item['sep']}}">{{number_format($item['deposits'], 0)}}</a></td>
+                                    <td><a href="/payments_by_date_branch?type=withdrawal&&date={{$item['date']}}&&sep={{$item['sep']}}">{{number_format($item['withdrawals'], 0)}}</a></td>
+                                    <td><a href="/payments_by_date_branch?type=charge&&date={{$item['date']}}&&sep={{$item['sep']}}">{{number_format($item['charges'], 0)}}</a></td>
+                                    <td><a href="/payments_by_date_branch?type=registration&&date={{$item['date']}}&&sep={{$item['sep']}}">{{number_format($item['regfees'], 0)}}</a></td>
+                                    <!-- <td><a style="text-decoration: none;" href="/reconciled/{{$item['date']}}">Open</a></td> -->
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                    @endif
-
-                    <table id="table" class="table table-stripped">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Sales Executive</th>
-                                <th>Expected Amount</th>
-                                <th>Submited Amount</th>
-                                <th>Shortage</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($recon as $item)
-                            <tr>
-                                <td>{{$item->created_at}}</td>
-                                <td>{{$item->handler}}</td>
-                                <td>{{number_format($item->expected, 2)}}</td>
-                                <td>{{number_format($item->submited, 2)}}</td>
-                                <td>
-                                    @if($item->shortage==1)
-                                    Yes
-                                    @else
-                                    No
-                                    @endif
-                                </td>
-                                <td>
-                                    <a href="/recon_per_ref/{{$item->reconciliation_reference}}" class="btn btn-primary btn-sm">View</a>
-                                </td>
-                            </tr>                                
-                            @endforeach
-                        </tbody>
-                    </table>
-
                 </div>
             </div>
         </div>
@@ -57,12 +40,12 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-        $('#table').DataTable({
-            "paging": true,
-            "ordering": true,
-            "info": true
-        });
-    });
+    // $(document).ready(function() {
+    //     $('#table').DataTable({
+    //         "paging": true,
+    //         "ordering": true,
+    //         "info": true
+    //     });
+    // });
 </script>
 @endsection
