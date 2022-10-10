@@ -1,4 +1,4 @@
-@extends('layouts.branch')
+@extends('layouts.loan')
 
 @section('content')
 <div class="container">
@@ -55,14 +55,22 @@
                             </div>
                         </div>
 
-                        <div class="row mt-1">
+                        <div class="row mt-3">
                             <div class="col-md-6 col-sm-12">
                                 <div class="form-group">
                                     <label for="">Duration</label>
                                     <input type="text" class="form-control" value="{{$loan->duration}} Months" disabled>
                                 </div>
                             </div>
+
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label for="">Status</label>
+                                    <input type="text" class="form-control" value="{{$loan->loan_status}}" disabled>
+                                </div>
+                            </div>
                         </div>
+
                     </form>
 
                     <div class="card mt-3">
@@ -152,7 +160,7 @@
                                     </div>
                                     <div class="col-md-6 col-sm-12">
                                         @if($photo==false)
-                                        <label for="">Passport Photos</label>
+                                        <label for="">Passport Photo</label>
                                         <input type="file" name="passport_photo" id="passport_photo" class="form-control">
                                         @else
                                         <div class="row">
@@ -211,72 +219,33 @@
                         </div>
                     </div>
 
-
-                    <!-- <div class="card mt-3">
-                        <div class="card-header">Security</div>
+                    <div class="card mt-3">
+                        <div class="card-header">Approval Status</div>
                         <div class="card-body">
-                            <form action="/save_security/{{$loan->id}}" method="post">
-                                @csrf
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-3">
-                                            @if($loan->Collateral==true)
-                                            <input name="Collateral" type="checkbox" name="chkbx" checked />
-                                            @else
-                                            <input name="Collateral" type="checkbox" name="chkbx" />
-                                            @endif
-                                            <label>Collateral</label>
-                                        </div>
+                            @if($loan->branch_manager_approval)
+                            <div class="form-group mb-2">
+                                <label for="">Approved By Branch Manager</label>
+                                <input class="form-control" disabled value="{{$loan->branch_manager_remarks}}">
+                            </div>
+                            @endif
 
-                                        <div class="col-3">
-                                            @if($loan->Guarantorship==true)
-                                            <input name="Guarantorship" type="checkbox" name="chkbx" checked />
-                                            @else
-                                            <input name="Guarantorship" type="checkbox" name="chkbx" />
-                                            @endif
-                                            <label>Guarantorship</label>
-                                        </div>
+                            @if($loan->loan_officer_approval)
+                            <div class="form-group mb-2">
+                                <label for="">Approved By Loan Officer</label>
+                                <input class="form-control" disabled value="{{$loan->loan_officer_remarks}}">
+                            </div>
+                            @endif
 
-                                        <div class="col-3">
-                                            @if($loan->CivilServantGuarantee==true)
-                                            <input name="CivilServantGuarantee" type="checkbox" name="chkbx" checked />
-                                            @else
-                                            <input name="CivilServantGuarantee" type="checkbox" name="chkbx" />
-                                            @endif
-                                            <label>Civil Servant Guarantee</label>
-                                        </div>
 
-                                        <div class="col-3">
-                                            @if($loan->Cheque==true)
-                                            <input name="Cheque" type="checkbox" name="chkbx" checked />
-                                            @else
-                                            <input name="Cheque" type="checkbox" name="chkbx" />
-                                            @endif
-                                            <label>Cheque</label>
-                                        </div>
-                                    </div>
-                                    @if($loan->status=='pending')
-                                    <button class="btn btn-primary w-100 mt-3">Save</button>
-                                    @endif
-                            </form>
+                            @if($loan->direct)
+                            <div class="form-group mb-2">
+                                <label for="">Approved By Lo</label>
+                                <input class="form-control" disabled value="{{$loan->loan_officer_remarks}}">
+                            </div>
+                            @endif
                         </div>
-                    </div> -->
-                </div>
-
-                @if($loan->loan_status=='pending')
-                @if(Auth::user()->branch_manager == true)
-                <div class="card mt-2">
-                    <div class="card-header">Approval</div>
-                    <div class="card-body">
-                        <form method="post" action="/branch_approve_loan/{{$loan->id}}">
-                            @csrf
-                            <textarea name="comment" class="form-control w-100" placeholder="Extra Comments" rows="3" name="comment"></textarea>
-                            <button class="btn btn-primary w-100 mt-2">Approve</button>
-                        </form>
                     </div>
                 </div>
-                @endif
-                @endif
 
             </div>
         </div>

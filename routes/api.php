@@ -804,7 +804,7 @@ Route::middleware('auth:sanctum')->post("/pay", function (Request $request) {
                 // 'transaction_type'=>'commission'
             ]);
             $total = $total + $item['amount'];
-            if ($regfee < 1000) {
+            // if ($regfee < 1000) {
 
                 // $payment = Payments::create([
                 //     'savings_account_id' => $acc->id,
@@ -872,9 +872,9 @@ Route::middleware('auth:sanctum')->post("/pay", function (Request $request) {
                 //     // 'transaction_type'=>'commission'
                 // ]);
                 // $total = $total + $item['amount'];
-            } else {
+            // } else {
 
-            }
+            // }
 
         } else {
             $payment = Payments::create([

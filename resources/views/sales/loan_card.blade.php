@@ -4,6 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-12">
+
             <div class="card">
                 <div class="card-header">
                     {{$customer->name}}
@@ -55,6 +56,7 @@
                             </div>
                         </div>
 
+
                         <div class="row">
                             <div class="col-md-6 col-sm-12">
                                 <div class="form-group">
@@ -64,8 +66,8 @@
                             </div>
                             <div class="col-md-6 col-sm-12">
                                 <div class="form-group">
-                                    <label for="">Balance</label>
-                                    <input type="text" class="form-control" value="{{number_format($loan->total_balance, 2)}}" disabled>
+                                    <label for="">Status</label>
+                                    <input type="text" class="form-control" value="{{$loan->loan_status}}" disabled>
                                 </div>
                             </div>
                         </div>
@@ -73,6 +75,21 @@
 
                 </div>
             </div>
+
+            <div class="card mt-3">
+                <div class="card-header">Loan Charges</div>
+                <div class="card-body">
+                    <table class="table">
+                        @foreach($deductions as $item)
+                        <tr>
+                            <td style="font-weight: 600;">{{$item['name']}}</td>
+                            <td>{{number_format($item['amount'], 2)}}</td>
+                        </tr>
+                        @endforeach
+                    </table>
+                </div>
+            </div>
+
             <div class="card mt-3">
                 <div class="card-header">Repayment Details</div>
                 <div class="card-body">

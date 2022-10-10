@@ -6,7 +6,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    Loans --{{$status}}
+                    Loans
                 </div>
                 <div class="card-body">
 

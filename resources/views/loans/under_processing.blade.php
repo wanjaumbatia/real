@@ -1,4 +1,4 @@
-@extends('layouts.branch')
+@extends('layouts.loan')
 
 @section('content')
 <div class="container">
@@ -6,7 +6,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    Loans under processing
+                    Under Processing Loans
                 </div>
                 <div class="card-body">
                     <table id='table' class="table table-striped mt-2">
@@ -28,7 +28,7 @@
                                 <td>{{number_format($item->loan_amount, 2)}}</td>
                                 <td>{{$item->percentage}} %</td>
                                 <td>{{$item->duration}} Months</td>
-                                <td><a href="/processing_branch_loan_card/{{$item->id}}" class="btn btn-primary btn-block">Open</a></td>
+                                <td><a href="/loans/process/{{$item->id}}" class="btn btn-primary btn-block">Open</a></td>
                             </tr>
                             @endforeach
                         </tbody>

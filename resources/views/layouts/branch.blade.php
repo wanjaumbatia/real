@@ -87,7 +87,12 @@
                                 <a class="dropdown-item" href="/approved_branch_loans">{{ __('Approved Loans') }}</a>
                             </div>
                         </li>
-                        
+
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/recon_report_by_date">{{ __('Reconciliation Report') }}</a>
+                        </li>
+                       
                         @endguest
                     </ul>
 

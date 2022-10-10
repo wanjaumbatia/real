@@ -84,8 +84,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/loans/index', [LoanController::class, 'index'])->name('loans.index');
     Route::get('/loans/process', [LoanController::class, 'request'])->name('loans.requests');
     Route::get('/loans/process/{id}', [LoanController::class, 'processing_loan_card'])->name('loans.process_card');
-
-
+    Route::get('/loans_by_branch', [LoanController::class, 'loans_by_branch'])->name('loans.loans_by_branch');
+    Route::get('/request_card/{id}', [LoanController::class, 'request_card'])->name('loans.request_card');
+    
+    Route::get('/loan_repay_ledger_single/{id}', [LoanController::class, 'loan_repay_ledger_single'])->name('loan_repay_ledger_single');
+    Route::get('/loan_repay_ledger', [LoanController::class, 'loan_repay_ledger'])->name('loan_repay_ledger');
+    Route::get('/loan_ledger', [LoanController::class, 'loan_ledger'])->name('loan_ledger');
+    Route::get('/charge_date', [LoanController::class, 'charge_date'])->name('charge_datejk');
+    
     Route::get('/office/commissions', [OfficeController::class, 'commissions'])->name('office.commissions');
     Route::get('/office/pof/{id}', [OfficeController::class, 'pay_on_field'])->name('office.pof');
     Route::post('/import', [UserDetails::class, 'uploadUsers'])->name('import');
@@ -122,6 +128,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/branch_loans', [BranchController::class, 'loans'])->name('branch_loans');
     Route::get('/pending_branch_loans', [BranchController::class, 'pending_branch_loans'])->name('pending_branch_loans');
     Route::get('/processing_branch_loans', [BranchController::class, 'processing_branch_loans'])->name('processing_branch_loans');
+    Route::get('/processing_branch_loan_card/{id}', [BranchController::class, 'processing_loan_card'])->name('processing_branch_loan_card');
+    
+    
     Route::post('/save_security/{id}', [BranchController::class, 'save_security'])->name('save_security');
 
     Route::get('/branch_loan/{id}', [BranchController::class, 'loan_card'])->name('loan_card');
@@ -139,7 +148,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/charge_interest', [LoanController::class, 'charge_interest'])->name('charge_interest');
     //Route::get('/loan_repayment', [LoanController::class, 'loan_repayment'])->name('loan_repayment');
     Route::post('/loan_officer_approval/{id}', [LoanController::class, 'loan_officer_approval'])->name('loan_officer_approval');
-
+    Route::get('/under_processing', [LoanController::class, 'under_processing'])->name('loans.under_processing');
+    
     Route::post('/branch_reject_loan/{id}', [BranchController::class, 'branch_reject_loan'])->name('branch_reject_loan');
 
 

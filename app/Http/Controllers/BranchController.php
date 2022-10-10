@@ -109,43 +109,7 @@ class BranchController extends Controller
     {
         if (auth()->user()->branch_manager == true) {
             $branch = auth()->user()->branch;
-            // if ($request->status == null || $request->status == 'all') {
-            //     $data = DB::select("
-            //     select 
-            //             loans.id, 
-            //             loans.name, 
-            //             loans.application_date,
-            //             loans.customer_id,
-            //             loans.amount, 
-            //             loans.paid,
-            //             loans.interest_percentage,
-            //             loans.duration,
-            //             loans.handler,
-            //             loans.status,
-            //             loans.remarks,
-            //             users.branch,
-            //             loans.current_savings
-            //         from loans inner join users on  loans.handler = users.name where branch='" . $branch . "';
-            //     ");
-            // } else {
-            //     $data = DB::select("
-            //     select 
-            //             loans.id, 
-            //             loans.name, 
-            //             loans.application_date,
-            //             loans.customer_id,
-            //             loans.amount, 
-            //             loans.paid,
-            //             loans.interest_percentage,
-            //             loans.duration,
-            //             loans.handler,
-            //             loans.status,
-            //             loans.remarks,
-            //             users.branch ,
-            //             loans.current_savings
-            //         from loans inner join users on  loans.handler = users.name where branch='" . $branch . "' and status = '" . $request->status . "';
-            //     ");
-            // }
+        
 
             $loans = LoansModel::where('branch', auth()->user()->branch)->where('loan_status', $request->status)->get();
 
@@ -185,23 +149,8 @@ class BranchController extends Controller
     public function processing_branch_loans(Request $request)
     {
         $branch = auth()->user()->branch;
-        $data = DB::select("
-        select 
-                loans.id, 
-                loans.name, 
-                loans.application_date,
-                loans.customer_id,
-                loans.amount, 
-                loans.paid,
-                loans.interest_percentage,
-                loans.duration,
-                loans.handler,
-                loans.status,
-                loans.remarks,
-                users.branch,
-                loans.current_savings
-            from loans inner join users on  loans.handler = users.name where branch='" . $branch . "' and loans.status ='processing';
-        ");
+
+        $data = LoansModel::where('branch', auth()->user()->branch)->where('loan_status', 'processing')->get();
 
         return view('branch.processing_loans')->with(['loans' => $data,]);
     }
@@ -232,7 +181,7 @@ class BranchController extends Controller
 
     public function save_security(Request $request, $id)
     {
-        $loan = Loan::where('id', $id)->first();
+        $loan = LoansModel::where('id', $id)->first();
         if ($request->Collateral) {
             $ln = Loan::where('id', $id)->update([
                 'legal' => true,
@@ -308,7 +257,7 @@ class BranchController extends Controller
             $rec = array();
             $rec['name'] = $item->name;
             if ($item->percentange == true) {
-                $rec['amount'] = $loan->amount * ($item->percentange_amount / 100);
+                $rec['amount'] = $loan->loan_amount * ($item->percentange_amount / 100);
             } else {
                 $rec['amount'] = $item->amount;
             }
@@ -387,9 +336,9 @@ class BranchController extends Controller
 
     public function branch_approve_loan(Request $request, $id)
     {
-        $loan = Loan::where('id', $id)->first();
-        $ln = Loan::where('id', $id)->update([
-            'status' => 'processing',
+        $loan = LoansModel::where('id', $id)->first();
+        $ln = LoansModel::where('id', $id)->update([
+            'loan_status' => 'processing',
             'branch_manager_approval' => true,
             'branch_manager_remarks' => $request->comment
         ]);
@@ -732,5 +681,70 @@ class BranchController extends Controller
         ]);
 
         return redirect('/branch_loan/' . $loan->id);
+    }
+
+    public function processing_loan_card($id)
+    {
+        //get loan details
+        $loan = LoansModel::where('id', $id)->first();
+        //get customer details
+        $customer = Customer::where('id', $loan->customer_id)->first();
+        $identity = false;
+        $photo = false;
+        $form = false;
+        $guarantor = false;
+        $agreement = false;
+        $loan_forms = LoanForm::where('loan_id', $id)->get();
+        foreach ($loan_forms as $item) {
+            if ($item->title == 'ID Number') {
+                $identity = true;
+            }
+
+            if ($item->title == 'Photo') {
+                $photo = true;
+            }
+
+            if ($item->title == 'Loan Form') {
+                $form = true;
+            }
+
+            if ($item->title == 'Guarantor') {
+                $guarantor = true;
+            }
+
+            if ($item->title == 'Agreement') {
+                $agreement = true;
+            }
+        }
+        //create charges
+        $security = LoanSecurityType::where('active', true)->get();
+        //calculate payments
+        $deduction = LoanDeduction::where('active', true)->get();
+        $deductions = array();
+        foreach ($deduction as $item) {
+            $rec = array();
+            $rec['name'] = $item->name;
+            if ($item->percentange == true) {
+                $rec['amount'] = $loan->loan_amount * ($item->percentange_amount / 100);
+            } else {
+                $rec['amount'] = $item->amount;
+            }
+            $deductions[] = $rec;
+        }
+
+
+        return view('branch.processing_loan_card')
+            ->with([
+                'loan' => $loan,
+                'deductions' => $deductions,
+                'securities' => $security,
+                'customer' => $customer,
+                'loan_forms' => $loan_forms,
+                'identity' => $identity,
+                'photo' => $photo,
+                'guarantor' => $guarantor,
+                'agreement' => $agreement,
+                'form' => $form
+            ]);
     }
 }

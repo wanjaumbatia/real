@@ -1255,9 +1255,20 @@ class OfficeController extends Controller
         ]);
     }
 
-    public function fix_reg_fee(){
-        $data = Payments::get();
-        dd($data);
-        return view('regfee_fix')->with(['data', $data]);
+    public function fix_reg_fee()
+    {
+        //$data = Payments::whereDate('created_at', '>', '2022-10-08')->get();
+        $data = Payments::whereDate('created_at', Carbon::parse('2022-10-08'))
+            ->where('remarks', '!=', 'Opening Balance')
+            ->where('transaction_type', '!=', 'withdrawal')
+            ->where('transaction_type', '!=', 'charge')
+            ->latest()->get()->groupBy(function ($item) {
+                return $item->batch_number;
+            });
+
+        // foreach ($data as $item) {
+        //     dd($item);
+        // }
+        return view('regfee_fix')->with(['data'=> $data]);
     }
 }

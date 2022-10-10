@@ -6,9 +6,9 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    Pending Loans
+                    Requested Loans
                 </div>
-                <div class="card-body">                  
+                <div class="card-body">
                     <table id='table' class="table table-striped mt-2">
                         <thead>
                             <tr>
@@ -23,13 +23,12 @@
                         <tbody>
                             @foreach($loans as $item)
                             <tr>
-                                <td>{{$item->name}}</td>
-                                <td>{{$item->application_date}}</td>
-                                <td>{{number_format($item->amount, 2)}}</td>
-                                <td>{{$item->interest_percentage}} %</td>
+                                <td>{{$item->customer}}</td>
+                                <td>{{$item->created_at}}</td>
+                                <td>{{number_format($item->loan_amount, 2)}}</td>
+                                <td>{{$item->percentage}} %</td>
                                 <td>{{$item->duration}} Months</td>
-                                <td><a href="/loans/process/{{$item->id}}" class="btn btn-primary btn-block">Open</a></td>
-
+                                <td><a href="/request_card/{{$item->id}}" class="btn btn-primary btn-block">Open</a></td>
                             </tr>
                             @endforeach
                         </tbody>

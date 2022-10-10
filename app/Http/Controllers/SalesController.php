@@ -6,6 +6,7 @@ use App\Models\BankAccounts;
 use App\Models\CommissionLines;
 use App\Models\Customer;
 use App\Models\Loan;
+use App\Models\LoanDeduction;
 use App\Models\LoanLedgerEntries;
 use App\Models\LoanRepayment;
 use App\Models\LoanRepaymentModel;
@@ -217,25 +218,24 @@ class SalesController extends Controller
         $loan = LoansModel::where('id', $id)->first();
         //get customer details
         $customer = Customer::where('id', $loan->customer_id)->first();
-        $statement = LoanLedgerEntries::where('loan_model_id', $loan->id)->get();
-        //generate ledger entries
-        // $loans = LoansModel::all();
-        // foreach ($loans as $item) {
-        //     LoanLedgerEntries::create([
-        //         'loan_model_id'=>$item->id,
-        //         'customer_id'=>$customer->id,
-        //         'customer'=>$customer->name,
-        //         'handler'=>$customer->handler,
-        //         'branch'=>$customer->branch,
-        //         'remarks'=>'Opening Balance From Old System',
-        //         'debit'=>$item->total_balance,
-        //         'credit'=>0,
-        //         'amount'=>$item->total_balance,
-        //     ]);
-        // }
+        
+        $statement = LoanLedgerEntries::where('loan_model_id', $loan->id)->get();   
+
+        $deduction = LoanDeduction::where('active', true)->get();
+        $deductions = array();
+        foreach ($deduction as $item) {
+            $rec = array();
+            $rec['name'] = $item->name;
+            if ($item->percentange == true) {
+                $rec['amount'] = $loan->loan_amount * ($item->percentange_amount / 100);
+            } else {
+                $rec['amount'] = $item->amount;
+            }
+            $deductions[] = $rec;
+        }
 
         return view('sales.loan_card')->with([
-            'customer' => $customer, 'loan' => $loan, 'statement' => $statement
+            'customer' => $customer, 'loan' => $loan, 'statement' => $statement, 'deductions' => $deductions,
         ]);
     }
 
@@ -743,7 +743,7 @@ class SalesController extends Controller
                 $saving_accounts['confirmed'] = number_format($confirmed_transaction, 2);
                 $saving_accounts['pending_withdrawal'] = number_format(($pending_withdrawal + $pending_penalty) * -1, 2);
                 if ($acc->plan == "Regular") {
-                    $loan = Loan::where('customer_id', $customer->id)->first();
+                    $loan = LoansModel::where('customer_id', $customer->id)->first();
                     if ($loan != null) {
                         $pend_loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'pending')->sum('amount');
                         $pending_transaction = $pending_transaction + $pend_loan_repayment;
@@ -755,8 +755,7 @@ class SalesController extends Controller
             }
 
             $loan = LoansModel::where('customer_id', $customer->id)->first();
-
-
+           
             $result = array();
             $result['customer'] = $customer;
             $result['accounts'] = $data;
@@ -837,7 +836,13 @@ class SalesController extends Controller
                 'purpose' => $request->purpose,
                 'remarks' => 'New Loan',
                 'disbursed' => false,
-                'disbursement_mode' => ''
+                'disbursement_mode' => '',
+
+                'total_interest' => $request->amount * 5.5 / 100 * $request->duration,
+                'total_interest_paid' => 0,
+                'monthly_interest' => $request->amount * 5.5 / 100,
+                'monthly_principle' => $request->amount / $request->duration,
+                'total_monthly_payment' => ($request->amount * 5.5 / 100) + ($request->amount / $request->duration)
             ]);
 
             return response()->json([
@@ -1012,8 +1017,9 @@ class SalesController extends Controller
         return view('sales.payments_by_date')->with(['data' => $data]);
     }
 
-    public function customer_balances(){
-        $data = DB::select("select customers.id, customers.name, sum(payments.amount) as balance from payments inner join customers on payments.customer_id=customers.id where payments.created_by = '". auth()->user()->name ."' group by customer_id");
-        return view('sales.customer_balances')->with(['data'=>$data]);
+    public function customer_balances()
+    {
+        $data = DB::select("select customers.id, customers.name, sum(payments.amount) as balance from payments inner join customers on payments.customer_id=customers.id where payments.created_by = '" . auth()->user()->name . "' group by customer_id");
+        return view('sales.customer_balances')->with(['data' => $data]);
     }
 }

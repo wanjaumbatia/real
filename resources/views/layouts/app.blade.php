@@ -67,7 +67,7 @@
                         </li>
                         @endif
 
-                        
+
                         @if(Auth::user()->office_admin == true)
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('office.commissions') }}">{{ __('Commissions') }}</a>
@@ -79,6 +79,50 @@
                             <a class="nav-link" href="">{{ __('Legal') }}</a>
                         </li>
                         @endif
+
+                        @if(Auth::user()->branch_manager == true)
+                        <li class="nav-item">
+                            <a class="nav-link" href="">{{ __('Sales') }}</a>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Clients
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/branch/clients">All Clients</a>
+                                <a class="dropdown-item" href="#">Active Clients</a>
+                                <a class="dropdown-item" href="#">Inactive Clients</a>
+                            </div>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Sales Executive
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/branch/sales_executives">All Sales Executives</a>
+                            </div>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Loans
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/branch_loans">{{ __('Branch Report') }}</a>
+                                <a class="dropdown-item" href="/pending_branch_loans">{{ __('Applied Loans') }}</a>
+                                <a class="dropdown-item" href="/processing_branch_loans">{{ __('Processing Loans') }}</a>
+                                <a class="dropdown-item" href="/approved_branch_loans">{{ __('Approved Loans') }}</a>
+                            </div>
+                        </li>
+
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/recon_report_by_date">{{ __('Reconciliation Report') }}</a>
+                        </li>
+                        @endif
+
                         @endguest
                     </ul>
 

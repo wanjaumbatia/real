@@ -9,5 +9,15 @@ class LoanLedgerEntries extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'loan_model_id',
+        'customer_id',
+        'customer',
+        'handler',
+        'branch',
+        'remarks',
+        'debit',
+        'credit',
+        'amount'
+    ];
 }

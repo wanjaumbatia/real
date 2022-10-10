@@ -1,4 +1,4 @@
-@extends('layouts.branch')
+@extends('layouts.loan')
 
 @section('content')
 <div class="container">
@@ -60,6 +60,12 @@
                                 <div class="form-group">
                                     <label for="">Duration</label>
                                     <input type="text" class="form-control" value="{{$loan->duration}} Months" disabled>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label for="">Current Savings</label>
+                                    <input type="text" class="form-control" value="{{number_format($customer_savings)}}" disabled>
                                 </div>
                             </div>
                         </div>
@@ -261,23 +267,52 @@
                             </form>
                         </div>
                     </div> -->
-                </div>
 
-                @if($loan->loan_status=='pending')
-                @if(Auth::user()->branch_manager == true)
-                <div class="card mt-2">
-                    <div class="card-header">Approval</div>
-                    <div class="card-body">
-                        <form method="post" action="/branch_approve_loan/{{$loan->id}}">
-                            @csrf
-                            <textarea name="comment" class="form-control w-100" placeholder="Extra Comments" rows="3" name="comment"></textarea>
-                            <button class="btn btn-primary w-100 mt-2">Approve</button>
-                        </form>
+                    <div class="card mt-3">
+                        <div class="card-header">Approval Remarks</div>
+                        <div class="card-body">
+                            @if($loan->branch_manager_approval)
+                            <div class="form-group mb-2">
+                                <label for="">Branch Manager Remarks</label>
+                                <input class="form-control" disabled value="{{$loan->branch_manager_remarks}}">
+                            </div>
+                            @endif
+
+                            @if($loan->loan_officer_approval)
+                            <div class="form-group mb-2">
+                                <label for="">Approved By Loan Officer</label>
+                                <input class="form-control" disabled value="{{$loan->loan_officer_remarks}}">
+                            </div>
+                            @endif
+                        </div>
                     </div>
-                </div>
-                @endif
-                @endif
 
+                    @if($loan->loan_status=='processing' && $loan->branch_manager_approval == true)
+                    @if(Auth::user()->loan_officer == true)
+                    <div class="card mt-2">
+                        <div class="card-header">Approval</div>
+                        <div class="card-body">
+                            <form method="post" action="/loan_officer_approval/{{$loan->id}}">
+                                @csrf
+                                <div class="form-group">
+                                    <label for="">More approvals</label>
+                                    <select name="approval" id="approval" class="form-control">
+                                        <option value="0">Direct</option>
+                                        <option value="1">Legal</option>
+                                        <option value="2">Public Finance</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Remarks</label>
+                                    <textarea name="comment" class="form-control w-100" placeholder="Extra Comments" rows="3" name="comment"></textarea>
+                                </div>
+                                <button class="btn btn-primary w-100 mt-2">Approve</button>
+                            </form>
+                        </div>
+                    </div>
+                    @endif
+                    @endif
+                </div>
             </div>
         </div>
     </div>

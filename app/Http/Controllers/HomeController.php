@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\Loan;
+use App\Models\LoansModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -48,10 +49,15 @@ class HomeController extends Controller
             return view('office.index')->with(['data' => $data, 'total_expected' => $total_expected]);
         } else if ($user->branch_manager == true) {
             return view('branch.index');
-        } else if ($user->loan_officer == true) {           
-            return view('loans.dashboard');
-        } else if ($user->legal == true) {       
-            
+        } else if ($user->loan_officer == true) {
+
+            $loan_totals = DB::select("SELECT (select sum(loan_amount)from loans_models) as total_loan_amount, (select sum(loan_amount) from loans_models where loan_status='ACTIVE') as total_loan_amount_active, (select sum(loan_amount) from loans_models where loan_status='EXPIRED') as total_loan_amount_expire, (select sum(loan_amount) from loans_models where loan_status='BAD') as total_loan_amount_bad FROM loans_models LIMIT 1;");
+            $loan_balances = DB::select("SELECT (select sum(total_balance)from loans_models) as total_balance_amount, (select sum(total_balance) from loans_models where loan_status='ACTIVE') as total_loan_balance_amount_active, (select sum(total_balance) from loans_models where loan_status='EXPIRED') as total_loan_balance_amount_expire, (select sum(total_balance) from loans_models where loan_status='BAD') as total_loan_balance_amount_bad FROM loans_models LIMIT 1;"); 
+           
+
+            return view('loans.dashboard')->with(['loan_totals' => $loan_totals[0]]);
+        } else if ($user->legal == true) {
+
             $data = DB::select("
             select 
                     loans.id, 
@@ -75,6 +81,4 @@ class HomeController extends Controller
             return abort(401);
         }
     }
-
-    
 }
