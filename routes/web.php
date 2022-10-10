@@ -99,7 +99,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/import_loans', [UserDetails::class, 'uploadLoans'])->name('import_loans');
     Route::post('/import_customers', [MembersController::class, 'uploadCustomers'])->name('import_customers');
-    Route::get('/create_account', [OfficeController::class, 'import_accounts'])->name('import_accounts');
+    //Route::get('/create_account', [OfficeController::class, 'import_accounts'])->name('import_accounts');
     Route::get('/reset_accounts', [OfficeController::class, 'reset_balances'])->name('reset_accounts');
 
     Route::get('/repayment', [OfficeController::class, 'save_loan_repayment'])->name('repayments');

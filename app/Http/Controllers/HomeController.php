@@ -50,9 +50,8 @@ class HomeController extends Controller
         } else if ($user->branch_manager == true) {
             return view('branch.index');
         } else if ($user->loan_officer == true) {
-            return redirect()->to('recon_report_by_date');
+            return redirect()->to('/recon_report_by_date');
         } else if ($user->legal == true) {
-
             $data = DB::select("
             select 
                     loans.id, 
@@ -70,7 +69,6 @@ class HomeController extends Controller
                     loans.current_savings
                 from loans inner join users on  loans.handler = users.name and status = 'processing' and loans.legal='1';
             ");
-
             return view('loans.legal_loans')->with(['loans' => $data]);;
         } else {
             return abort(401);
