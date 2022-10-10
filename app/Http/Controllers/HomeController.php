@@ -50,12 +50,7 @@ class HomeController extends Controller
         } else if ($user->branch_manager == true) {
             return view('branch.index');
         } else if ($user->loan_officer == true) {
-
-            $loan_totals = DB::select("SELECT (select sum(loan_amount)from loans_models) as total_loan_amount, (select sum(loan_amount) from loans_models where loan_status='ACTIVE') as total_loan_amount_active, (select sum(loan_amount) from loans_models where loan_status='EXPIRED') as total_loan_amount_expire, (select sum(loan_amount) from loans_models where loan_status='BAD') as total_loan_amount_bad FROM loans_models LIMIT 1;");
-            $loan_balances = DB::select("SELECT (select sum(total_balance)from loans_models) as total_balance_amount, (select sum(total_balance) from loans_models where loan_status='ACTIVE') as total_loan_balance_amount_active, (select sum(total_balance) from loans_models where loan_status='EXPIRED') as total_loan_balance_amount_expire, (select sum(total_balance) from loans_models where loan_status='BAD') as total_loan_balance_amount_bad FROM loans_models LIMIT 1;"); 
-           
-
-            return view('loans.dashboard')->with(['loan_totals' => $loan_totals[0]]);
+            return redirect()->to('recon_report_by_date');
         } else if ($user->legal == true) {
 
             $data = DB::select("
