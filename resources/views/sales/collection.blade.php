@@ -12,9 +12,8 @@
                 </div>
 
                 <div class="card-body">
-
                     <input value="{{$customer->id}}" hidden name="id" id="id" />
-                    <form id='collection-form1' method="post">
+                    <form id='collection-form'>
                         @foreach ($accounts as $acc)
                         <div class="form-group">
                             <label for="">{{$acc->name}}</label>
@@ -35,6 +34,7 @@
 
         $('#collection-form').submit((e) => {
             e.preventDefault();
+            console.log('paying');
             var id = $('#id').val();
             var items = $('#collection-form').serializeArray()
             var transactions = [];

@@ -540,6 +540,7 @@ class SalesController extends Controller
 
     public function pay(Request $request)
     {
+        Log::info('$test');
         $savingsAccount = SavingsAccount::where('customer_id', $request->id)->get();
         $total = 0;
         $batch_number = rand(100000000, 999999999);
