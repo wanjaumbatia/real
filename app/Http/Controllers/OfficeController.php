@@ -1065,7 +1065,7 @@ class OfficeController extends Controller
 
             $diff_in_months = $to->diffInMonths($from);
 
-            if ($diff_in_months >= $plan->duration) {
+            if ($diff_in_months <= $plan->duration) {
 
                 $pending_withdrawal = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('credit');
 
