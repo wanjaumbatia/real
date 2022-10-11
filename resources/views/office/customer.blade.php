@@ -377,6 +377,37 @@
                         </div>
 
                         <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingten">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseten" aria-expanded="true" aria-controls="collapseOne">
+                                    Edit Customer Name
+                                </button>
+                            </h2>
+                            <div id="collapseten" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <div class="table-response">
+                                    <form action="/change_name" method="post">
+                                        @csrf
+                                        <div class="form-group">
+                                            <label for="">Old Name</label>
+                                            <input type="number" class="form-control" name="id" value="{{$customer->id}}" hidden />
+                                            <input type="number" class="form-control" name="old_name" value="{{$customer->name}}" hidden />
+                                            <input type="number" class="form-control" name="old_name" value="{{$customer->name}}" disabled />
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="">New Name</label>
+                                            <input type="number" class="form-control" name="new_name" />
+                                        </div>
+
+                                        <button class="btn btn-primary w-100 mt-3">Submit</button>
+                                    </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="accordion-item">
                             <h2 class="accordion-header" id="headingThree">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseOne">
                                     Phone Number Change

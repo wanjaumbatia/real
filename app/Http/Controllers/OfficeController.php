@@ -329,6 +329,17 @@ class OfficeController extends Controller
         return redirect()->to($url);
     }
 
+    public function change_name(Request $request)
+    {
+        $customer = Customer::where('id', $request->id)->first();
+
+        $cust = Customer::where('id', $customer->id)->update([
+            'name' => $request->new_name,
+        ]);
+        $url = '/sep_customer/' . $customer->id;
+        return redirect()->to($url);
+    }
+
     public function change_amount(Request $request)
     {
         $payment = Payments::where('id', $request->id)->first();

@@ -160,6 +160,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/sep-customers/{name}', [OfficeController::class, 'customer_seps'])->name('customer_seps');
     Route::get('/sep_customer/{id}', [OfficeController::class, 'customer'])->name('sep_customer');
     Route::post('/change_phone', [OfficeController::class, 'change_phone'])->name('change_phone');
+    Route::post('/change_name', [OfficeController::class, 'change_name'])->name('change_name');
     Route::post('/migrate_plan', [OfficeController::class, 'migrate_plan'])->name('migrate_plan');
     Route::get('/loans', [SalesController::class, 'loans'])->name('sep_loans');
     Route::post('/change_amount', [OfficeController::class, 'change_amount'])->name('change_amount');
