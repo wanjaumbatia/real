@@ -185,6 +185,7 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/search', [OfficeController::class, 'search_customer'])->name('search');
+    Route::post('/make_deposit', [OfficeController::class, 'make_deposit'])->name('make_deposit');
 
     Route::post('/post_withdrawal1', [OfficeController::class, 'post_withdrawal'])->name('post_withdrawal');
 

@@ -130,6 +130,7 @@
                                                     @endif
                                                     <th>Change Plan</th>
                                                     <th>Withdrawal</th>
+                                                    <th>Deposit</th>
                                                     <th></th>
                                                 </tr>
                                             </thead>
@@ -186,6 +187,25 @@
                                                                     </div>
                                                                     <div class="col-12">
                                                                         <input class="form-control" name='payment' type="number" value="Office Admin" hidden />
+                                                                    </div>
+                                                                    <button class="btn btn-primary w-100" type="submit">Post</button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </td>
+                                                    <td>
+                                                        <form action="/make_deposit" method="POST">
+                                                            @csrf
+                                                            <input type="number" name="id" value="{{$item->id}}" hidden>
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <input type="text" name="id" value="{{$item->id}}" hidden>
+                                                                    <input value="{{$customer->id}}" hidden name="dt" id="dt" />
+                                                                    <div class="form-group">
+                                                                        <input class="form-control" name='amount' type="number" placeholder="Amount" />
+                                                                    </div>
+                                                                    <div class="form-group my-1">
+                                                                        <input type="date" class="form-control" name='date' type="number" placeholder="Commission" />
                                                                     </div>
                                                                     <button class="btn btn-primary w-100" type="submit">Post</button>
                                                                 </div>

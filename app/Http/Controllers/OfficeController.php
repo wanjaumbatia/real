@@ -201,10 +201,49 @@ class OfficeController extends Controller
     public function search_customer(Request $request)
     {
         if ($request->userid !== null) {
-            $data = DB::select("select * from customers where name like '%".$request->userid."%'");
+            $data = DB::select("select * from customers where name like '%" . $request->userid . "%'");
             return view('search')->with(['customer' => $data]);
         }
         return view('search')->with(['customer' => null]);
+    }
+
+    public function make_deposit(Request $request)
+    {
+        $batch_number = rand(100000000, 999999999);
+        $reference = rand(100000000, 999999999);
+
+        $acc = SavingsAccount::where('id', $request->id)->first();
+        $customer_id = $acc->customer_id;
+        $customer = Customer::where('id', $acc->customer_id)->first();
+        $payment = Payments::create([
+            'savings_account_id' => $acc->id,
+            'plan' => $acc->plan,
+            'customer_id' => $acc->customer_id,
+            'customer_name' => $acc->customer,
+            'transaction_type' => 'savings',
+            'status' => 'pending',
+            'remarks' => 'Collection from ' . $acc->customer . ' of ₦' . number_format($request->amount, 2),
+            'debit' => $request->amount,
+            'credit' => 0,
+            'amount' => $request->amount,
+            'requires_approval' => false,
+            'approved' => false,
+            'posted' => false,
+            'created_by' => $request->user()->name,
+            'branch' => $request->user()->branch,
+            'batch_number' => $batch_number,
+            'reference' => $reference,
+            'created_at' => $request->date
+        ]);
+
+        $cust = Customer::where('id', $customer_id)->first();
+        $balance = get_total_balance($customer_id);
+
+
+
+        return response([
+            'success' => true
+        ]);
     }
 
     public function customer($id)
