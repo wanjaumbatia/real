@@ -393,7 +393,7 @@ class SalesController extends Controller
                 'customer_id' => $account->customer_id,
                 'customer_name' => $account->customer,
                 'transaction_type' => 'withdrawal',
-                'status' => 'open',
+                'status' => 'pending',
                 'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
                 'debit' => 0,
                 'credit' => $request->amount,
@@ -401,8 +401,8 @@ class SalesController extends Controller
                 'requires_approval' => $approval,
                 'approved' => false,
                 'posted' => false,
-                'created_by' => auth()->user()->name,
-                'branch' => auth()->user()->branch,
+                'created_by' => $customer->handler,
+                'branch' => $customer->branch,
                 'batch_number' => $otp
             ]);
 
@@ -421,8 +421,8 @@ class SalesController extends Controller
                 'requires_approval' => $approval,
                 'approved' => false,
                 'posted' => false,
-                'created_by' => auth()->user()->name,
-                'branch' => auth()->user()->branch,
+                'created_by' => $customer->handler,
+                'branch' => $customer->branch,
                 'batch_number' => $otp
             ]);
 
@@ -437,9 +437,10 @@ class SalesController extends Controller
                 'transaction_type' => 'withdrawal',
                 'payment_id' => $charge->id,
                 'disbursed' => false,
-                'branch' => auth()->user()->branch,
+                'branch' => $customer->branch,
                 'approved' => false,
                 // 'transaction_type'=>'commission'
+                //test
             ]);
         }
 
