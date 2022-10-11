@@ -7,7 +7,7 @@
             <div class="row">
                 <div class="col-6">
                     {{ __('Search Customer') }}
-                </div> 
+                </div>
             </div>
         </div>
         <div class="card-body">
@@ -20,16 +20,18 @@
             </form>
 
             @if($customer !== null)
-                <table class="table">
-                    <tr>
-                        <td>{{$customer->name}}</td>
-                        <td>{{$customer->phone}}</td>
-                        <td>{{$customer->handler}}</td>
-                        <td>
-                            <a href="/sep_customer/{{$customer->id}}" class="btn btn-primary btn-sm w-100">Open</a>
-                        </td>
-                    </tr>
-                </table>
+            <table class="table">
+                @foreach($customer as $item)
+                <tr>
+                    <td>{{$item->name}}</td>
+                    <td>{{$item->phone}}</td>
+                    <td>{{$item->handler}}</td>
+                    <td>
+                        <a href="/sep_customer/{{$item->id}}" class="btn btn-primary btn-sm w-100">Open</a>
+                    </td>
+                </tr>
+                @endforeach
+            </table>
             @endif
         </div>
     </div>

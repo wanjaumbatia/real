@@ -201,8 +201,8 @@ class OfficeController extends Controller
     public function search_customer(Request $request)
     {
         if ($request->userid !== null) {
-            $customer = Customer::where('name',  'like ', '%' . $request->userid . '%')->first();
-            return view('search')->with(['customer' => $customer]);
+            $data = DB::select("select * from customers where name like '%".$request->userid."%'");
+            return view('search')->with(['customer' => $data]);
         }
         return view('search')->with(['customer' => null]);
     }
