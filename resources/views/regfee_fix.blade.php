@@ -7,11 +7,13 @@
             <div class="row">
                 <div class="col-6">
                     {{ __('Regestration Fee Fix') }}
-                </div> 
+                </div>
             </div>
         </div>
         <div class="card-body">
-          {{$data}}
+            @foreach($data as $item)
+            {{$item}}
+            @endforeach
         </div>
     </div>
     @endsection

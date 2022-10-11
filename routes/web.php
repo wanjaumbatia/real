@@ -90,7 +90,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/loan_repay_ledger_single/{id}', [LoanController::class, 'loan_repay_ledger_single'])->name('loan_repay_ledger_single');
     Route::get('/loan_repay_ledger', [LoanController::class, 'loan_repay_ledger'])->name('loan_repay_ledger');
     Route::get('/loan_ledger', [LoanController::class, 'loan_ledger'])->name('loan_ledger');
-    Route::get('/charge_date', [LoanController::class, 'charge_date'])->name('charge_datejk');
+    Route::get('/charge_date', [LoanController::class, 'charge_date'])->name('charge_date');
     
     Route::get('/office/commissions', [OfficeController::class, 'commissions'])->name('office.commissions');
     Route::get('/office/pof/{id}', [OfficeController::class, 'pay_on_field'])->name('office.pof');
@@ -108,6 +108,8 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/withdrawal_list', [SalesController::class, 'withdrawal_list'])->name('sales.withdrawal_list');
+    Route::get('/loan_repayment_logs', [SalesController::class, 'loan_repayment_logs'])->name('sales.loan_repayment_logs');
+
     Route::get('/customers', [SalesController::class, 'customers'])->name('sales.customers');
     Route::get('/customer/{id}', [SalesController::class, 'customer'])->name('sales.customer');
     Route::get('/loan/{id}', [SalesController::class, 'loan'])->name('sales.loan');
@@ -190,4 +192,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/save_customer', [SalesController::class, 'save_customer'])->name('save_customer');
 
     Route::get('/fix_reg_fee', [OfficeController::class, 'fix_reg_fee'])->name('fix_reg_fee');
+
+    Route::get('/fix_missing_transactions', [HomeController::class, 'fix_missing_transactions'])->name('fix_missing_transactions');
 });

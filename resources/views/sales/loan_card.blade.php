@@ -150,17 +150,15 @@
                             <tr>
                                 <th>Date</th>
                                 <th>Remarks</th>
-                                <th>Debit</th>
-                                <th>Credit</th>
+                                <th>Amount</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($statement as $item)
+                            @foreach($payments as $item)
                             <tr>
                                 <td>{{date('d-m-Y', strtotime($item->created_at))}}</td>
-                                <td>{{$item->remarks}}</td>
-                                <td>{{$item->debit}}</td>
-                                <td>{{$item->credit}}</td>
+                                <td>{{$item->description}}</td>
+                                <td>{{$item->amount}}</td>
                             </tr>
                             @endforeach
                         </tbody>

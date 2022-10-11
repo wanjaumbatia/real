@@ -46,45 +46,23 @@
                                 <th>Currenct Savings</th>
                                 @endif
                                 @if($status=='pending')
+                                <th>Balance</th>
                                 <th>Action</th>
+                                
                                 @endif
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($loans as $item)
                             <tr>
-                                <td>{{$item->name}}</td>
+                                <td>{{$item->customer}}</td>
                                 <td>{{$item->application_date}}</td>
-                                <td>{{number_format($item->amount, 2)}}</td>
-                                <td>{{$item->interest_percentage}} %</td>
+                                <td>{{number_format($item->loane_amount, 2)}}</td>
+                                <td>{{$item->percentage}} %</td>
                                 <td>{{$item->duration}} Months</td>
-                                @if($status=='running')
-                                <td>{{number_format($item->paid, 2)}}</td>
-                                @endif
-                                <td>
-                                    @if($item->status=='running')
-                                    <span class="btn btn-success p-1">Running</span>
-                                    @endif
-                                    @if($item->status=='pending')
-                                    <span class="btn btn-info p-1 text-white">Pending</span>
-                                    @endif
-                                    @if($item->status=='processing')
-                                    <span class="btn btn-warning p-1">Processing</span>
-                                    @endif
-                                    @if($item->status=='approved')
-                                    <span class="btn btn-default p-1">Approved</span>
-                                    @endif
-                                    @if($item->status=='bad_loan')
-                                    <span class="btn btn-danger p-1">Bad Loan</span>
-                                    @endif
-                                </td>
-                                @if($status=='pending')
-                                <th>{{number_format($item->current_savings, 2)}}</th>
-                                @endif
-                                @if($status=='pending')
-                                <td><a href="/branch_loan/{{$item->id}}" class="btn btn-primary btn-block">Open</a></td>
-                                @endif
-
+                                <td>{{number_format($item->total_balance, 0)}}</td>
+                                <td><a href="/branch_loan/{{$item->id}}" class="btn btn-primary btn-sm">View</a></td>
+                                
                             </tr>
                             @endforeach
                         </tbody>

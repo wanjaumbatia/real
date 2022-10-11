@@ -95,7 +95,7 @@
                                 </div>
                                 @endif
 
-                                @if($result['loan']->loan_status=='ACTIVE')
+                                @if($result['loan']->loan_status=='ACTIVE'||$result['loan']->loan_status=='EXPIRED'||$result['loan']->loan_status=='BAD')
                                 <div class="form-group">
                                     <label for="">Amount</label>
                                     <input type="text" class="form-control" value=" {{number_format($result['loan']->total_balance, 2)}}" disabled />

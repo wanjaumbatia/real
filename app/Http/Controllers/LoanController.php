@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\AccImport;
 use App\Imports\LoansModelImport;
 use App\Models\Branch;
 use App\Models\Customer;
@@ -83,30 +84,32 @@ class LoanController extends Controller
     public function charge_interest(Request $request)
     {
         //get loan
-        $loans = LoansModel::where('loan_status', '!=', 'BAD')->get();
+        $loans = LoansModel::where('loan_status', 'ACTIVE')->get();
 
         foreach ($loans as $loan) {
             $customer = Customer::where('id', $loan->customer_id)->first();
             //check if its charge date
-            //if (Carbon::now()->startOfDay()->gte($loan->next_charge_date) || $loan->next_charge_date == null) {
-            $interest = $loan->loan_amount * $loan->percentage / 100;
-            LoanLedgerEntries::create([
-                'loan_model_id' => $loan->id,
-                'customer_id' => $customer->id,
-                'customer' => $customer->name,
-                'handler' => $customer->handler,
-                'branch' => $customer->branch,
-                'remarks' => 'Interest Charge',
-                'debit' => $interest,
-                'credit' => 0,
-                'amount' => $interest
-            ]);
+            if (Carbon::now()->startOfDay()->gte($loan->next_charge_date) || $loan->next_charge_date == null) {
+                $interest = $loan->loan_amount * $loan->percentage / 100;
 
-            $dt = LoansModel::where('id', $loan->id)->update([
-                'total_interest' => $loan->total_interest + $interest,
-                'total_balance' => $loan->total_balance + $interest,
-                'next_charge_date' => Carbon::now()->addMonth()
-            ]);
+                LoanLedgerEntries::create([
+                    'loan_model_id' => $loan->id,
+                    'customer_id' => $customer->id,
+                    'customer' => $customer->name,
+                    'handler' => $customer->handler,
+                    'branch' => $customer->branch,
+                    'remarks' => 'Interest Charge',
+                    'debit' => $interest,
+                    'credit' => 0,
+                    'amount' => $interest
+                ]);
+
+                $dt = LoansModel::where('id', $loan->id)->update([
+                    'total_interest' => $loan->total_interest + $interest,
+                    'total_balance' => $loan->total_balance + $interest,
+                    'next_charge_date' => Carbon::now()->addMonth()
+                ]);
+            }
             //}
         }
 
@@ -301,7 +304,7 @@ class LoanController extends Controller
 
     public function ImportLoans(Request $request)
     {
-        Excel::import(new LoansModelImport, $request->file);
+        Excel::import(new AccImport, $request->file);
         return "done";
     }
 
@@ -323,49 +326,45 @@ class LoanController extends Controller
                 $ll = LoansModel::where('customer', $item->name)->first();
                 if ($ll != null) {
                     $customer = Customer::where('name', $item->name)->first();
-                    LoanLedgerEntries::create([
-                        'loan_model_id' => $ll->id,
-                        'customer_id' => $ll->customer_id,
-                        'customer' => $ll->customer,
-                        'handler' => $customer->handler,
-                        'branch' => $customer->branch,
-                        'remarks' => 'Loan Repayment',
-                        'debit' => 0,
-                        'credit' => $item->amount,
-                        'amount' => $item->amount * -1,
-                        'created_at' => $item->created_at
-                    ]);
-                }
-
-                $cap = 0;
-                //check if int if full
-                if ($item->monthly_interest <= $item->monthly_interest_paid) {
-                    $cap = $item->amount;
-                } else {
-                    //get int balance
-                    $int_bal = $item->monthly_interest - $item->monthly_interest_paid;
-                    if ($item->amount < $int_bal) {
-                        $int = $item->amount;
+                    // LoanLedgerEntries::create([
+                    //     'loan_model_id' => $ll->id,
+                    //     'customer_id' => $ll->customer_id,
+                    //     'customer' => $ll->customer,
+                    //     'handler' => $customer->handler,
+                    //     'branch' => $customer->branch,
+                    //     'remarks' => 'Loan Repayment',
+                    //     'debit' => 0,
+                    //     'credit' => $item->amount,
+                    //     'amount' => $item->amount * -1,
+                    //     'created_at' => $item->created_at
+                    // ]);
+                    $cap = 0;
+                    $int = 0;
+                    //check if int if full
+                    if ($item->monthly_interest <= $item->monthly_interest_paid) {
+                        $cap = $item->amount;
                     } else {
-                        $int = $item->amount - $int_bal;
-                        $cap = $item->amount - $int;
+                        //get int balance
+                        $int_bal = $item->monthly_interest - $item->monthly_interest_paid;
+                        if ($item->amount < $int_bal) {
+                            $int = $item->amount;
+                        } else {
+                            $int = $item->amount - $int_bal;
+                            $cap = $item->amount - $int;
+                        }
                     }
+
+                    // //update_monthly interest
+                    // $dt = LoansModel::where('id', $item->id)->update([
+                    //     'total_balance' => $item->total_balance - $item->amount,
+                    //     'total_interest_paid' =>  $int,
+                    //     'monthly_principle_paid' => $item->monthly_principle_paid + $cap,
+                    //     'monthly_interest_paid' => $item->monthly_interest_paid + $int,
+                    //     'total_amount_paid' => $item->total_amount_paid + $item->amount,
+                    //     'total_monthly_paid' => ($item->monthly_principle_paid - $cap) + ($item->monthly_interest_paid - $int),
+                    //     'next_charge_date' => Carbon::now()->addMonth()
+                    // ]);
                 }
-                $int = 0;
-
-                //update_monthly interest
-                $dt = LoansModel::where('id', $item->id)->update([
-                    'total_balance' => $item->total_balance - $item->amount,
-                    'total_interest_paid' =>  $int,
-                    'monthly_principle_paid' => $item->monthly_principle_paid + $cap,
-                    'monthly_interest_paid' => $item->monthly_interest_paid + $int,
-                    'total_amount_paid' => $item->total_amount_paid + $item->amount,
-                    'total_monthly_paid' => ($item->monthly_principle_paid - $cap) + ($item->monthly_interest_paid - $int),
-                    'next_charge_date' => Carbon::now()->addMonth()
-                ]);
-                //update balances
-
-                $cc = $cc + 1;
             }
         } catch (Error $e) {
             Log::error($e);
@@ -380,56 +379,73 @@ class LoanController extends Controller
     public function loan_repay_ledger_single(Request $request, $id)
     {
         //get loan 
-        $lons = LoansModel::where('loan_status', 'ACTIVE')->get();
+        $lons = LoansModel::where('loan_status', 'ACTIVE')->where('customer', 'MR BARTHOLOMEW EMMANUEL')->get();
+
         foreach ($lons as $ln) {
             $items = LoanRepayment::where('status', 'confirmed')->where('name', $ln->customer)->get();
             if (count($items) > 0) {
                 foreach ($items as $item) {
-                  
                     $ll = LoansModel::where('customer', $item->name)->first();
                     if ($ll != null) {
                         $customer = Customer::where('name', $item->name)->first();
-                        LoanLedgerEntries::create([
-                            'loan_model_id' => $ll->id,
-                            'customer_id' => $ll->customer_id,
-                            'customer' => $ll->customer,
-                            'handler' => $customer->handler,
-                            'branch' => $customer->branch,
-                            'remarks' => 'Loan Repayment',
-                            'debit' => 0,
-                            'credit' => $item->amount,
-                            'amount' => $item->amount * -1,
-                            'created_at' => $item->created_at
-                        ]);
-                    }
-                    $ll = LoansModel::where('customer', $item->name)->first();
-                    $cap = 0;
-                    $int = 0;
-                    //check if int if full
-                    if ($item->amount > ($ln->monthly_interest - $ln->monthly_interest_paid)) {
-                        $int = $item->amount;
-                    } else {
-                        //get int balance
-                        $int_bal = $ln->monthly_interest - $ln->monthly_interest_paid;
+                        $ll = LoansModel::where('customer', $item->name)->first();
+                        $cap = 0;
+                        $int = 0;
+                        //check if int if full
 
-                        if ($item->amount < $int_bal) {
-
+                        if ($item->amount < ($ln->monthly_interest - $ln->monthly_interest_paid)) {
                             $int = $item->amount;
                         } else {
-                            $int = $item->amount - $int_bal;
-                            $cap = $item->amount - $int;
+                            //get int balance
+                            $int_bal = $ln->monthly_interest - $ln->monthly_interest_paid;
+
+                            if ($item->amount < $int_bal) {
+                                $int = $item->amount;
+                            } else {
+                                $int = $item->amount - $int_bal;
+                                $cap = $item->amount - $int;
+                            }
                         }
+                        if ($int != 0) {
+                            LoanLedgerEntries::create([
+                                'loan_model_id' => $ll->id,
+                                'customer_id' => $ll->customer_id,
+                                'customer' => $ll->customer,
+                                'handler' => $customer->handler,
+                                'branch' => $customer->branch,
+                                'remarks' => 'Interest Repayment',
+                                'debit' => 0,
+                                'credit' => $cap,
+                                'amount' => $cap * -1,
+                                'created_at' => $item->created_at
+                            ]);
+                        }
+
+                        if ($cap != 0) {
+                            LoanLedgerEntries::create([
+                                'loan_model_id' => $ll->id,
+                                'customer_id' => $ll->customer_id,
+                                'customer' => $ll->customer,
+                                'handler' => $customer->handler,
+                                'branch' => $customer->branch,
+                                'remarks' => 'Capital Repayment',
+                                'debit' => 0,
+                                'credit' => $int,
+                                'amount' => $int * -1,
+                                'created_at' => $item->created_at
+                            ]);
+                        }
+
+                        $ln->total_balance = $ln->total_balance - $item->amount;
+                        $ln->total_interest_paid =  $ln->total_interest_paid + $cap;
+                        $ln->monthly_interest_paid = $ln->monthly_interest_paid + $cap;
+                        $ln->monthly_principle_paid = $ln->monthly_principle_paid + $int;
+                        $ln->total_amount_paid = $ln->total_amount_paid + $item->amount;
+                        $ln->total_monthly_paid = $ln->total_monthly_paid + $item->amount;
+                        $ln->total_monthly_balance = $ln->total_monthly_balance - $item->amount;
+                        $ln->next_charge_date = Carbon::now()->addMonth();
+                        $ln->update();
                     }
-                    //update_monthly interest
-                    $dt = LoansModel::where('id', $ln->id)->update([
-                        'total_balance' => $ln->total_balance - $item->amount,
-                        'total_interest_paid' => $ln->total_interest_paid + $int,
-                        'monthly_principle_paid' => $ln->monthly_principle_paid + $cap,
-                        'monthly_interest_paid' => $ln->monthly_interest_paid + $int,
-                        'total_amount_paid' => $ln->total_amount_paid + $item->amount,
-                        'total_monthly_paid' => ($ln->monthly_principle_paid - $cap) + ($ln->monthly_interest_paid - $int),
-                        'next_charge_date' => Carbon::now()->addMonth()
-                    ]);
                 }
             }
         }
@@ -466,8 +482,9 @@ class LoanController extends Controller
     public function charge_date(Request $request)
     {
         $loans = LoansModel::where('loan_status', 'ACTIVE')->get();
+
         foreach ($loans as $item) {
-            if ($item->next_charge_date != null) {
+            if ($item->next_charge_date == null) {
                 $start_date = $item->start_date;
                 $day = Carbon::parse($start_date)->format('d');
                 $new_date = "10/" . $day . "/2022";

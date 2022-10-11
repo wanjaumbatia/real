@@ -107,6 +107,8 @@
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="/collection">Collections</a>
                                 <a class="dropdown-item" href="/withdrawal_list">Withdrawals</a>
+                                <a class="dropdown-item" href="/loan_repayment_logs">Loan Repayment</a>
+
                             </div>
                         </li>
                         @endguest

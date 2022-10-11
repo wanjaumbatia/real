@@ -31,6 +31,12 @@ class Payments extends Model
         'batch_number',
         'branch',
         'reference',
+        'reconciled',
+        'created_at',
+        'updated_at',
+        'reconciliation_reference',
+        'reconciled_by',
+        'admin_reconciled'
     ];
 
     public function savings_account(){

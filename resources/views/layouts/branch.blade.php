@@ -81,7 +81,7 @@
                                 Loans
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="/branch_loans">{{ __('Branch Report') }}</a>
+                                <a class="dropdown-item" href="/branch_loans?status=active">{{ __('Active Loans') }}</a>
                                 <a class="dropdown-item" href="/pending_branch_loans">{{ __('Applied Loans') }}</a>
                                 <a class="dropdown-item" href="/processing_branch_loans">{{ __('Processing Loans') }}</a>
                                 <a class="dropdown-item" href="/approved_branch_loans">{{ __('Approved Loans') }}</a>

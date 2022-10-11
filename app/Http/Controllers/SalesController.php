@@ -234,8 +234,15 @@ class SalesController extends Controller
             $deductions[] = $rec;
         }
 
+        $payments = LoanRepayment::where('name', $customer->name)->get();
+        $total_repayment = LoanRepayment::where('name', $customer->name)->sum('amount');
+        
         return view('sales.loan_card')->with([
-            'customer' => $customer, 'loan' => $loan, 'statement' => $statement, 'deductions' => $deductions,
+            'customer' => $customer, 
+            'loan' => $loan, 
+            'statement' => $statement, 
+            'deductions' => $deductions,
+            'payments' => $payments
         ]);
     }
 
@@ -244,6 +251,13 @@ class SalesController extends Controller
         $payments = Payments::where('created_by', auth()->user()->name)->where('transaction_type', 'withdrawal')->get();
 
         return view('sales.withdrawal_list')->with(['data' => $payments]);
+    }
+
+    public function loan_repayment_logs()
+    {
+        $payments = LoanRepayment::where('handler', auth()->user()->name)->get();
+
+        return view('sales.loan_repayment_logs')->with(['data' => $payments]);
     }
 
     public function show_collection()
@@ -949,6 +963,7 @@ class SalesController extends Controller
 
             $loans = LoansModel::where('handler', auth()->user()->name)->where('loan_status', $request->status)->get();
 
+            dd($loans);
             return view('sales.loans')->with(['loans' => $loans, 'status' => $request->status]);
         } else {
             return abort(401);

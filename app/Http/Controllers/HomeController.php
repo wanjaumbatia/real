@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Loan;
 use App\Models\LoansModel;
+use App\Models\Payments;
+use App\Models\SavingsAccount;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -73,5 +76,27 @@ class HomeController extends Controller
         } else {
             return abort(401);
         }
+    }
+
+    public function fix_missing_transactions(Request $request)
+    {
+        $dd = Payments::where('remarks', 'like', 'Collection from CHUKWUMA PASCALINE IFEOMA%')->get();
+        dd($dd);
+        //     $data = DB::select("select * from payments where created_at > '2022-10-08' and created_at < '2022-10-09' and transaction_type != 'withdrawal'
+        //    and  transaction_type != 'charge' and  transaction_type != 'penalty' and remarks != 'Opening Balance' and transaction_type = 'registration';");;
+        //     foreach ($data as $item) {
+        //         $x = Payments::where('batch_number', $item->batch_number)->where('transaction_type', 'savings')->first();
+
+        //         $x->debit = $x->debit + 1000;
+        //         $x->credit = 0.0;
+        //         $x->amount = $x->amount + 1000;
+        //         $x->remarks = "Collection from CHUKWUMA PASCALINE IFEOMA of ". number_format($x->amount + 1000, 2);
+        //         $x->update();
+
+        //         $dl = Payments::where('id', $item->id)->first();
+        //         $dl->delete();
+        //     }
+        dd($dd);
+        return view('regfee_fix')->with(['data' => $dd]);
     }
 }

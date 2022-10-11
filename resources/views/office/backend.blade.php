@@ -2,11 +2,11 @@
 
 @section('content')
 <div class="container">
-    <!-- <div class="card mb-3">
+    <div class="card mb-3">
         <div class="card-header">
             <div class="row">
                 <div class="col-6">
-                    {{ __('Import Loans') }}
+                    {{ __('Import Data') }}
                 </div>
             </div>
         </div>  
@@ -20,7 +20,7 @@
                 <button class="btn btn-primary w-100 mt-2">Upload</button>
             </form>
         </div>
-    </div> -->
+    </div>
     <div class="card">
         <div class="card-header">
             <div class="row">
