@@ -201,7 +201,7 @@ class OfficeController extends Controller
     public function search_customer(Request $request)
     {
         if ($request->userid !== null) {
-            $customer = Customer::where('id', $request->userid)->first();
+            $customer = Customer::where('name',  'like ', '%' . $request->userid . '%')->first();
             return view('search')->with(['customer' => $customer]);
         }
         return view('search')->with(['customer' => null]);
@@ -214,7 +214,7 @@ class OfficeController extends Controller
         $plans = Plans::get();
         $loan_repayments = LoanRepayment::where('status', 'pending')->where('no', $customer->no)->get();
         $accounts = SavingsAccount::where('customer_id', $customer->id)->get();
-        $savings = Payments::where('customer_id', $customer->id)->where('transaction_type', 'savings')->where('status', 'pending')->get();
+        $savings = Payments::where('customer_id', $customer->id)->where('transaction_type', 'savings')->get();
         $withdrawals = Payments::where('customer_id', $customer->id)->where('transaction_type', 'withdrawal')->get();
 
         foreach ($accounts as $item) {

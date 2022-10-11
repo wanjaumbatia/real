@@ -204,7 +204,7 @@
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingFour">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="true" aria-controls="collapseOne">
-                                    Payments - {{count($savings)}}
+                                    Payments
                                 </button>
                             </h2>
                             <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
@@ -217,16 +217,19 @@
                                                     <th>Transaction</th>
                                                     <th>Branch</th>
                                                     <th>Amount</th>
+                                                    <th>Remarks</th>
                                                     <th>Date</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach($savings as $item)
+                                                @if($item->remarks == 'Opening Balance' || $item->status=='pending')
                                                 <tr>
                                                     <td>{{$item->plan}}</td>
                                                     <td>{{$item->transaction_type}}</td>
                                                     <td>{{$item->branch}}</td>
                                                     <td>{{number_format($item->amount, 2)}}</td>
+                                                    <td>{{$item->remarks}}</td>
                                                     <td>{{$item->created_at}}</td>
                                                     <td>
                                                         <form action="/change_amount" method="post">
@@ -238,8 +241,11 @@
                                                             </div>
                                                         </form>
                                                     </td>
+                                                    @if($item->remarks != 'Opening Balance')
                                                     <td><a href="/delete_payment/{{$item->id}}" class="btn btn-danger w-100">DELETE</a></td>
+                                                    @endif
                                                 </tr>
+                                                @endif
                                                 @endforeach
                                             </tbody>
                                         </table>
@@ -365,8 +371,7 @@
                                                         @endforeach
                                                     </select>
                                                 </div>
-                                                <button class="btn btn-primary w-100 mt-2"
-                                                 type="submit">Submit</button>
+                                                <button class="btn btn-primary w-100 mt-2" type="submit">Submit</button>
                                             </form>
                                         </div>
                                     </div>
@@ -383,21 +388,21 @@
                             <div id="collapseten" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     <div class="table-response">
-                                    <form action="/change_name" method="post">
-                                        @csrf
-                                        <div class="form-group">
-                                            <label for="">Old Name</label>
-                                            <input type="number" class="form-control" name="id" value="{{$customer->id}}" hidden />
-                                            <input type="text" class="form-control" name="old_name" value="{{$customer->name}}" hidden />
-                                            <input type="text" class="form-control" name="old_name" value="{{$customer->name}}" disabled />
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="">New Name</label>
-                                            <input type="text" class="form-control" name="new_name" />
-                                        </div>
+                                        <form action="/change_name" method="post">
+                                            @csrf
+                                            <div class="form-group">
+                                                <label for="">Old Name</label>
+                                                <input type="number" class="form-control" name="id" value="{{$customer->id}}" hidden />
+                                                <input type="text" class="form-control" name="old_name" value="{{$customer->name}}" hidden />
+                                                <input type="text" class="form-control" name="old_name" value="{{$customer->name}}" disabled />
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="">New Name</label>
+                                                <input type="text" class="form-control" name="new_name" />
+                                            </div>
 
-                                        <button class="btn btn-primary w-100 mt-3">Submit</button>
-                                    </form>
+                                            <button class="btn btn-primary w-100 mt-3">Submit</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

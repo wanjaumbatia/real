@@ -13,7 +13,7 @@
         <div class="card-body">
             <form action="/search" method="get">
                 <div class="form-group">
-                    <label>User ID</label>
+                    <label>Customer Name</label>
                     <input type="text" class="form-control" name="userid" required />
                     <button type="submit" class="btn btn-primary w-100 mt-2">Search</button>
                 </div>
