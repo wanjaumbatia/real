@@ -125,7 +125,11 @@
                                                     <th>Balance</th>
                                                     <th>Pending</th>
                                                     <th>Date</th>
+                                                    @if($customer->id > 73382)
+                                                    @if($item->reefee == 0)
                                                     <th>Registration Fee</th>
+                                                    @endif
+                                                    @endif
                                                     <th>Change Plan</th>
                                                     <th>Withdrawal</th>
                                                     <th></th>
@@ -149,8 +153,6 @@
                                                             <button class="form-control btn btn-primary mt-1" type="submit">Create Reg Fee</button>
                                                         </form>
                                                     </td>
-                                                    @else
-                                                    <td>{{number_format($item->reefee, 0)}}</td>
                                                     @endif
                                                     @endif
                                                     <td>

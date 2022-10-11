@@ -185,7 +185,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/search', [OfficeController::class, 'search_customer'])->name('search');
 
-    Route::post('/post_withdrawal', [OfficeController::class, 'post_withdrawal'])->name('post_withdrawal');
+    Route::post('/post_withdrawal1', [OfficeController::class, 'post_withdrawal'])->name('post_withdrawal');
 
     Route::post('/import_loans_new', [LoanController::class, 'ImportLoans'])->name('import_loans_new');
     Route::get('/new_customer', [SalesController::class, 'new_customer'])->name('new_customer');

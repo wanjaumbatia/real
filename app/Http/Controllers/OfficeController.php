@@ -1034,7 +1034,7 @@ class OfficeController extends Controller
                     'customer_id' => $account->customer_id,
                     'customer_name' => $account->customer,
                     'transaction_type' => 'withdrawal',
-                    'status' => 'confirmed',
+                    'status' => 'pending',
                     'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
                     'debit' => 0,
                     'credit' => $request->amount,
@@ -1042,8 +1042,8 @@ class OfficeController extends Controller
                     'requires_approval' => $approval,
                     'approved' => false,
                     'posted' => false,
-                    'created_by' => $request->user()->name,
-                    'branch' => $request->user()->branch,
+                    'created_by' => $customer->handler,
+                    'branch' =>  $customer->branch,
                     'batch_number' => $otp
                 ]);
 
@@ -1054,7 +1054,7 @@ class OfficeController extends Controller
                     'customer_id' => $account->customer_id,
                     'customer_name' => $account->customer,
                     'transaction_type' => 'interest',
-                    'status' => 'confirmed',
+                    'status' => 'pending',
                     'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($interest, 2) . " On " . $account->plan . " account.",
                     'debit' => 0,
                     'credit' => $interest,
@@ -1062,8 +1062,8 @@ class OfficeController extends Controller
                     'requires_approval' => $approval,
                     'approved' => false,
                     'posted' => false,
-                    'created_by' => $request->user()->name,
-                    'branch' => $request->user()->branch,
+                    'created_by' => $customer->handler,
+                    'branch' =>  $customer->branch,
                     'batch_number' => $otp
                 ]);
             } else {
@@ -1095,7 +1095,7 @@ class OfficeController extends Controller
                     'customer_id' => $account->customer_id,
                     'customer_name' => $account->customer,
                     'transaction_type' => 'withdrawal',
-                    'status' => 'confirmed',
+                    'status' => 'pending',
                     'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
                     'debit' => 0,
                     'credit' => $request->amount,
@@ -1103,30 +1103,30 @@ class OfficeController extends Controller
                     'requires_approval' => $approval,
                     'approved' => false,
                     'posted' => false,
-                    'created_by' => $request->user()->name,
-                    'branch' => $request->user()->branch,
+                    'created_by' => $customer->handler,
+                    'branch' =>  $customer->branch,
                     'batch_number' => $otp
                 ]);
 
                 //create charge line
-                $interest = Payments::create([
-                    'savings_account_id' => $account->id,
-                    'plan' => $account->plan,
-                    'customer_id' => $account->customer_id,
-                    'customer_name' => $account->customer,
-                    'transaction_type' => 'penalty',
-                    'status' => 'confirmed',
-                    'remarks' => 'Penalty for ' . $account->customer . ' of ₦' . number_format($interest, 2) . " On " . $account->plan . " account.",
-                    'debit' => 0,
-                    'credit' => $interest,
-                    'amount' => $interest * -1,
-                    'requires_approval' => $approval,
-                    'approved' => false,
-                    'posted' => false,
-                    'created_by' => $request->user()->name,
-                    'branch' => $request->user()->branch,
-                    'batch_number' => $otp
-                ]);
+                // $interest = Payments::create([
+                //     'savings_account_id' => $account->id,
+                //     'plan' => $account->plan,
+                //     'customer_id' => $account->customer_id,
+                //     'customer_name' => $account->customer,
+                //     'transaction_type' => 'penalty',
+                //     'status' => 'confirmed',
+                //     'remarks' => 'Penalty for ' . $account->customer . ' of ₦' . number_format($interest, 2) . " On " . $account->plan . " account.",
+                //     'debit' => 0,
+                //     'credit' => $interest,
+                //     'amount' => $interest * -1,
+                //     'requires_approval' => $approval,
+                //     'approved' => false,
+                //     'posted' => false,
+                //     'created_by' => $request->user()->name,
+                //     'branch' => $request->user()->branch,
+                //     'batch_number' => $otp
+                // ]);
 
                 $sep_commision = $request->amount * $plan->penalty * $plan->sep_commission;
             }
@@ -1171,7 +1171,7 @@ class OfficeController extends Controller
                 'customer_id' => $account->customer_id,
                 'customer_name' => $account->customer,
                 'transaction_type' => 'withdrawal',
-                'status' => 'open',
+                'status' => 'pending',
                 'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
                 'debit' => 0,
                 'credit' => $request->amount,
@@ -1179,8 +1179,8 @@ class OfficeController extends Controller
                 'requires_approval' => $approval,
                 'approved' => false,
                 'posted' => false,
-                'created_by' => $request->user()->name,
-                'branch' => $request->user()->branch,
+                'created_by' => $customer->handler,
+                'branch' =>  $customer->branch,
                 'batch_number' => $otp
             ]);
 
@@ -1191,7 +1191,7 @@ class OfficeController extends Controller
                 'customer_id' => $account->customer_id,
                 'customer_name' => $account->customer,
                 'transaction_type' => 'charge',
-                'status' => 'open',
+                'status' => 'pending',
                 'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->commission, 2) . " On " . $account->plan . " account.",
                 'debit' => 0,
                 'credit' => $request->commission,
@@ -1199,16 +1199,17 @@ class OfficeController extends Controller
                 'requires_approval' => $approval,
                 'approved' => false,
                 'posted' => false,
-                'created_by' => $request->user()->name,
-                'branch' => $request->user()->branch,
+                'created_by' => $customer->handler,
+                'branch' => $customer->branch,
                 'batch_number' => $otp
             ]);
         }
 
-        //return redirect()->to('/sep_customer/' . $customer->id);
+        return redirect()->to('/sep_customer/' . $customer->id);
 
         return response([
-            'success' => true
+            'success' => true,
+            'message' => 'Posted successfully'
         ]);
     }
 
@@ -1269,6 +1270,6 @@ class OfficeController extends Controller
         // foreach ($data as $item) {
         //     dd($item);
         // }
-        return view('regfee_fix')->with(['data'=> $data]);
+        return view('regfee_fix')->with(['data' => $data]);
     }
 }
