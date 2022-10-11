@@ -413,7 +413,7 @@ class SalesController extends Controller
                 'customer_id' => $account->customer_id,
                 'customer_name' => $account->customer,
                 'transaction_type' => 'charge',
-                'status' => 'open',
+                'status' => 'pending',
                 'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->commission, 2) . " On " . $account->plan . " account.",
                 'debit' => 0,
                 'credit' => $request->commission,
