@@ -280,7 +280,7 @@ class OfficeController extends Controller
     {
         $acc = SavingsAccount::where('id', $id)->first();
         $customer = Customer::where('id', $acc->customer_id)->first();
-        $acc->delete();
+      //  $acc->delete();
         $url = '/sep_customer/' . $customer->id;
         return redirect()->to($url);
     }
