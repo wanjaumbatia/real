@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <div class="card mb-3">
+    <!-- <div class="card mb-3">
         <div class="card-header">
             <div class="row">
                 <div class="col-6">
@@ -20,7 +20,14 @@
                 <button class="btn btn-primary w-100 mt-2">Upload</button>
             </form>
         </div>
+    </div> -->
+
+    <div class="row">
+        <div class="col-3">
+            <a href="/loans" class="btn btn-primary btn-sm">Check Loan Repayments</a>
+        </div>
     </div>
+
     <div class="card">
         <div class="card-header">
             <div class="row">

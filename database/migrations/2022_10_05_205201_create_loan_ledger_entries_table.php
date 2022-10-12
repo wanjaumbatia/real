@@ -24,7 +24,7 @@ class CreateLoanLedgerEntriesTable extends Migration
             $table->double('debit')->default(0);
             $table->double('credit')->default(0);
             $table->double('amount')->default(0);
-
+            
             $table->foreign('loan_model_id')
                 ->references('id')
                 ->on('loans_models')
