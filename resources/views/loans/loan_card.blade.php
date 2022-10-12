@@ -7,7 +7,14 @@
 
             <div class="card">
                 <div class="card-header">
-                    {{$customer->name}}
+                    <div class="row">
+                        <div class="col-6">
+                        {{$customer->name}}
+                        </div>
+                        <div class="col-6 text-end">
+                            <a href="/repay_test/{{$loan->id}}" class="btn btn-primary btn-sm">Post Repayments</a>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
                     <form>
@@ -56,7 +63,6 @@
                             </div>
                         </div>
 
-
                         <div class="row">
                             <div class="col-md-6 col-sm-12">
                                 <div class="form-group">
@@ -72,7 +78,6 @@
                             </div>
                         </div>
                     </form>
-
                 </div>
             </div>
 

@@ -199,11 +199,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/real_invest_list', [SalesController::class, 'real_invest_list'])->name('real_invest_list');
     Route::Post('/post_real_invest', [SalesController::class, 'post_real_invest'])->name('post_real_invest');
 
-
     Route::get('/active_loans', [LoanController::class, 'active_loans'])->name('loans.active_loans');
     Route::get('/expired_loans', [LoanController::class, 'expired_loans'])->name('loans.expired_loans');
     Route::get('/bad_loans', [LoanController::class, 'bad_loans'])->name('loans.bad_loans');
     Route::get('/loan_card/{id}', [LoanController::class, 'loan_card'])->name('loans.loan_card');
     Route::get('/loans_by_branch', [LoanController::class, 'loans_by_branch'])->name('loans.loans_by_branch');
-
+    Route::get('/repay_test/{id}', [LoanController::class, 'repay_test'])->name('loans.repay_test');
 });

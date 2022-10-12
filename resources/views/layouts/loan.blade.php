@@ -84,6 +84,10 @@
                             <a class="nav-link" href="{{ route('loans.bad_loans') }}">{{ __('Bad Loans') }}</a>
                         </li>
 
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('loans.closed_loans') }}">{{ __('Closed Loans') }}</a>
+                        </li>
+
                         @endif
 
                         @endguest
