@@ -40,44 +40,10 @@ class LoanController extends Controller
     public function index(Request $request)
     {
         if ($request->status == null || $request->status == 'all') {
-            $data = DB::select("
-            select 
-                    loans.id, 
-                    loans.name, 
-                    loans.application_date,
-                    loans.customer_id,
-                    loans.amount, 
-                    loans.paid,
-                    loans.interest_percentage,
-                    loans.duration,
-                    loans.handler,
-                    loans.status,
-                    loans.remarks,
-                    users.branch,
-                    loans.current_savings
-                from loans inner join users on  loans.handler = users.name
-            ");
+            $data = LoansModel::all();
         } else {
-            $data = DB::select("
-            select 
-                    loans.id, 
-                    loans.name, 
-                    loans.application_date,
-                    loans.customer_id,
-                    loans.amount, 
-                    loans.paid,
-                    loans.interest_percentage,
-                    loans.duration,
-                    loans.handler,
-                    loans.status,
-                    loans.remarks,
-                    users.branch ,
-                    loans.current_savings
-                from loans inner join users on  loans.handler = users.name and status = '" . $request->status . "';
-            ");
+            $data = LoansModel::where('loan_status', $request->status)->get();
         }
-
-
         return view('loans.index')->with(['loans' => $data, 'status' => $request->status]);
     }
 
@@ -311,8 +277,11 @@ class LoanController extends Controller
     public function loans_by_branch(Request $request)
     {
         $branches = Branch::all();
-        $branch = $request->branch;
-        $loans = LoansModel::where('branch', $branch)->where('loan_status', 'Active')->get();
+        if ($request->branch == null) {
+            $loans = LoansModel::where('branch', 'Asaba')->get();
+        } else {
+            $loans = LoansModel::where('branch', $request->branch)->get();
+        }
         return view('loans.branch')->with(['loans' => $loans, 'branches' => $branches]);
     }
 
@@ -498,6 +467,50 @@ class LoanController extends Controller
         }
         return response([
             'success' => true
+        ]);
+    }
+
+    public function active_loans(Request $request)
+    {
+        $loans = LoansModel::where('loan_status', 'Active')->get();
+        return view('loans.active')->with(['loans' => $loans]);
+    }
+
+    public function expired_loans(Request $request)
+    {
+        $loans = LoansModel::where('loan_status', 'Expired')->get();
+        return view('loans.expired')->with(['loans' => $loans]);
+    }
+
+    public function bad_loans(Request $request)
+    {
+        $loans = LoansModel::where('loan_status', 'Bad')->get();
+        return view('loans.bad')->with(['loans' => $loans]);
+    }
+
+    public function loan_card(Request $request, $id)
+    {
+        $loan = LoansModel::where('id', $id)->first();
+        $customer = Customer::where('id', $loan->customer_id)->first();
+        $deduction = LoanDeduction::where('active', true)->get();
+        $deductions = array();
+        foreach ($deduction as $item) {
+            $rec = array();
+            $rec['name'] = $item->name;
+            if ($item->percentange == true) {
+                $rec['amount'] = $loan->loan_amount * ($item->percentange_amount / 100);
+            } else {
+                $rec['amount'] = $item->amount;
+            }
+            $deductions[] = $rec;
+        }
+        $payments = [];
+
+        return view('loans.loan_card')->with([
+            'loan' => $loan,
+            'customer' => $customer,
+            'deductions' => $deductions,
+            'payments' => $payments
         ]);
     }
 }

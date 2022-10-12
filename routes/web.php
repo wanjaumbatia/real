@@ -84,7 +84,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/loans/index', [LoanController::class, 'index'])->name('loans.index');
     Route::get('/loans/process', [LoanController::class, 'request'])->name('loans.requests');
     Route::get('/loans/process/{id}', [LoanController::class, 'processing_loan_card'])->name('loans.process_card');
-    Route::get('/loans_by_branch', [LoanController::class, 'loans_by_branch'])->name('loans.loans_by_branch');
     Route::get('/request_card/{id}', [LoanController::class, 'request_card'])->name('loans.request_card');
 
     Route::get('/loan_repay_ledger_single/{id}', [LoanController::class, 'loan_repay_ledger_single'])->name('loan_repay_ledger_single');
@@ -131,7 +130,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pending_branch_loans', [BranchController::class, 'pending_branch_loans'])->name('pending_branch_loans');
     Route::get('/processing_branch_loans', [BranchController::class, 'processing_branch_loans'])->name('processing_branch_loans');
     Route::get('/processing_branch_loan_card/{id}', [BranchController::class, 'processing_loan_card'])->name('processing_branch_loan_card');
-
 
     Route::post('/save_security/{id}', [BranchController::class, 'save_security'])->name('save_security');
 
@@ -200,4 +198,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/new_real_saving', [SalesController::class, 'new_real_invest'])->name('new_real_invest');
     Route::get('/real_invest_list', [SalesController::class, 'real_invest_list'])->name('real_invest_list');
     Route::Post('/post_real_invest', [SalesController::class, 'post_real_invest'])->name('post_real_invest');
+
+
+    Route::get('/active_loans', [LoanController::class, 'active_loans'])->name('loans.active_loans');
+    Route::get('/expired_loans', [LoanController::class, 'expired_loans'])->name('loans.expired_loans');
+    Route::get('/bad_loans', [LoanController::class, 'bad_loans'])->name('loans.bad_loans');
+    Route::get('/loan_card/{id}', [LoanController::class, 'loan_card'])->name('loans.loan_card');
+    Route::get('/loans_by_branch', [LoanController::class, 'loans_by_branch'])->name('loans.loans_by_branch');
+
 });

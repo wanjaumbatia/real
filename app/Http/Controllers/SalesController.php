@@ -340,7 +340,7 @@ class SalesController extends Controller
     {
         $account = SavingsAccount::where('id', $request->id)->first();
         $balance = Payments::where('savings_account_id', $account->id)->where('status', 'confirmed')->sum('amount');
-        Log($balance);
+      
         $customer = Customer::where('id', $account->customer_id)->first();
 
         $plan = Plans::where('id', $account->plans_id)->first();
@@ -963,8 +963,6 @@ class SalesController extends Controller
             // }
 
             $loans = LoansModel::where('handler', auth()->user()->name)->where('loan_status', $request->status)->get();
-
-            dd($loans);
             return view('sales.loans')->with(['loans' => $loans, 'status' => $request->status]);
         } else {
             return abort(401);

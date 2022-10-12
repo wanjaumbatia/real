@@ -72,6 +72,18 @@
                             <a class="nav-link" href="{{ route('loans.under_processing') }}">{{ __('Loans Under Processing') }}</a>
                         </li>
 
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('loans.active_loans') }}">{{ __('Active Loans') }}</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('loans.expired_loans') }}">{{ __('Expired Loans') }}</a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('loans.bad_loans') }}">{{ __('Bad Loans') }}</a>
+                        </li>
+
                         @endif
 
                         @endguest
