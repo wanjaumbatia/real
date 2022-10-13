@@ -224,4 +224,5 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/reviews', [SalesController::class, 'reviews'])->name('sales.reviews');
     Route::get('/sales_review/{id}', [SalesController::class, 'sales_review'])->name('sales_review');
+    Route::post('/move_saving', [BranchController::class, 'move_saving'])->name('branch.move_saving');
 });

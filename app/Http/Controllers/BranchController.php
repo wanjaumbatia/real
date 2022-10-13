@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\Loan;
 use App\Models\LoanDeduction;
 use App\Models\LoanForm;
+use App\Models\LoanLedgerEntries;
 use App\Models\LoanRepayment;
 use App\Models\LoanReview;
 use App\Models\LoanSecurityType;
@@ -23,6 +24,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use PDO;
 use Throwable;
 
 class BranchController extends Controller
@@ -797,7 +799,13 @@ class BranchController extends Controller
             $loans = [];
         }
         $seps = User::where('sales_executive', true)->where('branch', auth()->user()->branch)->get();
-        
+
+        //get balance
+        foreach ($loans as $item) {
+            $balance = Payments::where('customer_id', $item->customer_id)->where('status', 'confirmed')->sum('amount');
+            $item->savings = $balance;
+        }
+
         return view('branch.loans_by_sep')->with(['loans' => $loans, 'seps' => $seps]);
     }
 
@@ -840,4 +848,75 @@ class BranchController extends Controller
         return redirect()->to('/loan_review/' . $request->id);
     }
 
+    public function move_saving(Request $request)
+    {
+        //get loan 
+        $loan = LoansModel::where('id', $request->id)->first();
+        $account = SavingsAccount::where('customer_id', $loan->customer_id)->first();
+        $balance = Payments::where('savings_account_id', $account->id)->where('status', 'confirmed')->sum('amount');
+
+        $customer = Customer::where('id', $account->customer_id)->first();
+        $otp = rand(000000, 999999);
+        //credit savings
+        $recovery = Payments::create([
+            'savings_account_id' => $account->id,
+            'plan' => $account->plan,
+            'customer_id' => $account->customer_id,
+            'customer_name' => $account->customer,
+            'transaction_type' => 'loan_recovery',
+            'status' => 'confirmed',
+            'remarks' => 'Recovered loan amount form ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " from " . $account->plan . " account.",
+            'debit' => 0,
+            'credit' => $request->amount,
+            'amount' => $request->amount * -1,
+            'requires_approval' => false,
+            'approved' => false,
+            'posted' => false,
+            'created_by' => $customer->handler,
+            'branch' => $customer->branch,
+            'batch_number' => $otp
+        ]);
+        //debit loan repayment
+        $payment = LoanRepayment::create([
+            'no' => $customer->no,
+            'loan_number' => $loan->id,
+            'name' => $loan->customer,
+            'amount' => $request->amount,
+            'handler' => $customer->handler,
+            'branch' => $customer->branch,
+            'description' => 'Loan recovery from savings of ' . $request->amount . ' for ' . $loan->name,
+            'status' => 'confirmed',
+            'posted' => false,
+            'document_number' => rand(1000000, 9999999)
+        ]);
+
+        //update loan details
+        //get interests
+        $loan->total_balance = $loan->total_balance - $payment->amount;
+        $loan->total_amount_paid = $loan->total_amount_paid + $payment->amount;
+        $loan->total_monthly_paid = $loan->total_monthly_paid + $payment->amount;
+        $loan->total_monthly_balance = $loan->total_monthly_balance - $payment->amount;
+
+        //calculate interest and capital repayments
+        $expected_interest = $loan->monthly_interest - $loan->monthly_interest_paid;
+
+        if ($expected_interest > $payment->amount) {
+            $loan->monthly_interest_paid = $loan->monthly_interest_paid + $payment->amount;
+            $loan->total_interest_paid = $loan->total_interest_paid + $payment->amount;
+        } else {
+            $loan->monthly_interest_paid = $loan->monthly_interest_paid + $expected_interest;
+            $loan->total_interest_paid = $loan->total_interest_paid + $expected_interest;
+
+            $rem_capital = $payment->amount - $expected_interest;
+            $loan->monthly_principle_paid =  $loan->monthly_principle_paid + $rem_capital;
+            $loan->capital_balance = $loan->capital_balance + $rem_capital;
+        }
+
+        $loan->update();
+        $payment->posted = true;
+        $payment->update();
+
+
+        return redirect()->to('/branch_loan_by_sep?name='.$customer->handler);
+    }
 }

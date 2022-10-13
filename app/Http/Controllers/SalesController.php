@@ -554,7 +554,7 @@ class SalesController extends Controller
         return redirect()->to($url);
     }
 
-    
+
 
     public function pay(Request $request)
     {
@@ -898,17 +898,30 @@ class SalesController extends Controller
         $loan = LoansModel::where('id', $loan_no)->first();
 
         if ($loan != null) {
-            $repayment = LoanRepaymentModel::create([
+            $repayment = LoanRepayment::create([
+                'no' => $loan->no,
                 'loan_number' => $loan->id,
-                'name' => $loan->customer,
+                'name' => $loan->name,
                 'amount' => $request->amount,
                 'handler' => auth()->user()->name,
                 'branch' => auth()->user()->branch,
-                'description' => 'Loan repayment of ' . $request->amount . ' for ' . $loan->customer,
+                'description' => 'Loan repayment of ' . $request->amount . ' for ' . $loan->name,
                 'status' => 'pending',
                 'posted' => false,
                 'document_number' => rand(1000000, 9999999)
             ]);
+
+            // $repayment = LoanRepaymentModel::create([
+            //     'loan_number' => $loan->id,
+            //     'name' => $loan->customer,
+            //     'amount' => $request->amount,
+            //     'handler' => auth()->user()->name,
+            //     'branch' => auth()->user()->branch,
+            //     'description' => 'Loan repayment of ' . $request->amount . ' for ' . $loan->customer,
+            //     'status' => 'pending',
+            //     'posted' => false,
+            //     'document_number' => rand(1000000, 9999999)
+            // ]);
 
             $msg = "Thanks for your patronage we rec'vd " . number_format($request->amount, 0) . " as loan repayment. for inquires call 09021417778";
             $customer = Customer::where('id', $loan->customer_id)->first();
@@ -1100,7 +1113,7 @@ class SalesController extends Controller
             $deductions[] = $rec;
         }
         $previous = LoanReview::where('loan_id', $loan->id)->get();
-        
+
         $payments = LoanRepayment::where('name', $loan->customer)->get();
         return view('sales.review_card')->with([
             'loan' => $loan,
