@@ -526,7 +526,7 @@ class LoanController extends Controller
         $payments = LoanRepayment::where('posted', false)->get();
         foreach ($payments as $payment) {
             $loan = LoansModel::where('customer', $payment->name)->first();
-          
+
             //get interests
             $loan->total_balance = $loan->total_balance - $payment->amount;
             $loan->total_amount_paid = $loan->total_amount_paid + $payment->amount;
@@ -556,5 +556,21 @@ class LoanController extends Controller
         return response([
             "success" => true
         ]);
+    }
+
+    public function loan_status_summary(Request $request)
+    {
+        if(auth()->user()->loan_officer == false){
+            return abort(401);
+        }
+        $data = array();
+        $data['active'] = LoansModel::where('loan_status', 'ACTIVE')->count();
+        $data['expired'] = LoansModel::where('loan_status', 'EXPIRED')->count();
+        $data['bad'] = LoansModel::where('loan_status', 'BAD')->count();
+        $data['active_amount'] = LoansModel::where('loan_status', 'ACTIVE')->sum('total_balance');
+        $data['expired_amount'] = LoansModel::where('loan_status', 'EXPIRED')->sum('total_balance');
+        $data['bad_amount'] = LoansModel::where('loan_status', 'BAD')->sum('total_balance');
+
+        return view('loans.loan_status_summary')->with(['data' => $data]);
     }
 }

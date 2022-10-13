@@ -85,6 +85,7 @@
                                 <a class="dropdown-item" href="/branch_active_loans">{{ __('Active Loans') }}</a>
                                 <a class="dropdown-item" href="/branch_expired_loans">{{ __('Expired Loans') }}</a>
                                 <a class="dropdown-item" href="/branch_bad_loans">{{ __('Bad Loans') }}</a>
+                                <a class="dropdown-item" href="/branch_loan_status_summary">{{ __('Loan Status Summary') }}</a>
                             </div>
                         </li>
 

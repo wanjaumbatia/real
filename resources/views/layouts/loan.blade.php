@@ -103,6 +103,11 @@
                                 <a class="dropdown-item" href="#">Forced Closed Loans</a>
                             </div>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/loan_status_summary">{{ __('Loan Status Summary') }}</a>
+                        </li>
+                        
                         @endif
 
                         @endguest

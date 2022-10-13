@@ -221,7 +221,9 @@ class BranchController extends Controller
         $customer = Customer::where('id', $loan->customer_id)->first();
         $deduction = LoanDeduction::where('active', true)->get();
         $deductions = array();
-
+        if ($loan->branch != auth()->user()->branch) {
+            return abort(401);
+        }
         foreach ($deduction as $item) {
             $rec = array();
             $rec['name'] = $item->name;
@@ -725,5 +727,18 @@ class BranchController extends Controller
     {
         $loans = LoansModel::where('loan_status', 'Bad')->where('branch', auth()->user()->branch)->get();
         return view('branch.bad')->with(['loans' => $loans]);
+    }
+
+    public function loan_status_summary(Request $request)
+    {
+        $data = array();
+        $data['active'] = LoansModel::where('loan_status', 'ACTIVE')->where('branch', auth()->user()->branch)->count();
+        $data['expired'] = LoansModel::where('loan_status', 'EXPIRED')->where('branch', auth()->user()->branch)->count();
+        $data['bad'] = LoansModel::where('loan_status', 'BAD')->where('branch', auth()->user()->branch)->count();
+        $data['active_amount'] = LoansModel::where('loan_status', 'ACTIVE')->where('branch', auth()->user()->branch)->sum('total_balance');
+        $data['expired_amount'] = LoansModel::where('loan_status', 'EXPIRED')->where('branch', auth()->user()->branch)->sum('total_balance');
+        $data['bad_amount'] = LoansModel::where('loan_status', 'BAD')->where('branch', auth()->user()->branch)->sum('total_balance');
+
+        return view('branch.loan_status_summary')->with(['data' => $data]);
     }
 }

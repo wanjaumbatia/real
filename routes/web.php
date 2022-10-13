@@ -209,4 +209,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/branch_active_loans', [BranchController::class, 'active_loans'])->name('branch.active_loans');
     Route::get('/branch_expired_loans', [BranchController::class, 'expired_loans'])->name('branch.expired_loans');
     Route::get('/branch_bad_loans', [BranchController::class, 'bad_loans'])->name('branch.bad_loans');
+    Route::get('/branch_loan_status_summary', [BranchController::class, 'loan_status_summary'])->name('branch_loan_status_summary');
+    
+    Route::get('/loan_status_summary', [LoanController::class, 'loan_status_summary'])->name('\loan_status_summary');
+
 });
