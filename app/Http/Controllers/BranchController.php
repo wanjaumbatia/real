@@ -15,6 +15,7 @@ use App\Models\Payments;
 use App\Models\Plans;
 use App\Models\SavingsAccount;
 use App\Models\User;
+use Carbon\Carbon;
 use Error;
 use Faker\Provider\ar_EG\Payment;
 use Illuminate\Http\Request;
@@ -109,10 +110,16 @@ class BranchController extends Controller
     {
         if (auth()->user()->branch_manager == true) {
             $branch = auth()->user()->branch;
-
-
             $loans = LoansModel::where('branch', auth()->user()->branch)->get();
-
+            foreach ($loans as $ln) {
+                $now = Carbon::now();
+                $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+                if ($ln->exit_date < $now) {
+                    $ln->countdown =  $diff * -1;
+                } else {
+                    $ln->countdown = $diff;
+                }
+            }
             return view('branch.loans')->with(['loans' => $loans, 'status' => $request->status, 'branch' => $branch]);
         } else {
             return abort(401);
@@ -714,24 +721,51 @@ class BranchController extends Controller
     public function active_loans(Request $request)
     {
         $loans = LoansModel::where('loan_status', 'Active')->where('branch', auth()->user()->branch)->get();
+        foreach ($loans as $ln) {
+            $now = Carbon::now();
+            $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+            if ($ln->exit_date < $now) {
+                $ln->countdown =  $diff * -1;
+            } else {
+                $ln->countdown = $diff;
+            }
+        }
         return view('branch.active')->with(['loans' => $loans]);
     }
 
     public function expired_loans(Request $request)
     {
         $loans = LoansModel::where('loan_status', 'Expired')->where('branch', auth()->user()->branch)->get();
+        foreach ($loans as $ln) {
+            $now = Carbon::now();
+            $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+            if ($ln->exit_date < $now) {
+                $ln->countdown =  $diff * -1;
+            } else {
+                $ln->countdown = $diff;
+            }
+        }
         return view('branch.expired')->with(['loans' => $loans]);
     }
 
     public function bad_loans(Request $request)
     {
         $loans = LoansModel::where('loan_status', 'Bad')->where('branch', auth()->user()->branch)->get();
+        foreach ($loans as $ln) {
+            $now = Carbon::now();
+            $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+            if ($ln->exit_date < $now) {
+                $ln->countdown =  $diff * -1;
+            } else {
+                $ln->countdown = $diff;
+            }
+        }
         return view('branch.bad')->with(['loans' => $loans]);
     }
 
     public function loan_status_summary(Request $request)
     {
-        if(auth()->user()->branch_manager == false){
+        if (auth()->user()->branch_manager == false) {
             return abort(401);
         }
         $data = array();

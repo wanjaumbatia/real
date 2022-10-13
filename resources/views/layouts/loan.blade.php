@@ -13,7 +13,7 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    
+
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
@@ -72,27 +72,27 @@
                             <a class="nav-link" href="{{ route('loans.loans_by_branch') }}">{{ __('Branch Register') }}</a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('loans.requests') }}">{{ __('Loan Requests') }}</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Loan Category
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{{ route('loans.active_loans') }}">{{ __('Active Loans') }}</a>
+                                <a class="dropdown-item" href="{{ route('loans.expired_loans') }}">{{ __('Expired Loans') }}</a>
+                                <a class="dropdown-item" href="{{ route('loans.bad_loans') }}">{{ __('Bad Loans') }}</a>
+                            </div>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('loans.under_processing') }}">{{ __('Loans Under Processing') }}</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Loan Processing
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{{ route('loans.requests') }}">{{ __('Loan Requests') }}</a>
+                                <a class="dropdown-item" href="{{ route('loans.under_processing') }}">{{ __('Loans Under Processing') }}</a>
+                            </div>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('loans.active_loans') }}">{{ __('Active Loans') }}</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('loans.expired_loans') }}">{{ __('Expired Loans') }}</a>
-                        </li>
-                        
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('loans.bad_loans') }}">{{ __('Bad Loans') }}</a>
-                        </li>
-
-                      
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Closed Loans
@@ -107,7 +107,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/loan_status_summary">{{ __('Loan Status Summary') }}</a>
                         </li>
-                        
+
                         @endif
 
                         @endguest

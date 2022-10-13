@@ -19,8 +19,10 @@
                                     <th>Amount</th>
                                     <th>Interest</th>
                                     <th>Duration</th>
-                                    <th>Paid Amount</th>
+                                    <th>Paid </th>
+                                    <th>Balance</th>
                                     <th>Status</th>
+                                    <th>Countdown</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -35,6 +37,12 @@
                                     <td>{{$item->duration}} Months</td>
                                     <td>{{number_format($item->total_balance,0)}}</td>
                                     <td>{{$item->loan_status}}</td>
+                                    <td>
+                                        @if($item->countdown <0) <p class="text-danger">{{$item->countdown}}</p>
+                                            @else
+                                            <p class="text-success">{{$item->countdown}}</p>
+                                            @endif
+                                    </td>
                                     <td><a href="/branch_loan/{{$item->id}}" class="btn btn-primary btn-block">Open</a></td>
                                 </tr>
                                 @endforeach
