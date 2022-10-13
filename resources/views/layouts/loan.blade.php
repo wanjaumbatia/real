@@ -88,6 +88,16 @@
                             <a class="nav-link" href="{{ route('loans.closed_loans') }}">{{ __('Closed Loans') }}</a>
                         </li>
 
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Closed Loans
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="#">All Closed Loans</a>
+                                <a class="dropdown-item" href="#">Normal Closed Loans</a>
+                                <a class="dropdown-item" href="#">Forced Closed Loans</a>
+                            </div>
+                        </li>
                         @endif
 
                         @endguest

@@ -507,7 +507,7 @@ class LoanController extends Controller
         }
         $payments = LoanRepayment::where('name', $loan->customer)->get();
         return view('loans.loan_card')->with([
-            'loan' => $loan,+LOG_PID
+            'loan' => $loan,
             'payments' => $payments
         ]);
     }

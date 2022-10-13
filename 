@@ -1,0 +1,11 @@
+
+commot
+commoy
+
+
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch master
+# Changes to be committed:
+#	modified:   app/Http/Controllers/OfficeController.php
+#
