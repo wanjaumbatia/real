@@ -218,8 +218,8 @@ class SalesController extends Controller
         $loan = LoansModel::where('id', $id)->first();
         //get customer details
         $customer = Customer::where('id', $loan->customer_id)->first();
-        
-        $statement = LoanLedgerEntries::where('loan_model_id', $loan->id)->get();   
+
+        $statement = LoanLedgerEntries::where('loan_model_id', $loan->id)->get();
 
         $deduction = LoanDeduction::where('active', true)->get();
         $deductions = array();
@@ -236,11 +236,11 @@ class SalesController extends Controller
 
         $payments = LoanRepayment::where('name', $customer->name)->get();
         $total_repayment = LoanRepayment::where('name', $customer->name)->sum('amount');
-        
+
         return view('sales.loan_card')->with([
-            'customer' => $customer, 
-            'loan' => $loan, 
-            'statement' => $statement, 
+            'customer' => $customer,
+            'loan' => $loan,
+            'statement' => $statement,
             'deductions' => $deductions,
             'payments' => $payments
         ]);
@@ -340,7 +340,7 @@ class SalesController extends Controller
     {
         $account = SavingsAccount::where('id', $request->id)->first();
         $balance = Payments::where('savings_account_id', $account->id)->where('status', 'confirmed')->sum('amount');
-      
+
         $customer = Customer::where('id', $account->customer_id)->first();
 
         $plan = Plans::where('id', $account->plans_id)->first();
@@ -771,7 +771,7 @@ class SalesController extends Controller
             }
 
             $loan = LoansModel::where('customer_id', $customer->id)->first();
-           
+
             $result = array();
             $result['customer'] = $customer;
             $result['accounts'] = $data;
@@ -963,6 +963,15 @@ class SalesController extends Controller
             // }
 
             $loans = LoansModel::where('handler', auth()->user()->name)->where('loan_status', $request->status)->get();
+            foreach ($loans as $ln) {
+                $now = Carbon::now();
+                $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+                if ($ln->exit_date < $now) {
+                    $ln->countdown =  $diff * -1;
+                } else {
+                    $ln->countdown = $diff;
+                }
+            }
             return view('sales.loans')->with(['loans' => $loans, 'status' => $request->status]);
         } else {
             return abort(401);

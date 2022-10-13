@@ -22,6 +22,7 @@
                                 <th>Paid Amount</th>
                                 <th>Balance</th>
                                 <th>Status</th>
+                                <th>Countdown</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -49,6 +50,12 @@
                                     <p class="text-primary font-weight-bold">{{$item->loan_status}}</p>
                                 </td>
                                 @endif
+                                <td>
+                                    @if($item->countdown <0) <p class="text-danger">{{$item->countdown}}</p>
+                                        @else
+                                        <p class="text-success">{{$item->countdown}}</p>
+                                        @endif
+                                </td>
                                 <td><a href="/loan_status/{{$item->id}}" class="btn btn-sm btn-primary">open</a></td>
                             </tr>
                             @endforeach

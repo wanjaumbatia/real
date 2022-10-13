@@ -113,7 +113,7 @@
                             </div>
                         </li>
 
-                        <li class="nav-item dropdown">
+                        <!-- <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Real Invest
                             </a>
@@ -121,7 +121,7 @@
                                 <a class="dropdown-item" href="/new_real_saving">New Real Invest</a>
                                 <a class="dropdown-item" href="/real_invest_list">Active Real Invest</a>
                             </div>
-                        </li>
+                        </li> -->
                         @endguest
                     </ul>
 

@@ -4,6 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
+            <div class="alert alert-danger">Kindly don't use this page.</div>
             <div class="card">
                 <div class="card-header">New Real Invest</div>
                 <div class="card-body">
