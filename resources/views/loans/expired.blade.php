@@ -22,6 +22,7 @@
                                     <th>Paid Amount</th>
                                     <th>Balance</th>
                                     <th>Status</th>
+                                    <th>Countdown</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -37,6 +38,12 @@
                                     <td>{{number_format(($item->total_interest_paid+$item->capital_balance),0)}}</td>
                                     <td>{{number_format($item->total_balance,0)}}</td>
                                     <td>{{$item->loan_status}}</td>
+                                    <td>
+                                        @if($item->countdown <0) <p class="text-danger">{{$item->countdown}}</p>
+                                            @else
+                                            <p class="text-success">{{$item->countdown}}</p>
+                                            @endif
+                                    </td>
                                     <td><a href="/loan_card/{{$item->id}}" class="btn btn-primary btn-block">Open</a></td>
                                 </tr>
                                 @endforeach

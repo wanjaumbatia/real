@@ -731,6 +731,9 @@ class BranchController extends Controller
 
     public function loan_status_summary(Request $request)
     {
+        if(auth()->user()->branch_manager == false){
+            return abort(401);
+        }
         $data = array();
         $data['active'] = LoansModel::where('loan_status', 'ACTIVE')->where('branch', auth()->user()->branch)->count();
         $data['expired'] = LoansModel::where('loan_status', 'EXPIRED')->where('branch', auth()->user()->branch)->count();

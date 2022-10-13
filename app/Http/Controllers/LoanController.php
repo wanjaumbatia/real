@@ -44,6 +44,16 @@ class LoanController extends Controller
         } else {
             $data = LoansModel::where('loan_status', $request->status)->get();
         }
+
+        foreach ($data as $ln) {
+            $now = Carbon::now();
+            $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+            if ($ln->exit_date < $now) {
+                $ln->countdown =  $diff * -1;
+            } else {
+                $ln->countdown = $diff;
+            }
+        }
         return view('loans.index')->with(['loans' => $data, 'status' => $request->status]);
     }
 
@@ -473,18 +483,46 @@ class LoanController extends Controller
     public function active_loans(Request $request)
     {
         $loans = LoansModel::where('loan_status', 'Active')->get();
+        foreach ($loans as $ln) {
+            $now = Carbon::now();
+            $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+            if ($ln->exit_date < $now) {
+                $ln->countdown =  $diff * -1;
+            } else {
+                $ln->countdown = $diff;
+            }
+        }
         return view('loans.active')->with(['loans' => $loans]);
     }
 
     public function expired_loans(Request $request)
     {
         $loans = LoansModel::where('loan_status', 'Expired')->get();
+        foreach ($loans as $ln) {
+            $now = Carbon::now();
+            $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+            if ($ln->exit_date < $now) {
+                $ln->countdown =  $diff * -1;
+            } else {
+                $ln->countdown = $diff;
+            }
+        }
+
         return view('loans.expired')->with(['loans' => $loans]);
     }
 
     public function bad_loans(Request $request)
     {
         $loans = LoansModel::where('loan_status', 'Bad')->get();
+        foreach ($loans as $ln) {
+            $now = Carbon::now();
+            $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+            if ($ln->exit_date < $now) {
+                $ln->countdown =  $diff * -1;
+            } else {
+                $ln->countdown = $diff;
+            }
+        }
         return view('loans.bad')->with(['loans' => $loans]);
     }
 
@@ -560,7 +598,7 @@ class LoanController extends Controller
 
     public function loan_status_summary(Request $request)
     {
-        if(auth()->user()->loan_officer == false){
+        if (auth()->user()->loan_officer == false) {
             return abort(401);
         }
         $data = array();
