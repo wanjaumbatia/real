@@ -508,11 +508,14 @@ class LoanController extends Controller
         $payments = LoanRepayment::where('name', $loan->customer)->get();
         return view('loans.loan_card')->with([
             'loan' => $loan,
-            'payments' => $payments
+            'payments' => $payments,
+            'customer' => $customer,
+            'deductions'=>$deductions
         ]);
     }
 
-    public function closed_loans(Request $request){
+    public function closed_loans(Request $request)
+    {
         $payment = LoanRepayment::where('id', '323')->first();
         $loan = LoansModel::where('customer', $payment->name)->first();
         return view('');
