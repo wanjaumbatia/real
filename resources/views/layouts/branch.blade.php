@@ -52,9 +52,9 @@
                         @guest
                         @else
 
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a class="nav-link" href="">{{ __('Sales') }}</a>
-                        </li>
+                        </li> -->
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -81,7 +81,18 @@
                                 Loans
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="/branch_loans?status=active">{{ __('Active Loans') }}</a>
+                                <a class="dropdown-item" href="/branch_loans">{{ __('All Loans') }}</a>
+                                <a class="dropdown-item" href="/branch_active_loans">{{ __('Active Loans') }}</a>
+                                <a class="dropdown-item" href="/branch_expired_loans">{{ __('Expired Loans') }}</a>
+                                <a class="dropdown-item" href="/branch_bad_loans">{{ __('Bad Loans') }}</a>
+                            </div>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Loan Processing
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="/pending_branch_loans">{{ __('Applied Loans') }}</a>
                                 <a class="dropdown-item" href="/processing_branch_loans">{{ __('Processing Loans') }}</a>
                                 <a class="dropdown-item" href="/approved_branch_loans">{{ __('Approved Loans') }}</a>
@@ -92,7 +103,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/recon_report_by_date">{{ __('Reconciliation Report') }}</a>
                         </li>
-                       
+
                         @endguest
                     </ul>
 

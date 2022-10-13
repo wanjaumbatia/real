@@ -30,50 +30,52 @@
                         </div>
                     </form>
                     <hr />
-                    <table id='table' class="table table-striped mt-2">
-                        <thead>
-                            <tr>
-                                <th>Customer</th>
-                                <th>Start Date</th>
-                                <th>Exit Date</th>
-                                <th>Amount</th>
-                                <th>Interest</th>
-                                <th>Duration</th>
-                                <th>Paid Amount</th>
-                                <th>Status</th>
-                                <th>Branch</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($loans as $item)
-                            <tr>
-                                <td>{{$item->customer}}</td>
-                                <td>{{date('d-m-Y', strtotime($item->start_date))}}</td>
-                                <td>{{date('d-m-Y', strtotime($item->exit_date))}}</td>
-                                <td>{{number_format($item->loan_amount)}}</td>
-                                <td>{{$item->percentage}} %</td>
-                                <td>{{$item->duration}} Months</td>
-                                <td>{{number_format($item->total_balance,0)}}</td>
-                                @if($item->loan_status == 'BAD')
-                                <td>
-                                    <p class="text-danger font-weight-bold">{{$item->loan_status}}</p>
-                                </td>
-                                @elseif(($item->loan_status == 'EXPIRED'))
-                                <td>
-                                    <p class="font-weight-bold" style="color: #f5b942">{{$item->loan_status}}</p>
-                                </td>
-                                @else
-                                <td>
-                                    <p class="text-primary font-weight-bold">{{$item->loan_status}}</p>
-                                </td>
-                                @endif
-                                <td>{{$item->Branch}}</td>
-                                <td><a href="/loan_card/{{$item->id}}" class="btn btn-primary btn-block">Open</a></td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table id='table' class="table table-striped mt-2">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Start Date</th>
+                                    <th>Exit Date</th>
+                                    <th>Amount</th>
+                                    <th>Interest</th>
+                                    <th>Duration</th>
+                                    <th>Paid Amount</th>
+                                    <th>Status</th>
+                                    <th>Branch</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($loans as $item)
+                                <tr>
+                                    <td>{{$item->customer}}</td>
+                                    <td>{{date('d-m-Y', strtotime($item->start_date))}}</td>
+                                    <td>{{date('d-m-Y', strtotime($item->exit_date))}}</td>
+                                    <td>{{number_format($item->loan_amount)}}</td>
+                                    <td>{{$item->percentage}} %</td>
+                                    <td>{{$item->duration}} Months</td>
+                                    <td>{{number_format($item->total_balance,0)}}</td>
+                                    @if($item->loan_status == 'BAD')
+                                    <td>
+                                        <p class="text-danger font-weight-bold">{{$item->loan_status}}</p>
+                                    </td>
+                                    @elseif(($item->loan_status == 'EXPIRED'))
+                                    <td>
+                                        <p class="font-weight-bold" style="color: #f5b942">{{$item->loan_status}}</p>
+                                    </td>
+                                    @else
+                                    <td>
+                                        <p class="text-primary font-weight-bold">{{$item->loan_status}}</p>
+                                    </td>
+                                    @endif
+                                    <td>{{$item->branch}}</td>
+                                    <td><a href="/loan_card/{{$item->id}}" class="btn btn-primary btn-block">Open</a></td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

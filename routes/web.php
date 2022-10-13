@@ -205,4 +205,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/loan_card/{id}', [LoanController::class, 'loan_card'])->name('loans.loan_card');
     Route::get('/loans_by_branch', [LoanController::class, 'loans_by_branch'])->name('loans.loans_by_branch');
     Route::get('/repay_test/{id}', [LoanController::class, 'repay_test'])->name('loans.repay_test');
+
+    Route::get('/branch_active_loans', [BranchController::class, 'active_loans'])->name('branch.active_loans');
+    Route::get('/branch_expired_loans', [BranchController::class, 'expired_loans'])->name('branch.expired_loans');
+    Route::get('/branch_bad_loans', [BranchController::class, 'bad_loans'])->name('branch.bad_loans');
 });

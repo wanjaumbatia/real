@@ -46,7 +46,7 @@ class BranchController extends Controller
         if (auth()->user()->branch_manager == false) {
             return abort(401);
         } else {
-            $seps = User::where('sales_executive', true)->where('branch', auth()->user()->branch)->get();            
+            $seps = User::where('sales_executive', true)->where('branch', auth()->user()->branch)->get();
             return view('branch.seps')->with(['seps' => $seps]);
         }
     }
@@ -109,9 +109,9 @@ class BranchController extends Controller
     {
         if (auth()->user()->branch_manager == true) {
             $branch = auth()->user()->branch;
-        
 
-            $loans = LoansModel::where('branch', auth()->user()->branch)->where('loan_status', $request->status)->get();
+
+            $loans = LoansModel::where('branch', auth()->user()->branch)->get();
 
             return view('branch.loans')->with(['loans' => $loans, 'status' => $request->status, 'branch' => $branch]);
         } else {
@@ -142,7 +142,7 @@ class BranchController extends Controller
 
         $data = LoansModel::where('loan_status', 'pending')->where('branch', $branch)->get();
 
-        
+
         return view('branch.applied_loans')->with(['loans' => $data,]);
     }
 
@@ -217,42 +217,11 @@ class BranchController extends Controller
 
     public function loan_card($id)
     {
-        //get loan details
         $loan = LoansModel::where('id', $id)->first();
-        //get customer details
         $customer = Customer::where('id', $loan->customer_id)->first();
-        $identity = false;
-        $photo = false;
-        $form = false;
-        $guarantor = false;
-        $agreement = false;
-        $loan_forms = LoanForm::where('loan_id', $id)->get();
-        foreach ($loan_forms as $item) {
-            if ($item->title == 'ID Number') {
-                $identity = true;
-            }
-
-            if ($item->title == 'Photo') {
-                $photo = true;
-            }
-
-            if ($item->title == 'Loan Form') {
-                $form = true;
-            }
-
-            if ($item->title == 'Guarantor') {
-                $guarantor = true;
-            }
-
-            if ($item->title == 'Agreement') {
-                $agreement = true;
-            }
-        }
-        //create charges
-        $security = LoanSecurityType::where('active', true)->get();
-        //calculate payments
         $deduction = LoanDeduction::where('active', true)->get();
         $deductions = array();
+
         foreach ($deduction as $item) {
             $rec = array();
             $rec['name'] = $item->name;
@@ -263,21 +232,13 @@ class BranchController extends Controller
             }
             $deductions[] = $rec;
         }
-
-
-        return view('branch.loan_card')
-            ->with([
-                'loan' => $loan,
-                'deductions' => $deductions,
-                'securities' => $security,
-                'customer' => $customer,
-                'loan_forms' => $loan_forms,
-                'identity' => $identity,
-                'photo' => $photo,
-                'guarantor' => $guarantor,
-                'agreement' => $agreement,
-                'form' => $form
-            ]);
+        $payments = LoanRepayment::where('name', $loan->customer)->get();
+        return view('branch.loan_card')->with([
+            'loan' => $loan,
+            'payments' => $payments,
+            'customer' => $customer,
+            'deductions' => $deductions
+        ]);
     }
 
     public function upload_forms(Request $request, $id)
@@ -746,5 +707,23 @@ class BranchController extends Controller
                 'agreement' => $agreement,
                 'form' => $form
             ]);
+    }
+
+    public function active_loans(Request $request)
+    {
+        $loans = LoansModel::where('loan_status', 'Active')->where('branch', auth()->user()->branch)->get();
+        return view('branch.active')->with(['loans' => $loans]);
+    }
+
+    public function expired_loans(Request $request)
+    {
+        $loans = LoansModel::where('loan_status', 'Expired')->where('branch', auth()->user()->branch)->get();
+        return view('branch.expired')->with(['loans' => $loans]);
+    }
+
+    public function bad_loans(Request $request)
+    {
+        $loans = LoansModel::where('loan_status', 'Bad')->where('branch', auth()->user()->branch)->get();
+        return view('branch.bad')->with(['loans' => $loans]);
     }
 }
