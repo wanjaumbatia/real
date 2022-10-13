@@ -90,6 +90,7 @@
                                 <a class="dropdown-item" href="/loans?status=active">Active</a>
                                 <a class="dropdown-item" href="/loans?status=expired">Expired</a>
                                 <a class="dropdown-item" href="/loans?status=bad">Bad/Doubtful</a>
+                                <a class="dropdown-item" href="/sales_loan_status_summary">Loan Status Summary</a>
                             </div>
                         </li>
 

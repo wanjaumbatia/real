@@ -1037,4 +1037,20 @@ class SalesController extends Controller
         $data = DB::select("select customers.id, customers.name, sum(payments.amount) as balance from payments inner join customers on payments.customer_id=customers.id where payments.created_by = '" . auth()->user()->name . "' group by customer_id");
         return view('sales.customer_balances')->with(['data' => $data]);
     }
+
+    public function loan_status_summary(Request $request)
+    {
+        if (auth()->user()->sales_executive == false) {
+            return abort(401);
+        }
+        $data = array();
+        $data['active'] = LoansModel::where('loan_status', 'ACTIVE')->where('handler', auth()->user()->name)->count();
+        $data['expired'] = LoansModel::where('loan_status', 'EXPIRED')->where('handler', auth()->user()->name)->count();
+        $data['bad'] = LoansModel::where('loan_status', 'BAD')->where('handler', auth()->user()->name)->count();
+        $data['active_amount'] = LoansModel::where('loan_status', 'ACTIVE')->where('handler', auth()->user()->name)->sum('total_balance');
+        $data['expired_amount'] = LoansModel::where('loan_status', 'EXPIRED')->where('handler', auth()->user()->name)->sum('total_balance');
+        $data['bad_amount'] = LoansModel::where('loan_status', 'BAD')->where('handler', auth()->user()->name)->sum('total_balance');
+
+        return view('branch.loan_status_summary')->with(['data' => $data]);
+    }
 }
