@@ -43,7 +43,19 @@
                                     <td>{{$item->percentage}} %</td>
                                     <td>{{$item->duration}} Months</td>
                                     <td>{{number_format($item->total_balance)}}</td>
-                                    <td>{{$item->loan_status}}</td>
+                                    @if($item->loan_status == 'BAD')
+                                    <td>
+                                        <p class="text-danger font-weight-bold">{{$item->loan_status}}</p>
+                                    </td>
+                                    @elseif(($item->loan_status == 'EXPIRED'))
+                                    <td>
+                                        <p class="font-weight-bold" style="color: #f5b942">{{$item->loan_status}}</p>
+                                    </td>
+                                    @else
+                                    <td>
+                                        <p class="text-primary font-weight-bold">{{$item->loan_status}}</p>
+                                    </td>
+                                    @endif
                                     <td><a href="/loan_card/{{$item->id}}" class="btn btn-primary btn-sm">Open</a></td>
                                 </tr>
                                 @endforeach

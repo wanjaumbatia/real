@@ -36,7 +36,19 @@
                                 <td>{{number_format($item->loan_amount,0)}}</td>
                                 <td>{{number_format($item->total_amount_paid, 0)}}</td>
                                 <td>{{number_format($item->total_balance, 0)}}</td>
-                                <td>{{$item->loan_status}}</td>
+                                @if($item->loan_status == 'BAD')
+                                <td>
+                                    <p class="text-danger font-weight-bold">{{$item->loan_status}}</p>
+                                </td>
+                                @elseif(($item->loan_status == 'EXPIRED'))
+                                <td>
+                                    <p class="font-weight-bold" style="color: #f5b942">{{$item->loan_status}}</p>
+                                </td>
+                                @else
+                                <td>
+                                    <p class="text-primary font-weight-bold">{{$item->loan_status}}</p>
+                                </td>
+                                @endif
                                 <td><a href="/loan_status/{{$item->id}}" class="btn btn-sm btn-primary">open</a></td>
                             </tr>
                             @endforeach

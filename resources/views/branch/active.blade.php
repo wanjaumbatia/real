@@ -1,4 +1,4 @@
-@extends('layouts.loan')
+@extends('layouts.branch')
 
 @section('content')
 <div class="container">
@@ -6,7 +6,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    Loans
+                    Active Loans
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -20,7 +20,6 @@
                                     <th>Interest</th>
                                     <th>Duration</th>
                                     <th>Paid Amount</th>
-                                    <th>Balance</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -34,7 +33,6 @@
                                     <td>{{number_format($item->loan_amount)}}</td>
                                     <td>{{$item->percentage}} %</td>
                                     <td>{{$item->duration}} Months</td>
-                                    <td>{{number_format(($item->total_interest_paid+$item->capital_balance),0)}}</td>
                                     <td>{{number_format($item->total_balance,0)}}</td>
                                     <td>{{$item->loan_status}}</td>
                                     <td><a href="/loan_card/{{$item->id}}" class="btn btn-primary btn-block">Open</a></td>

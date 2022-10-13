@@ -510,7 +510,7 @@ class LoanController extends Controller
             'loan' => $loan,
             'payments' => $payments,
             'customer' => $customer,
-            'deductions'=>$deductions
+            'deductions' => $deductions
         ]);
     }
 
@@ -521,38 +521,40 @@ class LoanController extends Controller
         return view('');
     }
 
-    public function viewMarket(Request $request, $id)
+    public function repay_test(Request $request, $id)
     {
-        $payment = LoanRepayment::where('id', '323')->first();
-        $loan = LoansModel::where('customer', $payment->name)->first();
+        $payments = LoanRepayment::where('posted', false)->get();
+        foreach ($payments as $payment) {
+            $loan = LoansModel::where('customer', $payment->name)->first();
+          
+            //get interests
+            $loan->total_balance = $loan->total_balance - $payment->amount;
+            $loan->total_amount_paid = $loan->total_amount_paid + $payment->amount;
+            $loan->total_monthly_paid = $loan->total_monthly_paid + $payment->amount;
+            $loan->total_monthly_balance = $loan->total_monthly_balance - $payment->amount;
 
-        //get interests
-        $loan->total_balance = $loan->total_balance - $payment->amount;
-        $loan->total_amount_paid = $loan->total_amount_paid + $payment->amount;
-        $loan->total_monthly_paid = $loan->total_monthly_paid + $payment->amount;
-        $loan->total_monthly_balance = $loan->total_monthly_balance - $payment->amount;
+            //calculate interest and capital repayments
+            $expected_interest = $loan->monthly_interest - $loan->monthly_interest_paid;
 
-        //calculate interest and capital repayments
-        $expected_interest = $loan->monthly_interest - $loan->monthly_interest_paid;
+            if ($expected_interest > $payment->amount) {
+                $loan->monthly_interest_paid = $loan->monthly_interest_paid + $payment->amount;
+                $loan->total_interest_paid = $loan->total_interest_paid + $payment->amount;
+            } else {
+                $loan->monthly_interest_paid = $loan->monthly_interest_paid + $expected_interest;
+                $loan->total_interest_paid = $loan->total_interest_paid + $expected_interest;
 
-        if ($expected_interest > $payment->amount) {
-            $loan->monthly_interest_paid = $loan->monthly_interest_paid + $payment->amount;
-            $loan->total_interest_paid = $loan->total_interest_paid + $payment->amount;
-        } else {
-            $loan->monthly_interest_paid = $loan->monthly_interest_paid + $expected_interest;
-            $loan->total_interest_paid = $loan->total_interest_paid + $expected_interest;
+                $rem_capital = $payment->amount - $expected_interest;
+                $loan->monthly_principle_paid =  $loan->monthly_principle_paid + $rem_capital;
+                $loan->capital_balance = $loan->capital_balance + $rem_capital;
+            }
 
-            $rem_capital = $payment->amount - $expected_interest;
-            $loan->monthly_principle_paid =  $loan->monthly_principle_paid + $rem_capital;
-            $loan->capital_balance = $loan->capital_balance + $rem_capital;
+            $loan->update();
+            $payment->posted = true;
+            $payment->update();
         }
 
-        $loan->update();
-        $payment->posted = true;
-        $payment->update();
-
         return response([
-            "id" => $loan
+            "success" => true
         ]);
     }
 }
