@@ -554,6 +554,8 @@ class SalesController extends Controller
         return redirect()->to($url);
     }
 
+    
+
     public function pay(Request $request)
     {
         Log::info('$test');

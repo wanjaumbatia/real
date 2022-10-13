@@ -229,9 +229,9 @@ class BranchController extends Controller
         $customer = Customer::where('id', $loan->customer_id)->first();
         $deduction = LoanDeduction::where('active', true)->get();
         $deductions = array();
-        if ($loan->branch != auth()->user()->branch) {
-            return abort(401);
-        }
+        // if ($loan->branch != auth()->user()->branch) {
+        //     return abort(401);
+        // }
         foreach ($deduction as $item) {
             $rec = array();
             $rec['name'] = $item->name;
