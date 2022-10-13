@@ -105,6 +105,9 @@
                             <a class="nav-link" href="/recon_report_by_date">{{ __('Reconciliation Report') }}</a>
                         </li>
 
+                        <li class="nav-item">
+                            <a class="nav-link" href="/branch_loan_by_sep">{{ __('Loan Review') }}</a>
+                        </li>
                         @endguest
                     </ul>
 

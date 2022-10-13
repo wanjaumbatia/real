@@ -108,6 +108,9 @@
                             <a class="nav-link" href="/loan_status_summary">{{ __('Loan Status Summary') }}</a>
                         </li>
 
+                        <li class="nav-item">
+                            <a class="nav-link" href="/loan_by_sep">{{ __('Loan Review') }}</a>
+                        </li>
                         @endif
 
                         @endguest
