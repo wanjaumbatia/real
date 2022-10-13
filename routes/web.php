@@ -212,5 +212,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/branch_loan_status_summary', [BranchController::class, 'loan_status_summary'])->name('branch_loan_status_summary');
     
     Route::get('/loan_status_summary', [LoanController::class, 'loan_status_summary'])->name('\loan_status_summary');
-
+    Route::get('/loan_review/{id}', [LoanController::class, 'loan_review'])->name('loans.loan_review');
+    Route::get('/loan_by_sep', [LoanController::class, 'loan_by_sep'])->name('loans.loan_by_sep');
+    Route::post('/save_review', [LoanController::class, 'save_review'])->name('loans.save_review');
 });

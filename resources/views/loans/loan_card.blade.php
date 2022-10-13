@@ -11,9 +11,6 @@
                         <div class="col-6">
                         {{$customer->name}}
                         </div>
-                        <div class="col-6 text-end">
-                            <a href="/repay_test/{{$loan->id}}" class="btn btn-primary btn-sm">Post Repayments</a>
-                        </div>
                     </div>
                 </div>
                 <div class="card-body">
