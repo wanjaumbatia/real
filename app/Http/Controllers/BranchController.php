@@ -8,6 +8,7 @@ use App\Models\Loan;
 use App\Models\LoanDeduction;
 use App\Models\LoanForm;
 use App\Models\LoanRepayment;
+use App\Models\LoanReview;
 use App\Models\LoanSecurityType;
 use App\Models\LoansModel;
 use App\Models\NewBalances;
@@ -778,4 +779,65 @@ class BranchController extends Controller
 
         return view('branch.loan_status_summary')->with(['data' => $data]);
     }
+
+    public function loan_by_sep(Request $request)
+    {
+        if ($request->name != null) {
+            $loans = LoansModel::where('handler', $request->name)->get();
+            foreach ($loans as $ln) {
+                $now = Carbon::now();
+                $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+                if ($ln->exit_date < $now) {
+                    $ln->countdown =  $diff * -1;
+                } else {
+                    $ln->countdown = $diff;
+                }
+            }
+        } else {
+            $loans = [];
+        }
+        $seps = User::where('sales_executive', true)->where('branch', auth()->user()->branch)->get();
+        
+        return view('branch.loans_by_sep')->with(['loans' => $loans, 'seps' => $seps]);
+    }
+
+    public function loan_review(Request $request, $id)
+    {
+        $loan = LoansModel::where('id', $id)->first();
+        $customer = Customer::where('id', $loan->customer_id)->first();
+        $deduction = LoanDeduction::where('active', true)->get();
+        $deductions = array();
+
+        foreach ($deduction as $item) {
+            $rec = array();
+            $rec['name'] = $item->name;
+            if ($item->percentange == true) {
+                $rec['amount'] = $loan->loan_amount * ($item->percentange_amount / 100);
+            } else {
+                $rec['amount'] = $item->amount;
+            }
+            $deductions[] = $rec;
+        }
+        $previous = LoanReview::where('loan_id', $loan->id)->get();
+        $payments = LoanRepayment::where('name', $loan->customer)->get();
+        return view('branch.review')->with([
+            'loan' => $loan,
+            'payments' => $payments,
+            'customer' => $customer,
+            'deductions' => $deductions,
+            'previous' => $previous
+        ]);
+    }
+
+    public function save_review(Request $request)
+    {
+        $loans_review = LoanReview::create([
+            'loan_id' => $request->id,
+            'commulative_remarks' => $request->comment,
+            'action_plan' => $request->action_plan
+        ]);
+
+        return redirect()->to('/loan_review/' . $request->id);
+    }
+
 }

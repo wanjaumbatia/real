@@ -216,4 +216,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/loan_review/{id}', [LoanController::class, 'loan_review'])->name('loans.loan_review');
     Route::get('/loan_by_sep', [LoanController::class, 'loan_by_sep'])->name('loans.loan_by_sep');
     Route::post('/save_review', [LoanController::class, 'save_review'])->name('loans.save_review');
+
+    Route::get('/branch_loan_review/{id}', [BranchController::class, 'loan_review'])->name('branch.loan_review');
+    Route::get('/branch_loan_by_sep', [BranchController::class, 'loan_by_sep'])->name('branch.loan_by_sep');
+    Route::post('/branch_save_review', [BranchController::class, 'save_review'])->name('branch.save_review');
+
+
+    Route::get('/reviews', [SalesController::class, 'reviews'])->name('sales.reviews');
+    Route::get('/sales_review/{id}', [SalesController::class, 'sales_review'])->name('sales_review');
 });

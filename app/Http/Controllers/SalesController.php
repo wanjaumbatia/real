@@ -10,6 +10,7 @@ use App\Models\LoanDeduction;
 use App\Models\LoanLedgerEntries;
 use App\Models\LoanRepayment;
 use App\Models\LoanRepaymentModel;
+use App\Models\LoanReview;
 use App\Models\LoansModel;
 use App\Models\OtpCode;
 use App\Models\PaymentLocation;
@@ -1061,5 +1062,50 @@ class SalesController extends Controller
         $data['bad_amount'] = LoansModel::where('loan_status', 'BAD')->where('handler', auth()->user()->name)->sum('total_balance');
 
         return view('branch.loan_status_summary')->with(['data' => $data]);
+    }
+
+
+    public function reviews(Request $request)
+    {
+        $loans = LoansModel::where('handler', auth()->user()->name)->get();
+        foreach ($loans as $ln) {
+            $now = Carbon::now();
+            $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+            if ($ln->exit_date < $now) {
+                $ln->countdown =  $diff * -1;
+            } else {
+                $ln->countdown = $diff;
+            }
+        }
+        return view('sales.reviews')->with(['loans' => $loans]);
+    }
+
+    public function sales_review(Request $request, $id)
+    {
+        $loan = LoansModel::where('id', $id)->first();
+        $customer = Customer::where('id', $loan->customer_id)->first();
+        $deduction = LoanDeduction::where('active', true)->get();
+        $deductions = array();
+
+        foreach ($deduction as $item) {
+            $rec = array();
+            $rec['name'] = $item->name;
+            if ($item->percentange == true) {
+                $rec['amount'] = $loan->loan_amount * ($item->percentange_amount / 100);
+            } else {
+                $rec['amount'] = $item->amount;
+            }
+            $deductions[] = $rec;
+        }
+        $previous = LoanReview::where('loan_id', $loan->id)->get();
+        
+        $payments = LoanRepayment::where('name', $loan->customer)->get();
+        return view('sales.review_card')->with([
+            'loan' => $loan,
+            'payments' => $payments,
+            'customer' => $customer,
+            'deductions' => $deductions,
+            'previous' => $previous
+        ]);
     }
 }
