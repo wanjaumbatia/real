@@ -95,6 +95,7 @@ class SalesController extends Controller
             $account = SavingsAccount::create([
                 'customer_id' => $customer->id,
                 'customer_number' => $customer->no,
+                'customer' => $customer->name,
                 'plans_id' => $plan->id,
                 'name' => 'Regular',
                 'pledge' => 0,
@@ -195,6 +196,7 @@ class SalesController extends Controller
             $account = SavingsAccount::create([
                 'customer_id' => $customer->id,
                 'customer_number' => $customer->no,
+                'customer' => $customer->name,
                 'plans_id' => $plan->id,
                 'name' => 'Regular',
                 'pledge' => 0,
@@ -1021,6 +1023,7 @@ class SalesController extends Controller
         $account = SavingsAccount::create([
             'customer_id' => $customer->id,
             'customer_number' => $customer->no,
+            'customer' => $customer->name,
             'pledge' => 0,
             'plans_id' => $plan->id,
             'name' => $name,

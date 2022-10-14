@@ -84,7 +84,7 @@
                         </div>
                         <div class="card-body">
                             <form>
-                                @if($result['loan']->loan_status=='PENDING'||$result['loan']->loan_status=='PROCESSING')
+                                @if($result['loan']->loan_status=='pending'||$result['loan']->loan_status=='processing')
                                 <div class="form-group">
                                     <label for="">Amount</label>
                                     <input type="text" class="form-control" value=" {{number_format($result['loan']->loan_amount, 2)}}" disabled />

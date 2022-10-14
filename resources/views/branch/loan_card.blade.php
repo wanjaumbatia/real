@@ -9,7 +9,7 @@
                 <div class="card-header">
                     <div class="row">
                         <div class="col-6">
-                        {{$customer->name}}
+                            {{$customer->name}}
                         </div>
                         <div class="col-6 text-end">
                             <a href="/repay_test/{{$loan->id}}" class="btn btn-primary btn-sm">Post Repayments</a>
@@ -147,6 +147,87 @@
                 </div>
             </div>
 
+            <!-- <div class="card mt-3">
+                <div class="card-header">
+                    Upload Documents
+                </div>
+                <div class="card-body">
+                    <form action="/branch_upload_forms/{{$loan->id}}" method="post" enctype="multipart/form-data">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-6 col-sm-12">
+                                @if($identity==false)
+                                <label for="">ID Card</label>
+                                <input type="file" name="id_card" id="id_card" class="form-control">
+                                @else
+                                <div class="row">
+                                    <div class="col-6"><label for="">ID Card</label></div>
+                                    <div class="col-6"><a href="" class="btn btn-primary btn-sm">Download</a></div>
+                                </div>
+                                @endif
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                @if($photo==false)
+                                <label for="">Passport Photos</label>
+                                <input type="file" name="passport_photo" id="passport_photo" class="form-control">
+                                @else
+                                <div class="row">
+                                    <div class="col-6"><label for="">Passport Photo</label></div>
+                                    <div class="col-6"><a href="" class="btn btn-primary btn-sm">Download</a></div>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6 col-sm-12">
+                                @if($form==false)
+                                <label for="">Loan Form</label>
+                                <input type="file" name="loan_form" id="loan_form" class="form-control">
+                                @else
+                                <div class="row">
+                                    <div class="col-6"><label for="">Loan Form</label></div>
+                                    <div class="col-6"><a href="" class="btn btn-primary btn-sm">Download</a></div>
+                                </div>
+                                @endif
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                @if($guarantor==false)
+                                <label for="">Security Document</label>
+                                <input type="file" name="guarantor_form" id="guarantor_form" class="form-control">
+                                @else
+                                <div class="row">
+                                    <div class="col-6"><label for="">Security Document</label></div>
+                                    <div class="col-6"><a href="" class="btn btn-primary btn-sm">Download</a></div>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6 col-sm-12">
+                                @if($agreement==false)
+                                <label for="">Loan Agreement</label>
+                                <input type="file" name="agreement_form" id="agreement_form" class="form-control">
+                                @else
+                                <div class="row">
+                                    <div class="col-6"><label for="">Loan Agreement</label></div>
+                                    <div class="col-6"><a href="" class="btn btn-primary btn-sm">Download</a></div>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-12 col-sm-12">
+                                <label></label>
+                                @if($loan->loan_status=='pending')
+                                <button type="submit" class="btn btn-primary w-100">Upload</button>
+                                @endif
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div> -->
+
+            @if($loan->loan_status == 'ACTIVE' || $loan->loan_status == 'EXPIRED' ||$loan->loan_status == 'BAD')
             <div class="card mt-3">
                 <div class="card-header">Loan Statement</div>
                 <div class="card-body">
@@ -170,6 +251,24 @@
                     </table>
                 </div>
             </div>
+            @elseif($loan->loan_status == 'pending')
+            <div class="card mt-3">
+                <div class="card-header">Approval</div>
+                <div class="card-body">
+                    <form action="/branch_approve_loan/{{$loan->id}}" method="post">
+                        @csrf
+                        <div class="form-group">
+                            <label for="">Remarks</label>
+                            <textarea name="comment" id="comment" rows="3" class="form-control"></textarea>
+                        </div>
+
+                        <button class="btn btn-primary w-100 mt-2">Approve</button>
+                    </form>
+                </div>
+            </div>
+            @elseif($loan->loan_status == 'processing')
+            <h1>Remarks</h1>
+            @endif
         </div>
     </div>
 </div>

@@ -139,7 +139,7 @@
                         </div>
                     </div>
 
-                    <div class="card mt-3">
+                    <!-- <div class="card mt-3">
                         <div class="card-header">
                             Upload Documents
                         </div>
@@ -217,7 +217,7 @@
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="card mt-3">
                         <div class="card-header">Approval Status</div>
