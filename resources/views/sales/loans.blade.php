@@ -21,6 +21,7 @@
                                 <th>Amount</th>
                                 <th>Paid Amount</th>
                                 <th>Balance</th>
+                                <th>Savings</th>
                                 <th>Status</th>
                                 <th>Countdown</th>
                                 <th></th>
@@ -37,6 +38,7 @@
                                 <td>{{number_format($item->loan_amount,0)}}</td>
                                 <td>{{number_format($item->total_amount_paid, 0)}}</td>
                                 <td>{{number_format($item->total_balance, 0)}}</td>
+                                <td>{{number_format($item->savings)}}</td>
                                 @if($item->loan_status == 'BAD')
                                 <td>
                                     <p class="text-danger font-weight-bold">{{$item->loan_status}}</p>

@@ -8,6 +8,8 @@ use App\Models\Balances;
 use App\Models\Branch;
 use App\Models\CommissionLines;
 use App\Models\Customer;
+use App\Models\Expense;
+use App\Models\ExpenseType;
 use App\Models\Loan;
 use App\Models\LoanRepayment;
 use App\Models\LoanRepaymentModel;
@@ -280,7 +282,7 @@ class OfficeController extends Controller
     {
         $acc = SavingsAccount::where('id', $id)->first();
         $customer = Customer::where('id', $acc->customer_id)->first();
-      //  $acc->delete();
+         $acc->delete();
         $url = '/sep_customer/' . $customer->id;
         return redirect()->to($url);
     }
@@ -1321,5 +1323,64 @@ class OfficeController extends Controller
         //     dd($item);
         // }
         return view('regfee_fix')->with(['data' => $data]);
+    }
+
+    public function expenses_list(Request $request)
+    {
+        $expenses = Expense::all();
+
+        return view('office.expenses')->with(['expenses' => $expenses]);
+    }
+
+    public function new_expense(Request $request)
+    {
+        return view('office.new_expense');
+    }
+
+    public function post_expense(Request $request)
+    {
+        if (auth()->user()->office_admin != true) {
+            return abort(401);
+        }
+
+        $expense = Expense::create([
+            'branch' => auth()->user()->branch,
+            'description'  => $request->description,
+            'status' => 'pending',
+            'approved' => false,
+            'amount' => $request->amount,
+            'remarks' => $request->remarks,
+            'created_by' => auth()->user()->name,
+        ]);
+
+        return redirect()->to('');
+    }
+
+    public function expense_types()
+    {
+        $types = ExpenseType::all();
+        return view('operations.expense_types')->with(['types' => $types]);
+    }
+
+    public function new_expense_types()
+    {
+        return view('operations.new_expense_type');
+    }
+
+    public function add_expense_type(Request $request)
+    {
+        $credit = null;
+        if ($request->type == 'Credit') {
+            $credit = true;
+        } else {
+            $credit = false;
+        }
+
+        $type = ExpenseType::create([
+            "expense_type" => $request->name,
+            "credit" => $credit
+        ]);
+
+        return redirect()->to('/expense_types');
     }
 }

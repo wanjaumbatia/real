@@ -19,7 +19,8 @@
                                     <th>Amount</th>
                                     <th>Interest</th>
                                     <th>Duration</th>
-                                    <th>Paid Amount</th>
+                                    <th>Balance</th>
+                                    <th>Savings</th>
                                     <th>Status</th>
                                     <th>Branch</th>
                                     <th>Count Down</th>
@@ -36,6 +37,7 @@
                                     <td>{{$item->percentage}} %</td>
                                     <td>{{$item->duration}} Months</td>
                                     <td>{{number_format($item->total_balance,0)}}</td>
+                                    <td>{{number_format($item->savings,0)}}</td>
                                     @if($item->loan_status == 'BAD')
                                     <td>
                                         <p class="text-danger font-weight-bold">{{$item->loan_status}}</p>

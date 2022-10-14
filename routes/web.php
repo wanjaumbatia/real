@@ -225,4 +225,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reviews', [SalesController::class, 'reviews'])->name('sales.reviews');
     Route::get('/sales_review/{id}', [SalesController::class, 'sales_review'])->name('sales_review');
     Route::post('/move_saving', [BranchController::class, 'move_saving'])->name('branch.move_saving');
+
+    Route::get('/admin_expenses', [OfficeController::class, 'expenses_list'])->name('office.expenses_list');
+    Route::get('/new_expense', [OfficeController::class, 'new_expense'])->name('office.new_expense');
+    Route::get('/expense_types', [OfficeController::class, 'expense_types'])->name('operations.expense_types');
+    Route::get('/new_expense_types', [OfficeController::class, 'new_expense_types'])->name('operations.new_expense_types');
+
+    Route::post('/add_expense_type', [OfficeController::class, 'add_expense_type'])->name('operations.add_expense_type');
 });

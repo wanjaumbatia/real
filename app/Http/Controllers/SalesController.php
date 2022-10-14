@@ -987,7 +987,10 @@ class SalesController extends Controller
                 } else {
                     $ln->countdown = $diff;
                 }
+                $balance = Payments::where('customer_id', $ln->customer_id)->where('status', 'confirmed')->sum('amount');
+                $ln->savings = $balance;
             }
+
             return view('sales.loans')->with(['loans' => $loans, 'status' => $request->status]);
         } else {
             return abort(401);
@@ -1091,6 +1094,8 @@ class SalesController extends Controller
             } else {
                 $ln->countdown = $diff;
             }
+            $balance = Payments::where('customer_id', $ln->customer_id)->where('status', 'confirmed')->sum('amount');
+            $ln->savings = $balance;
         }
         return view('sales.reviews')->with(['loans' => $loans]);
     }
