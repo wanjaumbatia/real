@@ -107,6 +107,7 @@ class LoanController extends Controller
     public function request(Request $request)
     {
         $loans = LoansModel::where('loan_status', 'processing')->where('loan_officer_approval', false)->get();
+        
         return view('loans.requests')->with(['loans' => $loans]);
     }
 

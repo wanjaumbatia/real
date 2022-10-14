@@ -139,7 +139,7 @@
                         </div>
                     </div>
 
-                    <div class="card mt-3">
+                    <!-- <div class="card mt-3">
                         <div class="card-header">
                             Upload Documents
                         </div>
@@ -217,7 +217,7 @@
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="card mt-3">
                         <div class="card-header">Approval Status</div>
@@ -237,12 +237,12 @@
                             @endif
 
 
-                            @if($loan->direct)
+                            <!-- @if($loan->direct)
                             <div class="form-group mb-2">
                                 <label for="">Approved By Lo</label>
                                 <input class="form-control" disabled value="{{$loan->loan_officer_remarks}}">
                             </div>
-                            @endif
+                            @endif -->
                         </div>
                     </div>
                 </div>

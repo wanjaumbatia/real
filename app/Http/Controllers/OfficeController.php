@@ -1328,18 +1328,19 @@ class OfficeController extends Controller
 
     public function expenses_list(Request $request)
     {
-        $expenses = Expense::all();
-
+        $expenses = Expense::where('branch', auth()->user()->branch)->get();
         return view('office.expenses')->with(['expenses' => $expenses]);
     }
 
     public function new_expense(Request $request)
     {
-        return view('office.new_expense');
+        $codes = ExpenseType::all();
+        return view('office.new_expense')->with(['codes'=>$codes]);;
     }
 
     public function post_expense(Request $request)
     {
+     
         if (auth()->user()->office_admin != true) {
             return abort(401);
         }
@@ -1351,10 +1352,11 @@ class OfficeController extends Controller
             'approved' => false,
             'amount' => $request->amount,
             'remarks' => $request->remarks,
+            'type' => $request->type,
             'created_by' => auth()->user()->name,
         ]);
 
-        return redirect()->to('');
+        return redirect()->to('/admin_expenses');
     }
 
     public function expense_types()
@@ -1500,7 +1502,6 @@ class OfficeController extends Controller
             $invest->status = 'Active';
             $invest->update();
         }
-
         return redirect()->to('/active_real_invest');
     }
 
@@ -1516,4 +1517,5 @@ class OfficeController extends Controller
         dd($data);
         // return view('office.pending_real_invest')->with(['data' => $data]);
     }
+
 }

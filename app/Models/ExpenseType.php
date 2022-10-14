@@ -9,5 +9,5 @@ class ExpenseType extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['expense_type', 'credit'];
+    protected $fillable = ['expense_type', 'credit', 'category'];
 }

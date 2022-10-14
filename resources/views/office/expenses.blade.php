@@ -32,7 +32,7 @@
                                     <td>{{$item->branch}}</td>
                                     <td>{{$item->description}}</td>
                                     <td>{{$item->status}}</td>
-                                    <td>{{$item->amount}}</td>
+                                    <td>{{number_format($item->amount)}}</td>
                                     <td>{{$item->remarks}}</td>
                                     <td>{{$item->created_by}}</td>
                                 </tr>

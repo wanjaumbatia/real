@@ -17,10 +17,22 @@
                     </div>
                     @endif
 
-                    <form action="">
+                    <form action="/post_expense" method="post">
+                        @csrf
                         <div class="form-group">
                             <label for="">Branch</label>
+                            <input type="text" name="branch" value="{{Auth::user()->branch}}" hidden>
                             <input type="text" class="form-control" value="{{Auth::user()->branch}}" disabled />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="">Code</label>
+                            <select name="type" id="type" class="form-control">
+                                @foreach($codes as $item)
+                                <option value="{{$item->expense_type}}">{{$item->expense_type}}</option>
+                                @endforeach
+                            </select>
+
                         </div>
 
                         <div class="form-group mt-1">
@@ -30,7 +42,7 @@
 
                         <div class="form-group mt-1">
                             <label for="">Amount</label>
-                            <input type="text" class="form-control" name="amount">
+                            <input type="number" class="form-control" name="amount">
                         </div>
                         <div class="form-group mt-1">
                             <label for="">Remarks</label>
@@ -51,10 +63,11 @@
 
 
 <script>
+    $('type').select2();
     $(document).ready(function() {
         $('#table').DataTable({
             "paging": true,
-            "ordering": true,
+            "ordering": true,   
             "info": true
         });
     });

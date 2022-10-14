@@ -5,6 +5,7 @@ use App\Http\Controllers\FieldTeam;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IosController;
 use App\Http\Controllers\LoanController;
+use App\Http\Controllers\MdsController;
 use App\Http\Controllers\MembersController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\SalesController;
@@ -243,4 +244,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/active_real_invest', [OfficeController::class, 'active_real_invest'])->name('active_real_invest');
     Route::get('/withdrawn_real_invest', [OfficeController::class, 'withdrawn_real_invest'])->name('withdrawn_real_invest');
     Route::get('/confirm_real_invest/{id}', [OfficeController::class, 'confirm_real_invest'])->name('confirm_real_invest');
+
+    Route::get('/import_expense_codes', [MdsController::class, 'import_expense_codes'])->name('import_expense_codes');
+    Route::post('/post_expense_code_excel', [MdsController::class, 'post_expense_code_excel'])->name('post_expense_code_excel');
+    Route::post('/post_expense', [OfficeController::class, 'post_expense'])->name('post_expense');
 });

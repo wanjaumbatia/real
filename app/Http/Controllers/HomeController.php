@@ -73,6 +73,8 @@ class HomeController extends Controller
                 from loans inner join users on  loans.handler = users.name and status = 'processing' and loans.legal='1';
             ");
             return view('loans.legal_loans')->with(['loans' => $data]);;
+        } else if ($user->managing_director == true) {
+            return view('md.index');
         } else {
             return abort(401);
         }
