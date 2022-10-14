@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">Active Real Invest</div>
+                <div class="card-header">Pending Real Invest</div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <div class="table-responsive">

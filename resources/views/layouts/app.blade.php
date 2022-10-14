@@ -56,16 +56,10 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('office.list') }}">{{ __('Reconciliation') }}</a>
                         </li>
-                        @endif
-
-                        @if(Auth::user()->office_admin == true)
                         <li class="nav-item">
                             <a class="nav-link" href="/recon_report_by_date">{{ __('Reconciliation Report') }}</a>
                         </li>
-                        @endif
-
-
-                        @if(Auth::user()->office_admin == true)
+                        
                         <!-- <li class="nav-item">
                             <a class="nav-link" href="{{ route('office.commissions') }}">{{ __('Commissions') }}</a>
                         </li> -->
@@ -78,6 +72,17 @@
                                 <a class="dropdown-item" href="/new_expense">New Expenses</a>
                                 <a class="dropdown-item" href="/admin_expenses">View Expenses</a>
                             </div>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Real Invest
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/real_invest_pending">Pending Real Invest</a>
+                                <a class="dropdown-item" href="/active_real_invest">Active Real Invest</a>
+                                <a class="dropdown-item" href="/withdrawn_real_invest">Withdrawn Real Invest</a>
+                                </div>
                         </li>
                         @endif
 

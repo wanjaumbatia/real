@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">Active Real Invest</div>
+                <div class="card-header">Withdrawn Real Invest</div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <div class="table-responsive">
@@ -18,8 +18,8 @@
                                         <th>Exit Date</th>
                                         <th>Amount</th>
                                         <th>Plan</th>
-                                        <th>Expected Returns</th>
-                                        <th>Status</th>
+                                        <th>Returns</th>
+                                        <th>Withdrawal Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -44,7 +44,7 @@
                                         <td>{{number_format($item->amount)}}</td>
                                         <td>{{$item->duration}} Months</td>
                                         <td>{{number_format($item->amount + ($item->amount * $item->percentage/100))}}</td>
-                                        <td>{{$item->status}}</td>
+                                        <td>{{date('d-m-Y', strtotime($item->withdrawal_date))}}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>

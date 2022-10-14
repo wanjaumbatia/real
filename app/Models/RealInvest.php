@@ -22,5 +22,7 @@ class RealInvest extends Model
         'percentage',
         'start_date',
         'exit_date',
+        'branch',
+        'town'
     ];
 }

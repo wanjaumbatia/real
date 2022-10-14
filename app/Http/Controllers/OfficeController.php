@@ -16,6 +16,7 @@ use App\Models\LoanRepaymentModel;
 use App\Models\NewBalances;
 use App\Models\Payments;
 use App\Models\Plans;
+use App\Models\RealInvest;
 use App\Models\ReconciliationRecord;
 use App\Models\SavingsAccount;
 use App\Models\ShortageLine;
@@ -282,7 +283,7 @@ class OfficeController extends Controller
     {
         $acc = SavingsAccount::where('id', $id)->first();
         $customer = Customer::where('id', $acc->customer_id)->first();
-         $acc->delete();
+        $acc->delete();
         $url = '/sep_customer/' . $customer->id;
         return redirect()->to($url);
     }
@@ -1382,5 +1383,137 @@ class OfficeController extends Controller
         ]);
 
         return redirect()->to('/expense_types');
+    }
+
+    public function real_invest_pending(Request $request)
+    {
+        $data = RealInvest::where('branch', auth()->user()->branch)->where('status', 'New')->get();
+        return view('office.pending_real_invest')->with(['data' => $data]);
+    }
+
+    public function confirm_real_invest(Request $request, $id)
+    {
+        $invest = RealInvest::where('id', $id)->where('status', 'New')->first();
+        if ($invest->is_customer == true) {
+            //create plan  and payment
+            $customer = Customer::where('id', $invest->customer_id)->first();
+            $plan = Plans::where('name', 'Real Invest')->first();
+
+            $acc = SavingsAccount::create([
+                'customer_id' => $customer->id,
+                'customer_number' => $customer->no,
+                'plans_id' => $plan->id,
+                'name' => $plan->name,
+                'pledge' => 0,
+                'created_by' => auth()->user()->name,
+                'active' => true,
+                'branch' => $customer->branch,
+                'handler' => $customer->handler,
+                'customer' => $customer->name,
+                'plan' => $plan->name
+            ]);
+            $batch_number = rand(100000000, 999999999);
+            $reference = rand(100000000, 999999999);
+
+            $payment = Payments::create([
+                'savings_account_id' => $acc->id,
+                'plan' => $acc->plan,
+                'customer_id' => $acc->customer_id,
+                'customer_name' => $acc->customer,
+                'transaction_type' => 'savings',
+                'status' => 'pending',
+                'remarks' => 'Real Invest payment for ' . $acc->customer . ' of ₦' . number_format($invest->amount, 2),
+                'debit' => $invest->amount,
+                'credit' => 0,
+                'amount' => $invest->amount,
+                'requires_approval' => false,
+                'approved' => false,
+                'posted' => false,
+                'created_by' => $request->user()->name,
+                'branch' => $request->user()->branch,
+                'batch_number' => $batch_number,
+                'reference' => $reference
+            ]);
+
+            $invest->start_date = Carbon::now();
+            $invest->exit_date = Carbon::now()->addMonths($invest->duration);
+            $invest->created = true;
+            $invest->status = 'Active';
+            $invest->update();
+        } else {
+            //create customer
+            $cc = Customer::create([
+                'name' => $invest->customer_name,
+                'address' => $invest->address,
+                'phone' => $invest->phone,
+                'posted' => false,
+                'no' => get_customer_number(),
+                'handler' => $invest->handler,
+                'branch' => $invest->branch,
+                'created_by' => auth()->user()->name,
+            ]);
+
+            $customer = Customer::where('name', $invest->customer_name)->first();
+
+            //create plan  and payment
+            $plan = Plans::where('name', 'Real Invest')->first();
+            $acc = SavingsAccount::create([
+                'customer_id' => $customer->id,
+                'customer_number' => $customer->no,
+                'customer' => $customer->name,
+                'plans_id' => $plan->id,
+                'name' => $plan->name,
+                'pledge' => 0,
+                'created_by' => auth()->user()->name,
+                'active' => true,
+                'branch' => $customer->branch,
+                'handler' => $customer->handler,
+                'customer' => $customer->name,
+                'plan' => $plan->name
+            ]);
+            $batch_number = rand(100000000, 999999999);
+            $reference = rand(100000000, 999999999);
+
+            $payment = Payments::create([
+                'savings_account_id' => $acc->id,
+                'plan' => $acc->plan,
+                'customer_id' => $acc->customer_id,
+                'customer_name' => $acc->customer,
+                'transaction_type' => 'savings',
+                'status' => 'confirmed',
+                'remarks' => 'Real Invest payment for ' . $acc->customer . ' of ₦' . number_format($invest->amount, 2),
+                'debit' => $invest->amount,
+                'credit' => 0,
+                'amount' => $invest->amount,
+                'requires_approval' => false,
+                'approved' => false,
+                'posted' => false,
+                'created_by' => $request->user()->name,
+                'branch' => $request->user()->branch,
+                'batch_number' => $batch_number,
+                'reference' => $reference
+            ]);
+
+            $invest->start_date = Carbon::now();
+            $invest->exit_date = Carbon::now()->addMonths($invest->duration);
+            $invest->created = true;
+            $invest->status = 'Active';
+            $invest->update();
+        }
+
+        return redirect()->to('/active_real_invest');
+    }
+
+    public function active_real_invest()
+    {
+        $data = RealInvest::where('branch', auth()->user()->branch)->where('status', 'Active')->get();
+        return view('office.real_invest')->with(['data' => $data]);
+    }
+
+    public function withdrawn_real_invest()
+    {
+        $data = RealInvest::where('branch', auth()->user()->branch)->where('withdrawn', true)->get();
+        dd($data);
+        // return view('office.pending_real_invest')->with(['data' => $data]);
     }
 }

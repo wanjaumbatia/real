@@ -4,7 +4,6 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="alert alert-danger">Kindly don't use this page.</div>
             <div class="card">
                 <div class="card-header">New Real Invest</div>
                 <div class="card-body">
@@ -16,7 +15,7 @@
                                 <option value="2">Old Customer</option>
                             </select>
                         </div>
-                        <form id='new_customer' class="mt-3" action="/post_real_invest" method="post">
+                        <form id='new_customer' class="mt-3" action="/create_real_invest" method="post">
                             @csrf
                             <input type="number" value="1" name="type" hidden>
                             <div class="form-group">
@@ -52,7 +51,7 @@
                             <button class="btn btn-primary w-100">Submit</button>
                         </form>
 
-                        <form id='old_customer' class="mt-3" action="/post_real_invest" method="post">
+                        <form id='old_customer' class="mt-3" action="/create_real_invest" method="post">
                             @csrf
                             <input type="number" value="2" name="type" hidden>
                             <div class="form-group">
@@ -103,8 +102,8 @@
     }
 
     $(document).ready(function() {
-        $('#new_customer').hide();
-        $('#old_customer').show();
+        $('#new_customer').show();
+        $('#old_customer').hide();
         $('#table').DataTable({
             "paging": true,
             "ordering": true,

@@ -113,6 +113,18 @@
                             </div>
                         </li>
 
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Real Invest
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/new_real_invest">New Real Invest</a>
+                                <a class="dropdown-item" href="/real_invest_list">Active Real Invest</a>   
+                                <a class="dropdown-item" href="/pending_real_invest">Pending Real Invest</a>     
+                                <a class="dropdown-item" href="/sales_withdrawn_real_invest">Withdrawn Real Invest</a>                                
+                            </div>
+                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link" href="/reviews">{{ __('Loan Reviews') }}</a>
                         </li>

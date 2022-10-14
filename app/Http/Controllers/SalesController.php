@@ -16,6 +16,7 @@ use App\Models\OtpCode;
 use App\Models\PaymentLocation;
 use App\Models\Payments;
 use App\Models\Plans;
+use App\Models\RealInvest;
 use App\Models\ReconciliationRecord;
 use App\Models\SavingsAccount;
 use Carbon\Carbon;
@@ -1127,5 +1128,78 @@ class SalesController extends Controller
             'deductions' => $deductions,
             'previous' => $previous
         ]);
+    }
+
+    public function real_invest_list(Request $request)
+    {
+        $invest = RealInvest::where('handler', auth()->user()->name)->where('status', 'Active')->get();
+        return view('sales.real_invest_list')->with(['data' => $invest]);
+    }
+
+    public function withdrawn_real_invest(Request $request)
+    {
+        $invest = RealInvest::where('handler', auth()->user()->name)->where('withdrawn', true)->get();
+        return view('sales.withdrawn_real_invest')->with(['data' => $invest]);
+    }
+
+    public function pending_real_invest(Request $request)
+    {
+        $invest = RealInvest::where('handler', auth()->user()->name)->where('status', 'New')->get();
+        return view('sales.pending_real_invest')->with(['data' => $invest]);
+    }
+
+    public function new_real_invest(Request $request)
+    {
+        $customers = Customer::where('handler', auth()->user()->name)->get();
+        return view('sales.new_real_invest')->with(['customers' => $customers]);
+    }
+
+    public function create_real_invest(Request $request)
+    {
+        $percentage = 0;
+        if ($request->tenure == 6) {
+            $percentage = 10;
+        } else if ($request->tenure == 12) {
+            $percentage = 22;
+        } else if ($request->tenure == 18) {
+            $percentage = 35;
+        } else if ($request->tenure == 24) {
+            $percentage = 50;
+        } else {
+        }
+        if ($request->type == 1) {
+            $invest = RealInvest::create([
+                'plan_name' => 'Real Invest',
+                'is_customer' => false,
+                'customer_name' => $request->name,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'handler' => auth()->user()->name,
+                'amount' => $request->amount,
+                'duration' => $request->tenure,
+                'percentage' => $percentage,
+                'status' => 'New',
+                'branch' => auth()->user()->branch
+            ]);
+        } else {
+            //get customer 
+            $customer = Customer::where('id', $request->customer)->first();
+            $invest = RealInvest::create([
+                'plan_name' => 'Real Invest',
+                'is_customer' => true,
+                'customer_id' => $customer->id,
+                'customer_name' => $customer->name,
+                'phone' => $customer->phone,
+                'address' => $customer->address,
+                'handler' => auth()->user()->name,
+                'amount' => $request->amount,
+                'duration' => $request->tenure,
+                'percentage' => $percentage,
+                'status' => 'New',
+                'branch' => auth()->user()->branch
+            ]);
+        }
+
+        return redirect()->to('/real_invest_list');
     }
 }

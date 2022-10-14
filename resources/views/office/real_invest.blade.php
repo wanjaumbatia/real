@@ -1,4 +1,4 @@
-@extends('layouts.sales')
+@extends('layouts.app')
 
 @section('content')
 <div class="container">
@@ -13,9 +13,9 @@
                                 <thead>
                                     <tr>
                                         <th>Customer</th>
+                                        <th>Sales Exec.</th>
                                         <th>Phone</th>
-                                        <th>Start Date</th>
-                                        <th>Exit Date</th>
+                                        <th>Created On</th>
                                         <th>Amount</th>
                                         <th>Plan</th>
                                         <th>Expected Returns</th>
@@ -26,26 +26,13 @@
                                     @foreach($data as $item)
                                     <tr>
                                         <td>{{$item->customer_name}}</td>
+                                        <td>{{$item->handler}}</td>
                                         <td>{{$item->phone}}</td>
-                                        <td>
-                                            @if($item->start_date!=null)
-                                            {{date('d-m-Y', strtotime($item->start_date))}}
-                                            @else
-                                            <p>-</p>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($item->exit_date!=null)
-                                            {{date('d-m-Y', strtotime($item->exit_date))}}
-                                            @else
-                                            <p>-</p>
-                                            @endif
-                                        </td>
+                                        <td>{{date('d-m-Y', strtotime($item->created_at))}}</td>
                                         <td>{{number_format($item->amount)}}</td>
                                         <td>{{$item->duration}} Months</td>
                                         <td>{{number_format($item->amount + ($item->amount * $item->percentage/100))}}</td>
-                                        <td>{{$item->status}}</td>
-                                    </tr>
+                                        <td>{{$item->status}}</td> </tr>
                                     @endforeach
                                 </tbody>
                             </table>

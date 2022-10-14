@@ -232,4 +232,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/new_expense_types', [OfficeController::class, 'new_expense_types'])->name('operations.new_expense_types');
 
     Route::post('/add_expense_type', [OfficeController::class, 'add_expense_type'])->name('operations.add_expense_type');
+
+    Route::get('/new_real_invest', [SalesController::class, 'new_real_invest'])->name('sales.new_real_invest');
+    Route::post('/create_real_invest', [SalesController::class, 'create_real_invest'])->name('sales.create_real_invest');
+    Route::get('/real_invest_list', [SalesController::class, 'real_invest_list'])->name('sales.real_invest_list');
+    Route::get('/pending_real_invest', [SalesController::class, 'pending_real_invest'])->name('sales.pending_real_invest');
+    Route::get('/sales_withdrawn_real_invest', [SalesController::class, 'withdrawn_real_invest'])->name('sales.withdrawn_real_invest');
+    
+    Route::get('/real_invest_pending', [OfficeController::class, 'real_invest_pending'])->name('real_invest_pending');
+    Route::get('/active_real_invest', [OfficeController::class, 'active_real_invest'])->name('active_real_invest');
+    Route::get('/withdrawn_real_invest', [OfficeController::class, 'withdrawn_real_invest'])->name('withdrawn_real_invest');
+    Route::get('/confirm_real_invest/{id}', [OfficeController::class, 'confirm_real_invest'])->name('confirm_real_invest');
 });
