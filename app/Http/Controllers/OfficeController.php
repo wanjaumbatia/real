@@ -1104,24 +1104,24 @@ class OfficeController extends Controller
                 ]);
 
                 //create interest line
-                $charge = Payments::create([
-                    'savings_account_id' => $account->id,
-                    'plan' => $account->plan,
-                    'customer_id' => $account->customer_id,
-                    'customer_name' => $account->customer,
-                    'transaction_type' => 'interest',
-                    'status' => 'pending',
-                    'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($interest, 2) . " On " . $account->plan . " account.",
-                    'debit' => 0,
-                    'credit' => $interest,
-                    'amount' => $interest * -1,
-                    'requires_approval' => $approval,
-                    'approved' => false,
-                    'posted' => false,
-                    'created_by' => $customer->handler,
-                    'branch' =>  $customer->branch,
-                    'batch_number' => $otp
-                ]);
+                // $charge = Payments::create([
+                //     'savings_account_id' => $account->id,
+                //     'plan' => $account->plan,
+                //     'customer_id' => $account->customer_id,
+                //     'customer_name' => $account->customer,
+                //     'transaction_type' => 'interest',
+                //     'status' => 'pending',
+                //     'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($interest, 2) . " On " . $account->plan . " account.",
+                //     'debit' => 0,
+                //     'credit' => $interest,
+                //     'amount' => $interest * -1,
+                //     'requires_approval' => $approval,
+                //     'approved' => false,
+                //     'posted' => false,
+                //     'created_by' => $customer->handler,
+                //     'branch' =>  $customer->branch,
+                //     'batch_number' => $otp
+                // ]);
             } else {
                 //check pending withdrawal
                 $pending_withdrawal = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('credit');
