@@ -27,9 +27,9 @@
 
                         <div class="form-group">
                             <label for="">Code</label>
-                            <select name="type" id="type" class="form-control">
+                            <select name="type" id="type" class="form-control" id="select_item">
                                 @foreach($codes as $item)
-                                <option value="{{$item->expense_type}}">{{$item->expense_type}}</option>
+                                <option value="{{$item->id}}">{{$item->expense_type}}</option>
                                 @endforeach
                             </select>
 
@@ -48,11 +48,15 @@
                             <label for="">Remarks</label>
                             <textarea type="text" class="form-control" name="remarks" rows="3"></textarea>
                         </div>
+
                         <div class="form-group mt-1">
                             <label for="">Created By</label>
                             <input type="text" class="form-control" value="{{Auth::user()->name}}" disabled>
                         </div>
-
+                        <div class="form-group mt-1">
+                            <label for="">Branch</label>
+                            <input type="text" class="form-control" value="{{Auth::user()->branch}}" disabled>
+                        </div>
                         <button class="btn btn-primary w-100 mt-2">Submit</button>
                     </form>
                 </div>
@@ -65,9 +69,10 @@
 <script>
     $('type').select2();
     $(document).ready(function() {
+        $('#select_item').select2();
         $('#table').DataTable({
             "paging": true,
-            "ordering": true,   
+            "ordering": true,
             "info": true
         });
     });

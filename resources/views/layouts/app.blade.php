@@ -80,11 +80,14 @@
                                 Expenses
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="/new_expense">New Expenses</a>
-                            <a class="dropdown-item" href="/admin_expenses">Expenses</a>
-                           
-                                
+                                <a class="dropdown-item" href="/new_expense">New Expenses</a>
+                                <a class="dropdown-item" href="/admin_expenses">Expenses</a>
+                                <a class="dropdown-item" href="#">Confirm Transafer</a>
                             </div>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/branch_cash_summary">{{ __('Cash Summary') }}</a>
                         </li>
                         @endif
 

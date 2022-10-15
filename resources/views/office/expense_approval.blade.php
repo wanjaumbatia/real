@@ -25,25 +25,20 @@
                                 <th>Status</th>
                                 <th>Amount</th>
                                 <th>Created By</th>
+                                <th></th>
                             </thead>
                             <tbody>
-                                @foreach($expenses as $item)
+                                @foreach($data as $item)
                                 <tr>
                                     <td>{{$item->type}}</td>
                                     <td>{{$item->branch}}</td>
                                     <td>{{$item->description}}</td>
-                                    <td>
-                                        @if($item->status=='pending')
-                                        <p class="text-warning">{{$item->status}}</p>
-                                        @elseif($item->status=='confirmed')
-                                        <p class="text-primary">{{$item->status}}</p>
-                                        @elseif($item->status=='rejected')
-                                        <p class="text-danger">{{$item->status}}</p>
-
-                                        @endif
-                                    </td>
+                                    <td>{{$item->status}}</td>
                                     <td>{{number_format($item->amount)}}</td>
                                     <td>{{$item->created_by}}</td>
+                                    <td>
+                                        <a href="/approve_expenses/{{$item->id}}" class="btn btn-primary btn-sm">Approve</a>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>

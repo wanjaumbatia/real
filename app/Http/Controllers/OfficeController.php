@@ -6,6 +6,8 @@ use App\Imports\BalanceImport;
 use App\Mail\Shortage;
 use App\Models\Balances;
 use App\Models\Branch;
+use App\Models\CashLedger;
+use App\Models\CashSummary;
 use App\Models\CommissionLines;
 use App\Models\Customer;
 use App\Models\Expense;
@@ -13,6 +15,7 @@ use App\Models\ExpenseType;
 use App\Models\Loan;
 use App\Models\LoanRepayment;
 use App\Models\LoanRepaymentModel;
+use App\Models\LoansModel;
 use App\Models\NewBalances;
 use App\Models\Payments;
 use App\Models\Plans;
@@ -1335,15 +1338,17 @@ class OfficeController extends Controller
     public function new_expense(Request $request)
     {
         $codes = ExpenseType::all();
-        return view('office.new_expense')->with(['codes'=>$codes]);;
+        return view('office.new_expense')->with(['codes' => $codes]);;
     }
 
     public function post_expense(Request $request)
     {
-     
+
         if (auth()->user()->office_admin != true) {
             return abort(401);
         }
+
+        $code = ExpenseType::where('id', $request->type)->first();
 
         $expense = Expense::create([
             'branch' => auth()->user()->branch,
@@ -1352,9 +1357,11 @@ class OfficeController extends Controller
             'approved' => false,
             'amount' => $request->amount,
             'remarks' => $request->remarks,
-            'type' => $request->type,
+            'type' => $code->expense_type,
+            'direction' => 'Out',
             'created_by' => auth()->user()->name,
         ]);
+
 
         return redirect()->to('/admin_expenses');
     }
@@ -1518,4 +1525,42 @@ class OfficeController extends Controller
         // return view('office.pending_real_invest')->with(['data' => $data]);
     }
 
+    public function cash_summary(Request $request)
+    {
+        $data = CashSummary::where('branch', auth()->user()->branch)->get();
+
+        //check if todays balance is there if not create new one  
+
+
+        return view('office.branch_cash_summary')->with(['data' => $data]);
+    }
+
+    public function save_summary(Request $request)
+    {
+        $loans = LoansModel::where('loan_status', 'ACTIVE')->where('start_date', '>', '2022-09-25')->where('start_date', '<', '2022-10-01')->sum('loan_amount');
+
+        return redirect()->to('branch_cash_summary');
+    }
+
+
+    public function add_cash_summary()
+    {
+        $branches = Branch::all();
+        return view('office.add_cash_summary')->with(['branches' => $branches]);
+    }
+
+    public function PendingExpenses(Request $request)
+    {
+        if(auth()->user()->operations_manager!=true){
+            return abort(401);
+        }
+        $pending_approvals = Expense::where('status', 'pending')->where('hq', false)->get();
+        return view('office.expense_approval')->with(['data'=> $pending_approvals]);
+    }
+
+    public function ApproveExpenses(Request $request, $id)
+    {
+    
+        dd('here');
+    }
 }

@@ -212,7 +212,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/branch_bad_loans', [BranchController::class, 'bad_loans'])->name('branch.bad_loans');
     Route::get('/branch_loan_status_summary', [BranchController::class, 'loan_status_summary'])->name('branch_loan_status_summary');
     Route::get('/sales_loan_status_summary', [SalesController::class, 'loan_status_summary'])->name('sales_loan_status_summary');
-    
+
     Route::get('/loan_status_summary', [LoanController::class, 'loan_status_summary'])->name('\loan_status_summary');
     Route::get('/loan_review/{id}', [LoanController::class, 'loan_review'])->name('loans.loan_review');
     Route::get('/loan_by_sep', [LoanController::class, 'loan_by_sep'])->name('loans.loan_by_sep');
@@ -222,6 +222,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/branch_loan_by_sep', [BranchController::class, 'loan_by_sep'])->name('branch.loan_by_sep');
     Route::post('/branch_save_review', [BranchController::class, 'save_review'])->name('branch.save_review');
 
+    Route::get('/add_cash_summary', [OfficeController::class, 'add_cash_summary'])->name('add_cash_summary');
+    Route::post('/save_summary', [OfficeController::class, 'save_summary'])->name('save_summary');
 
     Route::get('/reviews', [SalesController::class, 'reviews'])->name('sales.reviews');
     Route::get('/sales_review/{id}', [SalesController::class, 'sales_review'])->name('sales_review');
@@ -239,7 +241,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/real_invest_list', [SalesController::class, 'real_invest_list'])->name('sales.real_invest_list');
     Route::get('/pending_real_invest', [SalesController::class, 'pending_real_invest'])->name('sales.pending_real_invest');
     Route::get('/sales_withdrawn_real_invest', [SalesController::class, 'withdrawn_real_invest'])->name('sales.withdrawn_real_invest');
-    
+
     Route::get('/real_invest_pending', [OfficeController::class, 'real_invest_pending'])->name('real_invest_pending');
     Route::get('/active_real_invest', [OfficeController::class, 'active_real_invest'])->name('active_real_invest');
     Route::get('/withdrawn_real_invest', [OfficeController::class, 'withdrawn_real_invest'])->name('withdrawn_real_invest');
@@ -248,4 +250,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/import_expense_codes', [MdsController::class, 'import_expense_codes'])->name('import_expense_codes');
     Route::post('/post_expense_code_excel', [MdsController::class, 'post_expense_code_excel'])->name('post_expense_code_excel');
     Route::post('/post_expense', [OfficeController::class, 'post_expense'])->name('post_expense');
+    Route::get('/branch_cash_summary', [OfficeController::class, 'cash_summary'])->name('branch.cash_summary');
+
+    Route::get('/import_expenses_codes', [MdsController::class, 'import_expense_codes'])->name('import_expense_codes');
+    Route::get('/generate_prev_summary', [MdsController::class, 'generate_prev_summary'])->name('generate_prev_summary');
+    Route::get('/pending_expenses', [OfficeController::class, 'PendingExpenses'])->name('ops.PendingExpenses');
+    Route::get('/approve_expenses/{id}', [OfficeController::class, 'ApproveExpenses'])->name('ops.ApproveExpenses');
 });

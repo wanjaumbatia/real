@@ -23,6 +23,8 @@ class CreateExpensesTable extends Migration
             $table->double('amount')->default(0);
             $table->string('remarks')->nullable();
             $table->string('created_by')->nullable();
+            $table->string('direction')->nullable();
+            $table->boolean('hq')->default(false);
             $table->timestamps();
         });
     }
