@@ -227,7 +227,7 @@ class OfficeController extends Controller
             'customer_id' => $acc->customer_id,
             'customer_name' => $acc->customer,
             'transaction_type' => 'savings',
-            'status' => 'pending',
+            'status' => 'confirmed',
             'remarks' => 'Collection from ' . $acc->customer . ' of ₦' . number_format($request->amount, 2),
             'debit' => $request->amount,
             'credit' => 0,
@@ -235,8 +235,8 @@ class OfficeController extends Controller
             'requires_approval' => false,
             'approved' => false,
             'posted' => false,
-            'created_by' => $request->user()->name,
-            'branch' => $request->user()->branch,
+            'created_by' => $customer->handler,
+            'branch' => $customer->branch,
             'batch_number' => $batch_number,
             'reference' => $reference,
             'created_at' => $request->date
@@ -244,12 +244,8 @@ class OfficeController extends Controller
 
         $cust = Customer::where('id', $customer_id)->first();
         $balance = get_total_balance($customer_id);
-
-
-
-        return response([
-            'success' => true
-        ]);
+        
+        return redirect()->to('/customer/'.$customer->id);
     }
 
     public function customer($id)
