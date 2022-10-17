@@ -1551,7 +1551,7 @@ class OfficeController extends Controller
             $tt['inflow'] = 0;
         }
         $tt['opening_balance'] = $first_opening_balance;
-        $tt['report_date'] = '2022-09-30';
+        $tt['report_date'] = '25-10-2022 - 30-10-2022';
         $tt['remmittance'] = $first_saving[0]->amount;
         $tt['withdrawals'] = $first_withdrawal[0]->amount;
         $tt['loans'] = $first_loan[0]->amount;
@@ -1580,7 +1580,7 @@ class OfficeController extends Controller
         }
 
         $tt1['opening_balance'] = $first_balance;
-        $tt1['report_date'] = '2022-10-15';
+        $tt1['report_date'] = '01-10-2022 - 14-10-2022';
         $tt1['remmittance'] = $second_saving[0]->amount;
         $tt1['withdrawals'] = $second_withdrawal[0]->amount;
         $tt1['loans'] = $second_loan[0]->amount;
