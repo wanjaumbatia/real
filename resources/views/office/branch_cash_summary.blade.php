@@ -39,7 +39,7 @@
                             <td>{{number_format($item['outflow'])}}</td>
                             <td>{{number_format($item['withdrawals'])}}</td>
                             <td>{{number_format($item['loans'])}}</td>
-                            <td>{{($item['opening_balance'] + $item['remmittance'] + $item['inflow']) - ($item['expenses'] + $item['outflow'] + $item['withdrawals'] + $item['loans'])}}</td>
+                            <td>{{number_format(($item['opening_balance'] + $item['remmittance'] + $item['inflow']) - ($item['expenses'] + $item['outflow'] + $item['withdrawals'] + $item['loans']))}}</td>
                             <td></td>
                             <td></td>
                         </tr>

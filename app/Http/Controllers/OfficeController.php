@@ -1556,6 +1556,7 @@ class OfficeController extends Controller
         $tt['withdrawals'] = $first_withdrawal[0]->amount;
         $tt['loans'] = $first_loan[0]->amount;
         $tt['expenses'] = $first_expense[0]->amount;
+        $first_balance = ($first_opening_balance + $tt['remmittance'] + $tt['inflow']) - ($tt['expenses'] + $tt['outflow'] + $tt['withdrawals'] + $tt['loans']);
         $data[] = $tt;
 
         $tt1 = array();
@@ -1566,7 +1567,7 @@ class OfficeController extends Controller
         $second_expense = DB::select("select sum(amount) as amount from expenses where status = 'confirmed' and created_at >'2022-10-01' and created_at <'2022-10-15' and branch = '" . auth()->user()->branch . "';");
         $second_outflow = DB::select("select sum(credit) as amount from cash_flows where branch = '" . auth()->user()->branch . "' and status = 'confirmed' and created_at >'2022-10-01' and created_at <'2022-10-15'");
         $second_inflow = DB::select("select sum(debit) as amount from cash_flows where branch = '" . auth()->user()->branch . "' and status = 'confirmed' and created_at >'2022-10-01' and created_at <'2022-10-15'");
-       
+
         if ($second_outflow[0]->amount != null) {
             $tt1['outflow'] = $second_outflow[0]->amount;
         } else {
@@ -1578,13 +1579,14 @@ class OfficeController extends Controller
             $tt1['inflow'] = 0;
         }
 
-        $tt1['opening_balance'] = $second_opening_balance;
+        $tt1['opening_balance'] = $first_balance;
         $tt1['report_date'] = '2022-10-15';
         $tt1['remmittance'] = $second_saving[0]->amount;
         $tt1['withdrawals'] = $second_withdrawal[0]->amount;
         $tt1['loans'] = $second_loan[0]->amount;
         $tt1['expenses'] = $second_expense[0]->amount;
-        $data[] = $tt1;
+        $tt1['opening_balance'] =
+            $data[] = $tt1;
 
 
         return view('office.branch_cash_summary')->with(['data' => $data]);
