@@ -41,9 +41,9 @@
                             <td align="right"><a href="/cash_summary_withdrawals?date={{$item['date']}}" style="text-decoration: none;">{{number_format($item['withdrawals'])}}</a></td>
                             <td align="right">{{number_format($item['loans'])}}</td>
                             <td align="right">{{number_format(($item['opening_balance'] + $item['remmittance'] + $item['inflow']) - ($item['expenses'] + $item['outflow'] + $item['withdrawals'] + $item['loans']))}}</td>
-                            <td></td>
-                            <td></td>
-                            <td><button class="btn btn-primary btn-sm" onclick="openModal('{{$item['date']}}')">Close</button></td>
+                            <td>{{number_format($item['at_hand'])}}</td>
+                            <td>{{number_format($item['at_hand'] - (($item['opening_balance'] + $item['remmittance'] + $item['inflow']) - ($item['expenses'] + $item['outflow'] + $item['withdrawals'] + $item['loans'])))}}</td>
+                            <td><button class="btn btn-primary btn-sm" onclick="openModal('{{$item['date']}}', '{{$item['opening_balance']}}', '{{$item['remmittance']}}', '{{$item['inflow']}}', '{{$item['expenses']}}','{{$item['outflow']}}','{{$item['withdrawals']}}','{{$item['loans']}}')" ,>Close</button></td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -61,7 +61,14 @@
                 <div class="modal-body">
                     <form action="/save_cash_at_hand" method="POST">
                         @csrf
-                        <input id="date" hidden/>
+                        <input id="date" hidden name="date" />
+                        <input id="opening_balance" hidden name="opening_balance" />
+                        <input id="deposits" hidden name="deposits" />
+                        <input id="inflow" hidden name="inflow" />
+                        <input id="expenses" hidden name="expenses" />
+                        <input id="outflow" hidden name="outflow" />
+                        <input id="withdrawals" hidden name="withdrawals" />
+                        <input id="loans" hidden name="loans" />
                         <div class="form-group">
                             <label for="">Amount At Hand</label>
                             <input type="text" class="form-control" name="amount">
@@ -81,11 +88,18 @@
 </div>
 
 <script>
-    function openModal(e) {
-        $('#date').val(e);
+    function openModal(a, b, c, d, e, f, g, h) {
+        $('#date').val(a);
+        $('#opening_balance').val(b);
+        $('#deposits').val(c);
+        $('#inflow').val(d);
+        $('#expenses').val(e);
+        $('#outflow').val(f);
+        $('#withdrawals').val(g);
+        $('#loans').val(h);
         $('#modal').modal('show');
 
-        
+
     }
     $(document).ready(function() {
         $('#table').DataTable({

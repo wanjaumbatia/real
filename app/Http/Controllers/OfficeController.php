@@ -1557,6 +1557,15 @@ class OfficeController extends Controller
         $tt['loans'] = $first_loan[0]->amount;
         $tt['expenses'] = $first_expense[0]->amount;
         $tt['date'] = '2022-09-30';
+
+        $cs = CashSummary::where('report_date', $tt['date'])->first();
+        $tt['remarks'] = '';
+        $tt['at_hand'] = 0;
+        if ($cs != null) {
+            $tt['remarks'] = $cs->admin_remarks;
+            $tt['at_hand'] = $cs->CashAtHand;
+        }
+
         $first_balance = ($first_opening_balance + $tt['remmittance'] + $tt['inflow']) - ($tt['expenses'] + $tt['outflow'] + $tt['withdrawals'] + $tt['loans']);
         $data[] = $tt;
 
@@ -1587,7 +1596,17 @@ class OfficeController extends Controller
         $tt1['loans'] = $second_loan[0]->amount;
         $tt1['expenses'] = $second_expense[0]->amount;
         $tt1['date'] = '2022-10-14';
+        $cs1 = CashSummary::where('report_date', $tt1['date'])->first();
+        $tt1['remarks'] = '';
+        $tt1['at_hand'] = 0;
+        if ($cs1 != null) {
+            $tt1['remarks'] = $cs1->admin_remarks;
+            $tt1['at_hand'] = $cs1->CashAtHand;
+        }
         $data[] = $tt1;
+
+        //get on daily basis
+
         return view('office.branch_cash_summary')->with(['data' => $data]);
     }
 
@@ -1839,7 +1858,24 @@ class OfficeController extends Controller
 
     public function save_cash_at_hand(Request $request)
     {
-        dd($request);
+        //get cash summ
+        $summ = CashSummary::where('report_date', Carbon::parse($request->date))->first();
+        if ($summ == null) {
+            CashSummary::create([
+                "report_date" => $request->date,
+                "opening_balance" => $request->opening_balance,
+                "Remmitance" => $request->deposits,
+                "CashInflow" => $request->inflow,
+                "Expenses" => $request->expenses,
+                "Withdrawals" => $request->withdrawals,
+                "LoanIssued" => $request->loans,
+                "CashOutflow" => $request->outflow,
+                "CashAtHand" => $request->amount,
+                "admin_remarks" => $request->remarks
+            ]);
+        } else {
+            dd('edit');
+        }
         return redirect()->to('/branch_cash_summary');
     }
 }
