@@ -19,7 +19,7 @@
                                     <th>Amount</th>
                                     <th>Interest</th>
                                     <th>Duration</th>
-                                    <th>Paid Amount</th>
+                                    <th>Balance</th>
                                     <th>Balance</th>
                                     <th>Status</th>
                                     <th>Countdown</th>
@@ -35,7 +35,6 @@
                                     <td>{{number_format($item->loan_amount)}}</td>
                                     <td>{{$item->percentage}} %</td>
                                     <td>{{$item->duration}} Months</td>
-                                    <td>{{number_format(($item->total_interest_paid+$item->capital_balance),0)}}</td>
                                     <td>{{number_format($item->total_balance,0)}}</td>
                                     <td>{{$item->loan_status}}</td>
                                     <td>
