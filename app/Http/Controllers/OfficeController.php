@@ -1533,7 +1533,7 @@ class OfficeController extends Controller
         $data = array();
 
         $tt = array();
-        $first_opening_balance = 0;
+        $first_opening_balance = 2573300;
         $first_saving = DB::select("select sum(amount) as amount from payments where transaction_type = 'savings' and remarks != 'Opening Balance' and status = 'confirmed' and created_at >'2022-09-25' and created_at <'2022-10-1' and branch = '" . auth()->user()->branch . "';");
         $first_withdrawal = DB::select("select sum(credit) as amount from payments where transaction_type = 'withdrawal' and remarks != 'Opening Balance' and status = 'confirmed' and created_at >'2022-09-25' and created_at <'2022-10-1' and branch = '" . auth()->user()->branch . "';");
         $first_loan = DB::select("select sum(loan_amount) as amount from loans_models where loan_status = 'Active' and start_date >'2022-09-25' and start_date <'2022-10-01' and branch = '" . auth()->user()->branch . "';");
@@ -1556,6 +1556,7 @@ class OfficeController extends Controller
         $tt['withdrawals'] = $first_withdrawal[0]->amount;
         $tt['loans'] = $first_loan[0]->amount;
         $tt['expenses'] = $first_expense[0]->amount;
+        $tt['date'] = '2022-09-30';
         $first_balance = ($first_opening_balance + $tt['remmittance'] + $tt['inflow']) - ($tt['expenses'] + $tt['outflow'] + $tt['withdrawals'] + $tt['loans']);
         $data[] = $tt;
 
@@ -1585,10 +1586,8 @@ class OfficeController extends Controller
         $tt1['withdrawals'] = $second_withdrawal[0]->amount;
         $tt1['loans'] = $second_loan[0]->amount;
         $tt1['expenses'] = $second_expense[0]->amount;
-        $tt1['opening_balance'] =
-            $data[] = $tt1;
-
-
+        $tt1['date'] = '2022-10-14';
+        $data[] = $tt1;
         return view('office.branch_cash_summary')->with(['data' => $data]);
     }
 
@@ -1678,5 +1677,86 @@ class OfficeController extends Controller
         }
 
         return redirect()->to('/branch_cash_summary');
+    }
+
+    public function remittance(Request $request)
+    {
+        $branch = auth()->user()->branch;
+        //$data = DB::select("select created_by as handler, sum(debit) as amount from payments where branch = '" . $branch . "' and remarks!='Opening Balance' and status='confirmed' group by created_by;");
+        $data = [];
+        if ($request->date == '2022-09-30') {
+            $recons = Payments::where('branch', $branch)
+                ->whereDate('created_at', Carbon::parse($request->date))
+                ->where('status', 'confirmed')
+                ->where('remarks', '!=', 'Opening Balance')
+                ->latest()->get()->groupBy(function ($item) {
+                    return $item->created_by;
+                });
+
+            $result = array();
+            foreach ($recons as $item) {
+                $deposits = 0;
+                $data['date'] = $item[0]->created_at->format('d-m-Y');
+                $data['sep'] = $item[0]->created_by;
+
+                foreach ($item as $it) {
+                    if ($it->transaction_type == 'savings') {
+                        $deposits = $deposits + $it->debit;
+                    }
+                }
+                $data['deposits'] = $deposits;
+                $result[] = $data;
+            }
+
+            dd('test');
+        } else if ($request->date == '2022-10-14') {
+            $recons = Payments::where('branch', $branch)
+                ->whereDate('created_at', Carbon::parse($request->date))
+                ->where('status', 'confirmed')
+                ->where('remarks', '!=', 'Opening Balance')
+                ->latest()->get()->groupBy(function ($item) {
+                    return $item->created_by;
+                });
+
+            $result = array();
+            foreach ($recons as $item) {
+                $deposits = 0;
+                $data['date'] = $item[0]->created_at->format('d-m-Y');
+                $data['sep'] = $item[0]->created_by;
+
+                foreach ($item as $it) {
+                    if ($it->transaction_type == 'savings') {
+                        $deposits = $deposits + $it->debit;
+                    }
+                }
+                $data['deposits'] = $deposits;
+                $result[] = $data;
+            }
+        } else {
+            $recons = Payments::where('branch', $branch)
+                ->whereDate('created_at', Carbon::parse($request->date))
+                ->where('status', 'confirmed')
+                ->where('remarks', '!=', 'Opening Balance')
+                ->latest()->get()->groupBy(function ($item) {
+                    return $item->created_by;
+                });
+
+            $result = array();
+            foreach ($recons as $item) {
+                $deposits = 0;
+                $data['date'] = $item[0]->created_at->format('d-m-Y');
+                $data['sep'] = $item[0]->created_by;
+
+                foreach ($item as $it) {
+                    if ($it->transaction_type == 'savings') {
+                        $deposits = $deposits + $it->debit;
+                    }
+                }
+                $data['deposits'] = $deposits;
+                $result[] = $data;
+            }
+        }
+
+        return view('office.remmitance');
     }
 }

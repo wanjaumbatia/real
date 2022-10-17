@@ -33,13 +33,13 @@
                         <tr>
                             <td>{{$item['report_date']}}</td>
                             <td>{{number_format($item['opening_balance'])}}</td>
-                            <td>{{number_format($item['remmittance'])}}</td>
-                            <td>{{number_format($item['inflow'])}}</td>
-                            <td>{{number_format($item['expenses'])}}</td>
-                            <td>{{number_format($item['outflow'])}}</td>
-                            <td>{{number_format($item['withdrawals'])}}</td>
-                            <td>{{number_format($item['loans'])}}</td>
-                            <td>{{number_format(($item['opening_balance'] + $item['remmittance'] + $item['inflow']) - ($item['expenses'] + $item['outflow'] + $item['withdrawals'] + $item['loans']))}}</td>
+                            <td align="right"><a href="/remmittance?date={{$item['date']}}" style="text-decoration: none;">{{number_format($item['remmittance'])}}</a></td>
+                            <td align="right"><a href="#" style="text-decoration: none;">{{number_format($item['inflow'])}}</a></td>
+                            <td align="right"><a href="#" style="text-decoration: none;">{{number_format($item['expenses'])}}</a></td>
+                            <td align="right"><a href="#" style="text-decoration: none;">{{number_format($item['outflow'])}}</a></td>
+                            <td align="right"><a href="#" style="text-decoration: none;">{{number_format($item['withdrawals'])}}</a></td>
+                            <td align="right">{{number_format($item['loans'])}}</td>
+                            <td align="right">{{number_format(($item['opening_balance'] + $item['remmittance'] + $item['inflow']) - ($item['expenses'] + $item['outflow'] + $item['withdrawals'] + $item['loans']))}}</td>
                             <td></td>
                             <td></td>
                         </tr>

@@ -264,4 +264,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/confirmed_cashflow', [OfficeController::class, 'confirmed_cashflow'])->name('confirmed_cashflow');
     Route::get('/new_cashflow', [OfficeController::class, 'new_cashflow'])->name('new_cash_flow');
     Route::post('/post_cashflow', [OfficeController::class, 'post_cashflow'])->name('post_cashflow');
+
+    Route::get('/remmittance', [OfficeController::class, 'remittance'])->name('remittance');
 });
