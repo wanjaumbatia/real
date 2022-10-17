@@ -1531,7 +1531,7 @@ class OfficeController extends Controller
         $first_opening_balance = 0;
         $first_saving = DB::select("select sum(amount) as amount from payments where transaction_type = 'savings' and remarks != 'Opening Balance' and status = 'confirmed' and created_at >'2022-09-25' and created_at <'2022-10-1' and branch = '" . auth()->user()->branch . "';");
         $first_withdrawal = DB::select("select sum(credit) as amount from payments where transaction_type = 'withdrawal' and remarks != 'Opening Balance' and status = 'confirmed' and created_at >'2022-09-25' and created_at <'2022-10-1' and branch = '" . auth()->user()->branch . "';");
-        $first_loan = DB::select("select sum(loan_amount) as amount from loans_models where loan_status = 'Active' and created_at >'2022-09-25' and created_at <'2022-10-01' and branch = '" . auth()->user()->branch . "';");
+        $first_loan = DB::select("select sum(loan_amount) as amount from loans_models where loan_status = 'Active' and start_date >'2022-09-25' and start_date <'2022-10-01' and branch = '" . auth()->user()->branch . "';");
         $first_expense = DB::select("select sum(amount) as amount from expenses where status = 'confirmed' and created_at >'2022-09-25' and created_at <'2022-10-01' and branch = '" . auth()->user()->branch . "';");
         $tt['opening_balance'] = $first_opening_balance;
         $tt['report_date'] = '2022-09-30';
@@ -1545,14 +1545,14 @@ class OfficeController extends Controller
         $second_opening_balance = 0;
         $second_saving = DB::select("select sum(amount) as amount from payments where transaction_type = 'savings' and remarks != 'Opening Balance' and status = 'confirmed' and created_at >'2022-10-01' and created_at <'2022-10-15' and branch = '" . auth()->user()->branch . "';");
         $second_withdrawal = DB::select("select sum(credit) as amount from payments where transaction_type = 'withdrawal' and remarks != 'Opening Balance' and status = 'confirmed' and created_at >'2022-10-01' and created_at <'2022-10-15' and branch = '" . auth()->user()->branch . "';");
-        $second_loan = DB::select("select sum(loan_amount) as amount from loans_models where loan_status = 'Active' and created_at >'2022-10-01' and created_at <'2022-10-15' and branch = '" . auth()->user()->branch . "';");
-        $first_expense = DB::select("select sum(amount) as amount from expenses where status = 'confirmed' and created_at >'2022-10-01' and created_at <'2022-10-15' and branch = '" . auth()->user()->branch . "';");
+        $second_loan = DB::select("select sum(loan_amount) as amount from loans_models where loan_status = 'ACTIVE' and start_date >'2022-10-01' and start_date <'2022-10-15' and branch = '" . auth()->user()->branch . "';");
+        $second_expense = DB::select("select sum(amount) as amount from expenses where status = 'confirmed' and created_at >'2022-10-01' and created_at <'2022-10-15' and branch = '" . auth()->user()->branch . "';");
         $tt1['opening_balance'] = $second_opening_balance;
         $tt1['report_date'] = '2022-10-15';
-        $tt1['remmittance'] = $first_saving[0]->amount;
-        $tt1['withdrawals'] = $first_withdrawal[0]->amount;
-        $tt1['loans'] = $first_loan[0]->amount;
-        $tt1['expenses'] = $first_expense[0]->amount;
+        $tt1['remmittance'] = $second_saving[0]->amount;
+        $tt1['withdrawals'] = $second_withdrawal[0]->amount;
+        $tt1['loans'] = $second_loan[0]->amount;
+        $tt1['expenses'] = $second_expense[0]->amount;
         $data[] = $tt1;
         
         

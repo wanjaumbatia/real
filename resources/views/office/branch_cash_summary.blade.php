@@ -29,21 +29,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                         @foreach($data as $item)
+                        @foreach($data as $item)
                         <tr>
-                            <td>{{$item->report_date}}</td>
-                            <td>{{number_format($item->opening_balance)}}</td>
-                            <td>{{number_format($item->remmittance)}}</td>
+                            <td>{{$item['report_date']}}</td>
+                            <td>{{number_format($item['opening_balance'])}}</td>
+                            <td>{{number_format($item['remmittance'])}}</td>
                             <td></td>
-                            <td>{{number_format($item->expenses)}}</td>
+                            <td>{{number_format($item['expenses'])}}</td>
                             <td></td>
-                            <td>{{number_format($item->withdrawals)}}</td>
-                            <td>{{number_format($item->loans)}}</td>
+                            <td>{{number_format($item['withdrawals'])}}</td>
+                            <td>{{number_format($item['loans'])}}</td>
                             <td></td>
-                            S<td></td>
+                            <td></td>
                             <td></td>
                         </tr>
-                        @endforeach 
+                        @endforeach
                     </tbody>
                 </table>
             </div>
