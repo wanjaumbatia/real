@@ -1836,4 +1836,10 @@ class OfficeController extends Controller
 
         return view('office.cash_summary_withdrawals')->with(['data' => $result]);
     }
+
+    public function save_cash_at_hand(Request $request)
+    {
+        dd($request);
+        return redirect()->to('/branch_cash_summary');
+    }
 }
