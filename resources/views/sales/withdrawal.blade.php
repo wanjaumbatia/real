@@ -83,6 +83,7 @@
                                 })
                                 .then(results => results.json())
                                 .then((data) => {
+                                    console.log(data);
                                     if (data.success == true) {
                                         swal("Enter OTP:", {
                                                 content: "input",

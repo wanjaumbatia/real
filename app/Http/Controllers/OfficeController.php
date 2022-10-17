@@ -7,6 +7,7 @@ use App\Imports\RealInvestImport;
 use App\Mail\Shortage;
 use App\Models\Balances;
 use App\Models\Branch;
+use App\Models\CashFlow;
 use App\Models\CashLedger;
 use App\Models\CashSummary;
 use App\Models\CommissionLines;
@@ -1554,15 +1555,16 @@ class OfficeController extends Controller
         $tt1['loans'] = $second_loan[0]->amount;
         $tt1['expenses'] = $second_expense[0]->amount;
         $data[] = $tt1;
-        
-        
+
+
         return view('office.branch_cash_summary')->with(['data' => $data]);
     }
 
-    public function import_real_invest(Request $request){
+    public function import_real_invest(Request $request)
+    {
         Excel::import(new RealInvestImport, $request->file);
         return response([
-            'success'=>true
+            'success' => true
         ]);
     }
 
@@ -1600,5 +1602,11 @@ class OfficeController extends Controller
     {
         $branches = Branch::all();
         return view('office.new_cash_summary')->with(['branches' => $branches]);
+    }
+
+    public function confirmed_cashflow()
+    {
+        $data = CashFlow::where('branch', auth()->user()->branch)->get();
+        return view('office.confirmed_cashflow')->with(['data', $data]);
     }
 }

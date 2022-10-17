@@ -352,45 +352,32 @@ class SalesController extends Controller
         $total_credit = $request->amount + $request->commission;
         $otp = rand(000000, 999999);
 
+        if ($plan->name == 'Real Invest') {
 
-        if ($plan->outward == false) {
+            $invest = RealInvest::where('savings_account_id', $request->id)->first();
 
-            Log::info($request);
+            //cal int
+            $int = $invest->amount * $invest->percentage / 100;
 
-            if ($balance < $total_credit) {
-                return response([
-                    "success" => false,
-                    "message" => "You do not have enough balance in this account to withdraw ₦" . number_format($request->amount) . "."
-                ]);
-            }
-            //check pending withdrawal
-            $pending_withdrawal = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('credit');
-            $pending_charge = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'charge')->sum('credit');
+            $interest = Payments::create([
+                'savings_account_id' => $account->id,
+                'plan' => $account->plan,
+                'customer_id' => $account->customer_id,
+                'customer_name' => $account->customer,
+                'transaction_type' => 'interest',
+                'status' => 'pending',
+                'remarks' => 'Investment Interest for ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
+                'credit' => 0,
+                'debit' => $int,
+                'amount' => $int,
+                'requires_approval' => false,
+                'approved' => false,
+                'posted' => false,
+                'created_by' => $customer->handler,
+                'branch' => $customer->branch,
+                'batch_number' => $otp
+            ]);
 
-            if ($balance < ($total_credit + $pending_withdrawal + $pending_charge)) {
-                return response([
-                    "success" => false,
-                    "message" => "Unable to process this withdrawal since customer has a pending withdrawal, this amount exceed the remaining balance."
-                ]);
-            }
-
-            $plan = Plans::where('name', $account->plan)->first();
-
-            $expected_commision = $request->amount * $plan->charge;
-
-            $approval = false;
-            if ($expected_commision > $request->commission) {
-                $approval = true;
-            } else {
-                $approval = false;
-            }
-
-            if ($plan->outward == false) {
-                $commision = $request->amount *  $plan->charge;
-            }
-
-            $batch_number = rand(100000000, 999999999);
-            //create withdrawal line
             $withdrawal = Payments::create([
                 'savings_account_id' => $account->id,
                 'plan' => $account->plan,
@@ -402,7 +389,7 @@ class SalesController extends Controller
                 'debit' => 0,
                 'credit' => $request->amount,
                 'amount' => $request->amount * -1,
-                'requires_approval' => $approval,
+                'requires_approval' => false,
                 'approved' => false,
                 'posted' => false,
                 'created_by' => $customer->handler,
@@ -410,44 +397,105 @@ class SalesController extends Controller
                 'batch_number' => $otp
             ]);
 
-            //create charge line
-            $charge = Payments::create([
-                'savings_account_id' => $account->id,
-                'plan' => $account->plan,
-                'customer_id' => $account->customer_id,
-                'customer_name' => $account->customer,
-                'transaction_type' => 'charge',
-                'status' => 'pending',
-                'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->commission, 2) . " On " . $account->plan . " account.",
-                'debit' => 0,
-                'credit' => $request->commission,
-                'amount' => $request->commission * -1,
-                'requires_approval' => $approval,
-                'approved' => false,
-                'posted' => false,
-                'created_by' => $customer->handler,
-                'branch' => $customer->branch,
-                'batch_number' => $otp
-            ]);
+            $invest->status = 'Withdrawn';
+            $invest->withdrawn = true;
+            $invest->withdrawn_by = auth()->user()->name;
+            $invest->withdrawal_date = Carbon::now();
+            $invest->update();
+        } else {
+            if ($plan->outward == false) {
+                
+                if ($balance < $total_credit) {
+                    return response([
+                        "success" => false,
+                        "message" => "You do not have enough balance in this account to withdraw ₦" . number_format($request->amount) . "."
+                    ]);
+                }
+                //check pending withdrawal
+                $pending_withdrawal = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('credit');
+                $pending_charge = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'charge')->sum('credit');
+
+                if ($balance < ($total_credit + $pending_withdrawal + $pending_charge)) {
+                    return response([
+                        "success" => false,
+                        "message" => "Unable to process this withdrawal since customer has a pending withdrawal, this amount exceed the remaining balance."
+                    ]);
+                }
+
+                $plan = Plans::where('name', $account->plan)->first();
+
+                $expected_commision = $request->amount * $plan->charge;
+
+                $approval = false;
+                if ($expected_commision > $request->commission) {
+                    $approval = true;
+                } else {
+                    $approval = false;
+                }
+
+                if ($plan->outward == false) {
+                    $commision = $request->amount *  $plan->charge;
+                }
+
+                $batch_number = rand(100000000, 999999999);
+                //create withdrawal line
+                $withdrawal = Payments::create([
+                    'savings_account_id' => $account->id,
+                    'plan' => $account->plan,
+                    'customer_id' => $account->customer_id,
+                    'customer_name' => $account->customer,
+                    'transaction_type' => 'withdrawal',
+                    'status' => 'pending',
+                    'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
+                    'debit' => 0,
+                    'credit' => $request->amount,
+                    'amount' => $request->amount * -1,
+                    'requires_approval' => $approval,
+                    'approved' => false,
+                    'posted' => false,
+                    'created_by' => $customer->handler,
+                    'branch' => $customer->branch,
+                    'batch_number' => $otp
+                ]);
+
+                //create charge line
+                $charge = Payments::create([
+                    'savings_account_id' => $account->id,
+                    'plan' => $account->plan,
+                    'customer_id' => $account->customer_id,
+                    'customer_name' => $account->customer,
+                    'transaction_type' => 'charge',
+                    'status' => 'pending',
+                    'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->commission, 2) . " On " . $account->plan . " account.",
+                    'debit' => 0,
+                    'credit' => $request->commission,
+                    'amount' => $request->commission * -1,
+                    'requires_approval' => $approval,
+                    'approved' => false,
+                    'posted' => false,
+                    'created_by' => $customer->handler,
+                    'branch' => $customer->branch,
+                    'batch_number' => $otp
+                ]);
 
 
-            $sep_commision = $request->commission * $plan->sep_commission;
-            //create sales agent line
-            $comm_line = CommissionLines::create([
-                'handler' => $account->handler,
-                'amount' => $sep_commision,
-                'description' => 'Commission for withdrawal of ₦' . number_format($request->amount, 2) . ' charged at ₦' . number_format($request->commission, 2) . ' for ' . $account->customer,
-                'batch_number' => $batch_number,
-                'transaction_type' => 'withdrawal',
-                'payment_id' => $charge->id,
-                'disbursed' => false,
-                'branch' => $customer->branch,
-                'approved' => false,
-                // 'transaction_type'=>'commission'
-                //test
-            ]);
+                $sep_commision = $request->commission * $plan->sep_commission;
+                //create sales agent line
+                $comm_line = CommissionLines::create([
+                    'handler' => $account->handler,
+                    'amount' => $sep_commision,
+                    'description' => 'Commission for withdrawal of ₦' . number_format($request->amount, 2) . ' charged at ₦' . number_format($request->commission, 2) . ' for ' . $account->customer,
+                    'batch_number' => $batch_number,
+                    'transaction_type' => 'withdrawal',
+                    'payment_id' => $charge->id,
+                    'disbursed' => false,
+                    'branch' => $customer->branch,
+                    'approved' => false,
+                    // 'transaction_type'=>'commission'
+                    //test
+                ]);
+            }
         }
-
         return response([
             "success" => true,
             "code" => 'otp'
@@ -769,7 +817,7 @@ class SalesController extends Controller
                     }
                     $acc['interest_added'] = ($invest->percentage / 100 * $invest->amount) * $invest->duration;
                     $acc['total_due'] = ($invest->percentage / 100 * $invest->amount) + $invest->amount;
-            }
+                }
 
                 $saving_accounts['details'] = $acc;
                 $saving_accounts['plan'] = $plan;

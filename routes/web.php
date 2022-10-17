@@ -261,4 +261,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/approve_expenses/{id}', [OfficeController::class, 'ApproveExpenses'])->name('ops.ApproveExpenses');
 
     Route::post('/import_real_invest', [OfficeController::class , 'import_real_invest'])->name('import_real_invest');
+    Route::get('/confirmed_cashflow', [OfficeController::class, 'confirmed_cashflow'])->name('confirmed_cashflow');
 });
