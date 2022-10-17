@@ -15,6 +15,7 @@ use App\Models\LoanRepaymentModel;
 use App\Models\LoanReview;
 use App\Models\LoanSecurityType;
 use App\Models\LoansModel;
+use App\Models\Payments;
 use App\Models\User;
 use Carbon\Carbon;
 use Error;
@@ -107,7 +108,7 @@ class LoanController extends Controller
     public function request(Request $request)
     {
         $loans = LoansModel::where('loan_status', 'processing')->where('loan_officer_approval', false)->get();
-        
+
         return view('loans.requests')->with(['loans' => $loans]);
     }
 
@@ -654,12 +655,16 @@ class LoanController extends Controller
         }
         $previous = LoanReview::where('loan_id', $loan->id)->get();
         $payments = LoanRepayment::where('name', $loan->customer)->get();
+       
+        $savings = Payments::where('customer_id', $customer->id)->where('status', 'confirmed')->sum('amount');
+
         return view('loans.review')->with([
             'loan' => $loan,
             'payments' => $payments,
             'customer' => $customer,
             'deductions' => $deductions,
-            'previous' => $previous
+            'previous' => $previous,
+            'savings' => $savings
         ]);
     }
 

@@ -73,6 +73,12 @@
                                     <input type="text" class="form-control" value="{{number_format($loan->total_balance)}}" disabled>
                                 </div>
                             </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label for="">Savings</label>
+                                    <input type="text" class="form-control" value="{{number_format($savings)}}" disabled>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
