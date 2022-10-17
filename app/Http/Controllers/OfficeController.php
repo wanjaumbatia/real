@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\BalanceImport;
+use App\Imports\RealInvestImport;
 use App\Mail\Shortage;
 use App\Models\Balances;
 use App\Models\Branch;
@@ -244,8 +245,8 @@ class OfficeController extends Controller
 
         $cust = Customer::where('id', $customer_id)->first();
         $balance = get_total_balance($customer_id);
-        
-        return redirect()->to('/customer/'.$customer->id);
+
+        return redirect()->to('/customer/' . $customer->id);
     }
 
     public function customer($id)
@@ -1356,6 +1357,7 @@ class OfficeController extends Controller
             'type' => $code->expense_type,
             'direction' => 'Out',
             'created_by' => auth()->user()->name,
+            'created_at' => $request->date
         ]);
 
 
@@ -1510,7 +1512,7 @@ class OfficeController extends Controller
 
     public function active_real_invest()
     {
-        $data = RealInvest::where('branch', auth()->user()->branch)->where('status', 'Active')->get();
+        $data = RealInvest::where('branch', auth()->user()->branch)->where('status', 'ACTIVE')->get();
         return view('office.real_invest')->with(['data' => $data]);
     }
 
@@ -1523,12 +1525,45 @@ class OfficeController extends Controller
 
     public function cash_summary(Request $request)
     {
-        $data = CashSummary::where('branch', auth()->user()->branch)->get();
+        $data = array();
 
-        //check if todays balance is there if not create new one  
+        $tt = array();
+        $first_opening_balance = 0;
+        $first_saving = DB::select("select sum(amount) as amount from payments where transaction_type = 'savings' and remarks != 'Opening Balance' and status = 'confirmed' and created_at >'2022-09-25' and created_at <'2022-10-1' and branch = '" . auth()->user()->branch . "';");
+        $first_withdrawal = DB::select("select sum(credit) as amount from payments where transaction_type = 'withdrawal' and remarks != 'Opening Balance' and status = 'confirmed' and created_at >'2022-09-25' and created_at <'2022-10-1' and branch = '" . auth()->user()->branch . "';");
+        $first_loan = DB::select("select sum(loan_amount) as amount from loans_models where loan_status = 'Active' and created_at >'2022-09-25' and created_at <'2022-10-01' and branch = '" . auth()->user()->branch . "';");
+        $first_expense = DB::select("select sum(amount) as amount from expenses where status = 'confirmed' and created_at >'2022-09-25' and created_at <'2022-10-01' and branch = '" . auth()->user()->branch . "';");
+        $tt['opening_balance'] = $first_opening_balance;
+        $tt['report_date'] = '2022-09-30';
+        $tt['remmittance'] = $first_saving[0]->amount;
+        $tt['withdrawals'] = $first_withdrawal[0]->amount;
+        $tt['loans'] = $first_loan[0]->amount;
+        $tt['expenses'] = $first_expense[0]->amount;
+        $data[] = $tt;
 
-
+        $tt1 = array();
+        $second_opening_balance = 0;
+        $second_saving = DB::select("select sum(amount) as amount from payments where transaction_type = 'savings' and remarks != 'Opening Balance' and status = 'confirmed' and created_at >'2022-10-01' and created_at <'2022-10-15' and branch = '" . auth()->user()->branch . "';");
+        $second_withdrawal = DB::select("select sum(credit) as amount from payments where transaction_type = 'withdrawal' and remarks != 'Opening Balance' and status = 'confirmed' and created_at >'2022-10-01' and created_at <'2022-10-15' and branch = '" . auth()->user()->branch . "';");
+        $second_loan = DB::select("select sum(loan_amount) as amount from loans_models where loan_status = 'Active' and created_at >'2022-10-01' and created_at <'2022-10-15' and branch = '" . auth()->user()->branch . "';");
+        $first_expense = DB::select("select sum(amount) as amount from expenses where status = 'confirmed' and created_at >'2022-10-01' and created_at <'2022-10-15' and branch = '" . auth()->user()->branch . "';");
+        $tt1['opening_balance'] = $second_opening_balance;
+        $tt1['report_date'] = '2022-10-15';
+        $tt1['remmittance'] = $first_saving[0]->amount;
+        $tt1['withdrawals'] = $first_withdrawal[0]->amount;
+        $tt1['loans'] = $first_loan[0]->amount;
+        $tt1['expenses'] = $first_expense[0]->amount;
+        $data[] = $tt1;
+        
+        
         return view('office.branch_cash_summary')->with(['data' => $data]);
+    }
+
+    public function import_real_invest(Request $request){
+        Excel::import(new RealInvestImport, $request->file);
+        return response([
+            'success'=>true
+        ]);
     }
 
     public function save_summary(Request $request)
@@ -1547,16 +1582,23 @@ class OfficeController extends Controller
 
     public function PendingExpenses(Request $request)
     {
-        if(auth()->user()->operations_manager!=true){
+        if (auth()->user()->operations_manager != true) {
             return abort(401);
         }
         $pending_approvals = Expense::where('status', 'pending')->where('hq', false)->get();
-        return view('office.expense_approval')->with(['data'=> $pending_approvals]);
+        return view('office.expense_approval')->with(['data' => $pending_approvals]);
     }
 
     public function ApproveExpenses(Request $request, $id)
     {
-    
+
         dd('here');
+    }
+
+
+    public function new_cash_summary(Request $request)
+    {
+        $branches = Branch::all();
+        return view('office.new_cash_summary')->with(['branches' => $branches]);
     }
 }

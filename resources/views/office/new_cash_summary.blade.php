@@ -17,51 +17,41 @@
                     </div>
                     @endif
 
-                    <form action="/post_expense" method="post">
+                    <form action="/post_cash_summary" method="post">
                         @csrf
                         <div class="form-group">
                             <label for="">Branch</label>
-                            <input type="text" name="branch" value="{{Auth::user()->branch}}" hidden>
-                            <input type="text" class="form-control" value="{{Auth::user()->branch}}" disabled />
-                        </div>
-
-                        <div class="form-group">
-                            <label for="Date"></label>
-                            <input type="date" class="form-control" name="date">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="">Code</label>
-                            <select name="type" id="type" class="form-control" id="select_item">
-                                @foreach($codes as $item)
-                                <option value="{{$item->id}}">{{$item->expense_type}}</option>
+                            <select name="branch" id="branch" class="form-control">
+                                @foreach($branches as $item)
+                                <option value="{{$item->name}}">{{$item->name}}</option>
                                 @endforeach
                             </select>
-
                         </div>
 
                         <div class="form-group mt-1">
-                            <label for="">Description</label>
-                            <input type="text" class="form-control" name="description">
+                            <label for="">Opening Balance</label>
+                            <input type="number" class="form-control" name="opening_balance">
                         </div>
 
                         <div class="form-group mt-1">
-                            <label for="">Amount</label>
-                            <input type="number" class="form-control" name="amount">
-                        </div>
-                        <div class="form-group mt-1">
-                            <label for="">Remarks</label>
-                            <textarea type="text" class="form-control" name="remarks" rows="3"></textarea>
+                            <label for="">Remmittance</label>
+                            <input type="number" class="form-control" name="remmittance">
                         </div>
 
                         <div class="form-group mt-1">
-                            <label for="">Created By</label>
-                            <input type="text" class="form-control" value="{{Auth::user()->name}}" disabled>
+                            <label for="">Opening Balance</label>
+                            <input type="number" class="form-control" name="remmitance">
+                        </div>
+
+                        <div class="form-group mt-1">
+                            <label for="">Cash Inflow</label>
+                            <input type="number" class="form-control" name="cash_inflow">
                         </div>
                         <div class="form-group mt-1">
-                            <label for="">Branch</label>
-                            <input type="text" class="form-control" value="{{Auth::user()->branch}}" disabled>
+                            <label for="">Cash Outflow</label>
+                            <textarea type="text" class="form-control" name="cash_outflow" rows="3"></textarea>
                         </div>
+
                         <button class="btn btn-primary w-100 mt-2">Submit</button>
                     </form>
                 </div>

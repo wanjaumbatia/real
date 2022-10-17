@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <!-- <div class="card mb-3">
+    <div class="card mb-3">
         <div class="card-header">
             <div class="row">
                 <div class="col-6">
@@ -11,7 +11,7 @@
             </div>
         </div>  
         <div class="card-body">
-            <form method="post" action="/import_loans_new" enctype="multipart/form-data">
+            <form method="post" action="/import_real_invest" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">
                     <label>Select File</label>
@@ -19,12 +19,6 @@
                 </div>
                 <button class="btn btn-primary w-100 mt-2">Upload</button>
             </form>
-        </div>
-    </div> -->
-
-    <div class="row">
-        <div class="col-3">
-            <a href="/loans" class="btn btn-primary btn-sm">Check Loan Repayments</a>
         </div>
     </div>
 

@@ -252,8 +252,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/post_expense', [OfficeController::class, 'post_expense'])->name('post_expense');
     Route::get('/branch_cash_summary', [OfficeController::class, 'cash_summary'])->name('branch.cash_summary');
 
+    Route::get('/new_cash_summary', [OfficeController::class, 'new_cash_summary'])->name('new_cash_summary');
+    Route::post('/post_cash_summary', [OfficeController::class, 'post_cash_summary'])->name('post_cash_summary');
+    
     Route::get('/import_expenses_codes', [MdsController::class, 'import_expense_codes'])->name('import_expense_codes');
     Route::get('/generate_prev_summary', [MdsController::class, 'generate_prev_summary'])->name('generate_prev_summary');
     Route::get('/pending_expenses', [OfficeController::class, 'PendingExpenses'])->name('ops.PendingExpenses');
     Route::get('/approve_expenses/{id}', [OfficeController::class, 'ApproveExpenses'])->name('ops.ApproveExpenses');
+
+    Route::post('/import_real_invest', [OfficeController::class , 'import_real_invest'])->name('import_real_invest');
 });

@@ -19,6 +19,7 @@
                     <div class="table-responsive">
                         <table id='table' class="table table-striped">
                             <thead>
+                                <td>Date</td>
                                 <th>Code</th>
                                 <th>Branch</th>
                                 <th>Description</th>
@@ -29,6 +30,7 @@
                             <tbody>
                                 @foreach($expenses as $item)
                                 <tr>
+                                    <td>{{$item->created_at}}</td>
                                     <td>{{$item->type}}</td>
                                     <td>{{$item->branch}}</td>
                                     <td>{{$item->description}}</td>

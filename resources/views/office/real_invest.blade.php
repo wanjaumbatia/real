@@ -15,7 +15,8 @@
                                         <th>Customer</th>
                                         <th>Sales Exec.</th>
                                         <th>Phone</th>
-                                        <th>Created On</th>
+                                        <th>Start Date</th>
+                                        <th>Exit Date</th>
                                         <th>Amount</th>
                                         <th>Plan</th>
                                         <th>Expected Returns</th>
@@ -28,7 +29,8 @@
                                         <td>{{$item->customer_name}}</td>
                                         <td>{{$item->handler}}</td>
                                         <td>{{$item->phone}}</td>
-                                        <td>{{date('d-m-Y', strtotime($item->created_at))}}</td>
+                                        <td>{{date('d-m-Y', strtotime($item->start_date))}}</td>
+                                        <td>{{date('d-m-Y', strtotime($item->exit_date))}}</td>
                                         <td>{{number_format($item->amount)}}</td>
                                         <td>{{$item->duration}} Months</td>
                                         <td>{{number_format($item->amount + ($item->amount * $item->percentage/100))}}</td>

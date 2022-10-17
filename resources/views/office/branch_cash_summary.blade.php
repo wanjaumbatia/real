@@ -21,14 +21,11 @@
                             <th>Cash Inflow</th>
                             <th>Expense</th>
                             <th>Cash Ouflow</th>
-                            <th>Cash Ouflow HQ</th>
-                            <th>Cash Ouflow Others</th>
                             <th>Withdrawals</th>
                             <th>Loan Issued</th>
                             <th>Cashbook Balance</th>
                             <th>Cash At Hand</th>
                             <th>Shortage (+/-)</th>
-                            <th>Remarks</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,17 +33,14 @@
                         <tr>
                             <td>{{$item->report_date}}</td>
                             <td>{{number_format($item->opening_balance)}}</td>
-                            <td>{{number_format($item->Remmitance)}}</td>
+                            <td>{{number_format($item->remmittance)}}</td>
                             <td></td>
+                            <td>{{number_format($item->expenses)}}</td>
                             <td></td>
+                            <td>{{number_format($item->withdrawals)}}</td>
+                            <td>{{number_format($item->loans)}}</td>
                             <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>{{number_format($item->Withdrawals *-1)}}</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            S<td></td>
                             <td></td>
                         </tr>
                         @endforeach 
