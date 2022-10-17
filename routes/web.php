@@ -262,4 +262,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/import_real_invest', [OfficeController::class , 'import_real_invest'])->name('import_real_invest');
     Route::get('/confirmed_cashflow', [OfficeController::class, 'confirmed_cashflow'])->name('confirmed_cashflow');
+    Route::get('/new_cashflow', [OfficeController::class, 'new_cashflow'])->name('new_cash_flow');
+    Route::post('/post_cashflow', [OfficeController::class, 'post_cashflow'])->name('post_cashflow');
 });

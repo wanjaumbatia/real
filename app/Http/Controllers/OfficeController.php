@@ -196,7 +196,11 @@ class OfficeController extends Controller
 
     public function seps($name)
     {
-        $seps = User::where('branch', $name)->where('sales_executive', true)->get();
+        $seps = User::where('branch', $name)->where(function ($query) {
+            $query->where('sales_executive', '=', true)
+                ->orWhere('office_admin', '=', true);
+        })->get();
+
         return view('office.seps')->with(['seps' => $seps]);
     }
 
@@ -1534,6 +1538,18 @@ class OfficeController extends Controller
         $first_withdrawal = DB::select("select sum(credit) as amount from payments where transaction_type = 'withdrawal' and remarks != 'Opening Balance' and status = 'confirmed' and created_at >'2022-09-25' and created_at <'2022-10-1' and branch = '" . auth()->user()->branch . "';");
         $first_loan = DB::select("select sum(loan_amount) as amount from loans_models where loan_status = 'Active' and start_date >'2022-09-25' and start_date <'2022-10-01' and branch = '" . auth()->user()->branch . "';");
         $first_expense = DB::select("select sum(amount) as amount from expenses where status = 'confirmed' and created_at >'2022-09-25' and created_at <'2022-10-01' and branch = '" . auth()->user()->branch . "';");
+        $first_outflow = DB::select("select sum(credit) as amount from cash_flows where branch = '" . auth()->user()->branch . "' and status = 'confirmed' and created_at >'2022-09-25' and created_at <'2022-10-1'");
+        $first_inflow = DB::select("select sum(debit) as amount from cash_flows where branch = '" . auth()->user()->branch . "' and status = 'confirmed' and created_at >'2022-09-25' and created_at <'2022-10-1'");
+        if ($first_outflow[0]->amount != null) {
+            $tt['outflow'] = $first_outflow[0]->amount;
+        } else {
+            $tt['outflow'] = 0;
+        }
+        if ($first_inflow[0]->amount != null) {
+            $tt['inflow'] = $first_inflow[0]->amount;
+        } else {
+            $tt['inflow'] = 0;
+        }
         $tt['opening_balance'] = $first_opening_balance;
         $tt['report_date'] = '2022-09-30';
         $tt['remmittance'] = $first_saving[0]->amount;
@@ -1548,6 +1564,20 @@ class OfficeController extends Controller
         $second_withdrawal = DB::select("select sum(credit) as amount from payments where transaction_type = 'withdrawal' and remarks != 'Opening Balance' and status = 'confirmed' and created_at >'2022-10-01' and created_at <'2022-10-15' and branch = '" . auth()->user()->branch . "';");
         $second_loan = DB::select("select sum(loan_amount) as amount from loans_models where loan_status = 'ACTIVE' and start_date >'2022-10-01' and start_date <'2022-10-15' and branch = '" . auth()->user()->branch . "';");
         $second_expense = DB::select("select sum(amount) as amount from expenses where status = 'confirmed' and created_at >'2022-10-01' and created_at <'2022-10-15' and branch = '" . auth()->user()->branch . "';");
+        $second_outflow = DB::select("select sum(credit) as amount from cash_flows where branch = '" . auth()->user()->branch . "' and status = 'confirmed' and created_at >'2022-10-01' and created_at <'2022-10-15'");
+        $second_inflow = DB::select("select sum(debit) as amount from cash_flows where branch = '" . auth()->user()->branch . "' and status = 'confirmed' and created_at >'2022-10-01' and created_at <'2022-10-15'");
+       
+        if ($second_outflow[0]->amount != null) {
+            $tt1['outflow'] = $second_outflow[0]->amount;
+        } else {
+            $tt1['outflow'] = 0;
+        }
+        if ($second_inflow[0]->amount != null) {
+            $tt1['inflow'] = $second_inflow[0]->amount;
+        } else {
+            $tt1['inflow'] = 0;
+        }
+
         $tt1['opening_balance'] = $second_opening_balance;
         $tt1['report_date'] = '2022-10-15';
         $tt1['remmittance'] = $second_saving[0]->amount;
@@ -1608,5 +1638,43 @@ class OfficeController extends Controller
     {
         $data = CashFlow::where('branch', auth()->user()->branch)->get();
         return view('office.confirmed_cashflow')->with(['data', $data]);
+    }
+
+    public function new_cashflow()
+    {
+        $branches = Branch::all();
+        return view('office.new_cashflow')->with(['branches' => $branches]);
+    }
+
+    public function post_cashflow(Request $request)
+    {
+        if ($request->direction == 1) {
+            //to hq
+            $dt = CashFlow::create([
+                'branch' => $request->branch,
+                'from' => $request->branch,
+                'to' => 'HQ',
+                'debit' => 0,
+                'credit' => $request->amount,
+                'amount' => $request->amount * -1,
+                'description' => $request->description,
+                'status' => 'pending',
+                'created_by' => auth()->user()->name
+            ]);
+        } else {
+            $dt = CashFlow::create([
+                'branch' => $request->branch,
+                'from' => 'HQ',
+                'to' => $request->branch,
+                'debit' => $request->amount,
+                'credit' => 0,
+                'amount' => $request->amount,
+                'description' => $request->description,
+                'status' => 'pending',
+                'created_by' => auth()->user()->name
+            ]);
+        }
+
+        return redirect()->to('/branch_cash_summary');
     }
 }

@@ -34,12 +34,12 @@
                             <td>{{$item['report_date']}}</td>
                             <td>{{number_format($item['opening_balance'])}}</td>
                             <td>{{number_format($item['remmittance'])}}</td>
-                            <td></td>
+                            <td>{{number_format($item['inflow'])}}</td>
                             <td>{{number_format($item['expenses'])}}</td>
-                            <td></td>
+                            <td>{{number_format($item['outflow'])}}</td>
                             <td>{{number_format($item['withdrawals'])}}</td>
                             <td>{{number_format($item['loans'])}}</td>
-                            <td></td>
+                            <td>{{($item['opening_balance'] + $item['remmittance'] + $item['inflow']) - ($item['expenses'] + $item['outflow'] + $item['withdrawals'] + $item['loans'])}}</td>
                             <td></td>
                             <td></td>
                         </tr>

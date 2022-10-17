@@ -404,7 +404,6 @@ class SalesController extends Controller
             $invest->update();
         } else {
             if ($plan->outward == false) {
-                
                 if ($balance < $total_credit) {
                     return response([
                         "success" => false,
