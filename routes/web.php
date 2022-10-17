@@ -254,13 +254,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/new_cash_summary', [OfficeController::class, 'new_cash_summary'])->name('new_cash_summary');
     Route::post('/post_cash_summary', [OfficeController::class, 'post_cash_summary'])->name('post_cash_summary');
-    
+
     Route::get('/import_expenses_codes', [MdsController::class, 'import_expense_codes'])->name('import_expense_codes');
     Route::get('/generate_prev_summary', [MdsController::class, 'generate_prev_summary'])->name('generate_prev_summary');
     Route::get('/pending_expenses', [OfficeController::class, 'PendingExpenses'])->name('ops.PendingExpenses');
     Route::get('/approve_expenses/{id}', [OfficeController::class, 'ApproveExpenses'])->name('ops.ApproveExpenses');
 
-    Route::post('/import_real_invest', [OfficeController::class , 'import_real_invest'])->name('import_real_invest');
+    Route::post('/import_real_invest', [OfficeController::class, 'import_real_invest'])->name('import_real_invest');
     Route::get('/confirmed_cashflow', [OfficeController::class, 'confirmed_cashflow'])->name('confirmed_cashflow');
     Route::get('/new_cashflow', [OfficeController::class, 'new_cashflow'])->name('new_cash_flow');
     Route::post('/post_cashflow', [OfficeController::class, 'post_cashflow'])->name('post_cashflow');
@@ -268,4 +268,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/remmittance', [OfficeController::class, 'remittance'])->name('remittance');
     Route::get('/cash_summary_withdrawals', [OfficeController::class, 'cash_summary_withdrawals'])->name('cash_summary_withdrawals');
     Route::post('/save_cash_at_hand', [OfficeController::class, 'save_cash_at_hand'])->name('save_cash_at_hand');
+
+    Route::get('/sales_outlook', [SalesController::class, 'performance_outlook'])->name('sales.performance_outlook');
+    Route::get('/change_status/{id}', [LoanController::class, 'change_status'])->name('change_status');
+    Route::post('/post_change_status/{id}', [LoanController::class, 'post_change_status'])->name('post_change_status');
 });

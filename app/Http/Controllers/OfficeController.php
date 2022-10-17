@@ -121,6 +121,12 @@ class OfficeController extends Controller
             $data['regfees'] = $regfees;
             $result[] = $data;
         }
+
+        //get loans 
+        $loans = LoanRepayment::where('branch', auth()->user()->branch)->where('status', 'confirmed')->latest()->get()->groupBy(function ($item) {
+            return $item->created_at->format('d-M-y');
+        });
+        dd($loans);
         return view('office.recon_report_by_date')->with(['data' => $result]);
     }
 

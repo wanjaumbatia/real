@@ -244,12 +244,16 @@ class BranchController extends Controller
             }
             $deductions[] = $rec;
         }
+
+        $savings = Payments::where('customer_id', $customer->id)->where('status', 'confirmed')->sum('amount');
+
         $payments = LoanRepayment::where('name', $loan->customer)->get();
         return view('branch.loan_card')->with([
             'loan' => $loan,
             'payments' => $payments,
             'customer' => $customer,
-            'deductions' => $deductions
+            'deductions' => $deductions,
+            'savings' => $savings
         ]);
     }
 
@@ -917,6 +921,6 @@ class BranchController extends Controller
         $payment->update();
 
 
-        return redirect()->to('/branch_loan_by_sep?name='.$customer->handler);
+        return redirect()->to('/branch_loan_by_sep?name=' . $customer->handler);
     }
 }

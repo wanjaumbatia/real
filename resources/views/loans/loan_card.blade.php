@@ -9,7 +9,12 @@
                 <div class="card-header">
                     <div class="row">
                         <div class="col-6">
-                        {{$customer->name}}
+                            {{$customer->name}}
+                        </div>
+                        <div class="col-6 text-end">
+                            <a href='/change_status/{{$loan->id}}' class="btn btn-primary btn-sm mx-1">Change Status</a>
+                            <!-- <a href='/customer/{{$customer->id}}' class="btn btn-primary btn-sm mx-1">Customer Details</a> -->
+                            <a href='#' class="btn btn-primary btn-sm mx-1">Close</a>
                         </div>
                     </div>
                 </div>

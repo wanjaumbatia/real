@@ -233,7 +233,7 @@ class LoanController extends Controller
             $deductions[] = $rec;
         }
 
-        $data = DB::select("select sum(amount) as balance from payments where customer_id = '" . $customer->id . "' LIMIT 1;");
+        $savings = Payments::where('customer_id', $customer->id)->where('status', 'confirmed')->sum('amount');
 
         return view('loans.processing_loan_card')
             ->with([
@@ -247,7 +247,7 @@ class LoanController extends Controller
                 'form' => $form,
                 'deductions' => $deductions,
                 'loan_forms' => $loan_forms,
-                'customer_savings' => $data[0]->balance
+                'savings' => $savings
             ]);
     }
 
@@ -655,7 +655,7 @@ class LoanController extends Controller
         }
         $previous = LoanReview::where('loan_id', $loan->id)->get();
         $payments = LoanRepayment::where('name', $loan->customer)->get();
-       
+
         $savings = Payments::where('customer_id', $customer->id)->where('status', 'confirmed')->sum('amount');
 
         return view('loans.review')->with([
@@ -677,5 +677,25 @@ class LoanController extends Controller
         ]);
 
         return redirect()->to('/loan_review/' . $request->id);
+    }
+
+    public function change_status(Request $request, $id)
+    {
+        $loan = LoansModel::where('id', $id)->first();
+        $customer = Customer::where('id', $loan->customer_id)->first();
+        $payments = LoanRepayment::where('name', $loan->customer)->get();
+        return view('loans.change_status')->with([
+            'loan' => $loan,
+            'customer' => $customer
+        ]);
+    }
+
+    public function post_change_status(Request $request, $id)
+    {
+        if ($request->stop_interest == null) {
+            dd('stop inteterest');
+        } else {
+            dd('continue inteterest');
+        }
     }
 }

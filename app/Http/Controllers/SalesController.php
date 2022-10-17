@@ -1264,4 +1264,8 @@ class SalesController extends Controller
 
         return redirect()->to('/real_invest_list');
     }
+
+    public function performance_outlook(){
+        return view('sales.performance_outlook');
+    }
 }

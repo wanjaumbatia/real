@@ -69,6 +69,13 @@
                                     <input type="text" class="form-control" value="{{$loan->loan_status}}" disabled>
                                 </div>
                             </div>
+
+                            <div class="col-md-6 col-sm-12">
+                                <div class="form-group">
+                                    <label for="">Balance</label>
+                                    <input type="text" class="form-control" value="{{number_format($savings)}}" disabled>
+                                </div>
+                            </div>
                         </div>
 
                     </form>
@@ -134,6 +141,7 @@
                                         <label for="">Paid Monthly Interest Payment</label>
                                         <input type="text" class="form-control" value="{{number_format($loan->monthly_interest_paid, 2)}}" disabled />
                                     </div>
+                                    
                                 </div>
                             </form>
                         </div>
