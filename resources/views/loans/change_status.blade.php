@@ -161,10 +161,10 @@
                             <div class="col-6">
                                 <div class="form-group">
                                     <label for="">Stop Interest</label>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" name="stop_interest">
-                                      
-                                    </div>
+                                    <select name="status" id="staus" class="form-control">
+                                        <option value="nostop">Do not stop interest</option>
+                                        <option value="stop">Stop Interest</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>

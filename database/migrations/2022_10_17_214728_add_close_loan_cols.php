@@ -14,6 +14,7 @@ class AddCloseLoanCols extends Migration
     public function up()
     {
         Schema::table('loans_models', function (Blueprint $table) {
+            $table->string('loan_number')->nullable();
             $table->boolean('closed')->default(false);
             $table->string('close_remarks')->nullable();
             $table->string('closed_by')->nullable();
