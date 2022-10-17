@@ -1684,16 +1684,17 @@ class OfficeController extends Controller
         $branch = auth()->user()->branch;
         //$data = DB::select("select created_by as handler, sum(debit) as amount from payments where branch = '" . $branch . "' and remarks!='Opening Balance' and status='confirmed' group by created_by;");
         $data = [];
+        $result = array();
         if ($request->date == '2022-09-30') {
             $recons = Payments::where('branch', $branch)
-                ->whereDate('created_at', Carbon::parse($request->date))
+                ->whereDate('created_at', '>',  Carbon::parse('2022-09-25'))
+                ->whereDate('created_at', '<',  Carbon::parse('2022-10-01'))
                 ->where('status', 'confirmed')
                 ->where('remarks', '!=', 'Opening Balance')
                 ->latest()->get()->groupBy(function ($item) {
                     return $item->created_by;
                 });
 
-            $result = array();
             foreach ($recons as $item) {
                 $deposits = 0;
                 $data['date'] = $item[0]->created_at->format('d-m-Y');
@@ -1707,18 +1708,16 @@ class OfficeController extends Controller
                 $data['deposits'] = $deposits;
                 $result[] = $data;
             }
-
-            dd('test');
         } else if ($request->date == '2022-10-14') {
             $recons = Payments::where('branch', $branch)
-                ->whereDate('created_at', Carbon::parse($request->date))
+                ->whereDate('created_at', '>',  Carbon::parse('2022-10-01'))
+                ->whereDate('created_at', '<',  Carbon::parse('2022-10-15'))
                 ->where('status', 'confirmed')
                 ->where('remarks', '!=', 'Opening Balance')
                 ->latest()->get()->groupBy(function ($item) {
                     return $item->created_by;
                 });
 
-            $result = array();
             foreach ($recons as $item) {
                 $deposits = 0;
                 $data['date'] = $item[0]->created_at->format('d-m-Y');
@@ -1741,7 +1740,6 @@ class OfficeController extends Controller
                     return $item->created_by;
                 });
 
-            $result = array();
             foreach ($recons as $item) {
                 $deposits = 0;
                 $data['date'] = $item[0]->created_at->format('d-m-Y');
@@ -1757,6 +1755,85 @@ class OfficeController extends Controller
             }
         }
 
-        return view('office.remmitance');
+        return view('office.remmitance')->with(['data' => $result]);
+    }
+
+    public function cash_summary_withdrawals(Request $request)
+    {
+        $branch = auth()->user()->branch;
+        //$data = DB::select("select created_by as handler, sum(debit) as amount from payments where branch = '" . $branch . "' and remarks!='Opening Balance' and status='confirmed' group by created_by;");
+        $data = [];
+        $result = array();
+        if ($request->date == '2022-09-30') {
+            $recons = Payments::where('branch', $branch)
+                ->whereDate('created_at', '>',  Carbon::parse('2022-09-25'))
+                ->whereDate('created_at', '<',  Carbon::parse('2022-10-01'))
+                ->where('status', 'confirmed')
+                ->where('remarks', '!=', 'Opening Balance')
+                ->latest()->get()->groupBy(function ($item) {
+                    return $item->created_by;
+                });
+
+            foreach ($recons as $item) {
+                $deposits = 0;
+                $data['date'] = $item[0]->created_at->format('d-m-Y');
+                $data['sep'] = $item[0]->created_by;
+
+                foreach ($item as $it) {
+                    if ($it->transaction_type == 'withdrawal') {
+                        $deposits = $deposits + $it->credit;
+                    }
+                }
+                $data['withdrawals'] = $deposits;
+                $result[] = $data;
+            }
+        } else if ($request->date == '2022-10-14') {
+            $recons = Payments::where('branch', $branch)
+                ->whereDate('created_at', '>',  Carbon::parse('2022-10-01'))
+                ->whereDate('created_at', '<',  Carbon::parse('2022-10-15'))
+                ->where('status', 'confirmed')
+                ->where('remarks', '!=', 'Opening Balance')
+                ->latest()->get()->groupBy(function ($item) {
+                    return $item->created_by;
+                });
+
+            foreach ($recons as $item) {
+                $deposits = 0;
+                $data['date'] = $item[0]->created_at->format('d-m-Y');
+                $data['sep'] = $item[0]->created_by;
+
+                foreach ($item as $it) {
+                    if ($it->transaction_type == 'withdrawal') {
+                        $deposits = $deposits + $it->credit;
+                    }
+                }
+                $data['withdrawals'] = $deposits;
+                $result[] = $data;
+            }
+        } else {
+            $recons = Payments::where('branch', $branch)
+                ->whereDate('created_at', Carbon::parse($request->date))
+                ->where('status', 'confirmed')
+                ->where('remarks', '!=', 'Opening Balance')
+                ->latest()->get()->groupBy(function ($item) {
+                    return $item->created_by;
+                });
+
+            foreach ($recons as $item) {
+                $deposits = 0;
+                $data['date'] = $item[0]->created_at->format('d-m-Y');
+                $data['sep'] = $item[0]->created_by;
+
+                foreach ($item as $it) {
+                    if ($it->transaction_type == 'withdrawal') {
+                        $deposits = $deposits + $it->credit;
+                    }
+                }
+                $data['withdrawals'] = $deposits;
+                $result[] = $data;
+            }
+        }
+
+        return view('office.cash_summary_withdrawals')->with(['data' => $result]);
     }
 }

@@ -37,7 +37,7 @@
                             <td align="right"><a href="#" style="text-decoration: none;">{{number_format($item['inflow'])}}</a></td>
                             <td align="right"><a href="#" style="text-decoration: none;">{{number_format($item['expenses'])}}</a></td>
                             <td align="right"><a href="#" style="text-decoration: none;">{{number_format($item['outflow'])}}</a></td>
-                            <td align="right"><a href="#" style="text-decoration: none;">{{number_format($item['withdrawals'])}}</a></td>
+                            <td align="right"><a href="/cash_summary_withdrawals?date={{$item['date']}}" style="text-decoration: none;">{{number_format($item['withdrawals'])}}</a></td>
                             <td align="right">{{number_format($item['loans'])}}</td>
                             <td align="right">{{number_format(($item['opening_balance'] + $item['remmittance'] + $item['inflow']) - ($item['expenses'] + $item['outflow'] + $item['withdrawals'] + $item['loans']))}}</td>
                             <td></td>

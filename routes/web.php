@@ -266,4 +266,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/post_cashflow', [OfficeController::class, 'post_cashflow'])->name('post_cashflow');
 
     Route::get('/remmittance', [OfficeController::class, 'remittance'])->name('remittance');
+    Route::get('/cash_summary_withdrawals', [OfficeController::class, 'cash_summary_withdrawals'])->name('cash_summary_withdrawals');
 });
