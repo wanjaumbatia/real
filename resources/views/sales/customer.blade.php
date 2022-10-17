@@ -48,6 +48,25 @@
                         </div>
                         <div class="card-body">
                             <form>
+                                @if($item['details']->plan == 'Real Invest')
+                                <div class="form-group">
+                                    <label>Investment</label>
+                                    <input class="form-control" disabled value="{{$item['confirmed'], 0}}" />
+                                </div>
+                                <!-- <div class="form-group">
+                                    <label>Interest Added</label>
+                                    <input class="form-control" disabled value="{{number_format($item['details']->interest_added, 0)}}" />
+                                </div> -->
+                                <div class="form-group">
+                                    <label>Expected Amount</label>
+                                    <input class="form-control" disabled value="{{number_format($item['details']->total_due, 0)}}" />
+                                </div>
+                                @if($item['details']->mature == true)
+                                <a href="/withdrawal/{{$item['details']->id}}" class="btn btn-primary w-100 btn-sm mt-2">Withdraw</a>
+                                @else
+                                <button class="btn btn-primary w-100" disabled>Not Matured</button>
+                                @endif
+                                @else
                                 <div class="form-group">
                                     <label>Balance</label>
                                     <input class="form-control" disabled value="{{$item['confirmed'], 0}}" />
@@ -60,8 +79,8 @@
                                     <label>Pending Withdrawals</label>
                                     <input class="form-control" disabled value="{{$item['pending_withdrawal'], 0}}" />
                                 </div>
-
                                 <a href="/withdrawal/{{$item['details']->id}}" class="btn btn-primary w-100 btn-sm mt-2">Withdraw</a>
+                                @endif
                             </form>
                         </div>
                     </div>

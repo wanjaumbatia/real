@@ -9,7 +9,7 @@
                 <div class="card-body">
                     <div class="table-responsive">
                         <div class="table-responsive">
-                            <table class="table table-stripped">
+                            <table class="table table-striped">
                                 <thead>
                                     <tr>
                                         <th>Customer</th>
@@ -19,7 +19,7 @@
                                         <th>Exit Date</th>
                                         <th>Amount</th>
                                         <th>Plan</th>
-                                        <th>Expected Returns</th>
+                                        <th>Returns</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>

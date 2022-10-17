@@ -88,6 +88,11 @@ class RealInvestImport implements ToModel, WithHeadingRow, WithChunkReading, Wit
             'created_at' => $row['start_date'],
             'reconciled'=>true
         ]);
+
+        $invest1 = RealInvest::where('id', $invest->id)->update([
+            'savings_account_id'=>$acc->id
+        ]);
+        
         return [];
     }
 

@@ -760,6 +760,17 @@ class SalesController extends Controller
                 $pending_penalty = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'penalty')->where('status', 'pending')->sum('amount');
                 $plan = Plans::where('id', $acc->plans_id)->first();
                 $saving_accounts = array();
+                if ($acc->plan == 'Real Invest') {
+                    $invest = RealInvest::where('savings_account_id', $acc->id)->first();
+                    if ($invest->exit_date > Carbon::now()) {
+                        $acc['mature'] = false;
+                    } else {
+                        $acc['mature'] = true;
+                    }
+                    $acc['interest_added'] = ($invest->percentage / 100 * $invest->amount) * $invest->duration;
+                    $acc['total_due'] = ($invest->percentage / 100 * $invest->amount) + $invest->amount;
+            }
+
                 $saving_accounts['details'] = $acc;
                 $saving_accounts['plan'] = $plan;
                 $saving_accounts['confirmed'] = number_format($confirmed_transaction, 2);
@@ -771,6 +782,7 @@ class SalesController extends Controller
                         $pending_transaction = $pending_transaction + $pend_loan_repayment;
                     }
                 }
+
                 $saving_accounts['pending'] = number_format($pending_transaction, 2);
                 $data[] = $saving_accounts;
                 $total_balance = $total_balance + $confirmed_transaction;

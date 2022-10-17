@@ -11,6 +11,7 @@ class RealInvest extends Model
 
     protected $fillable = [
         'plan_name',
+        'savings_account_id',
         'is_customer',
         'customer_id',
         'customer_name',
