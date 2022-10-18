@@ -20,7 +20,7 @@
                             </div>
                         </div>
                     </form>
-                    <div class="row font-weight-bold">
+                    <div class="row font-weight-bold" mt-3>
                         Total Expected: ₦ {{number_format($total_expected, 2)}}
                     </div>
                 </div>

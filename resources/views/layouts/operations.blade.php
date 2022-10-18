@@ -42,7 +42,7 @@
 
                         @else
                         <li class="nav-item">
-                            <a class="nav-link active" href="admin_recon}">{{ __('Reconciliations') }}</a>
+                            <a class="nav-link active" href="/admin_recon">{{ __('Reconciliations') }}</a>
                         </li>
 
                         <li class="nav-item">
