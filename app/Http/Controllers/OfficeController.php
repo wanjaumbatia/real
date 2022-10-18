@@ -682,7 +682,7 @@ class OfficeController extends Controller
 
     public function withdrawal_list($id)
     {
-        if (auth()->user()->office_admin == false) {
+        if (auth()->user()->office_admin == false || auth()->user()->operations_manager == false) {
             return abort(401);
         }
 

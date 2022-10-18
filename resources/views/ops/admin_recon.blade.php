@@ -23,7 +23,7 @@
                                 </div>
                             </form>
                         </div>
-                        <div class="col-12 mt-3">
+                        <div class="col-12 mt-3 ml-3">
                             <div class="row font-weight-bold">
                                 Total Expected: ₦ {{number_format($total_expected, 2)}}
                             </div>
