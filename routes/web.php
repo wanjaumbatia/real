@@ -272,4 +272,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/sales_outlook', [SalesController::class, 'performance_outlook'])->name('sales.performance_outlook');
     Route::get('/change_status/{id}', [LoanController::class, 'change_status'])->name('change_status');
     Route::post('/post_change_status/{id}', [LoanController::class, 'post_change_status'])->name('post_change_status');
+    Route::get('/loan_closure/{id}', [LoanController::class, 'loan_closure'])->name('loan_closure');
+    Route::post('/close_loan/{id}', [LoanController::class, 'close_loan'])->name('close_loan');
+
 });

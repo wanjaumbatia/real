@@ -683,7 +683,6 @@ class LoanController extends Controller
     {
         $loan = LoansModel::where('id', $id)->first();
         $customer = Customer::where('id', $loan->customer_id)->first();
-        $payments = LoanRepayment::where('name', $loan->customer)->get();
         return view('loans.change_status')->with([
             'loan' => $loan,
             'customer' => $customer
@@ -692,10 +691,51 @@ class LoanController extends Controller
 
     public function post_change_status(Request $request, $id)
     {
-        if ($request->stop_interest == null) {
-            dd('stop inteterest');
+        $stop = false;
+        if ($request->stop_interest == 'stop') {
+            $stop = true;
         } else {
-            dd('continue inteterest');
         }
+
+        $loan = LoansModel::where('id', $id)->update([
+            'stop_interest' => $stop,
+            'status_change_remarks' => $request->remarks,
+            'loan_status' => $request->status,
+            'status_change_date' => Carbon::now(),
+            'changed_by' => auth()->user()->name
+        ]);
+
+        return redirect()->to('/loan_card/' . $id);
+    }
+
+    public function loan_closure(Request $request, $id)
+    {
+        $loan = LoansModel::where('id', $id)->first();
+        $customer = Customer::where('id', $loan->customer_id)->first();
+
+        $payments = LoanRepayment::where('name', $loan->customer)->get();
+        return view('loans.closure')->with([
+            'loan' => $loan,
+            'customer' => $customer,
+            'payments' => $payments
+        ]);
+    }
+
+    public function close_loan(Request $request, $id)
+    {
+        if ($request->type = "Normal") {
+            $normal = true;
+        } else {
+            $normal = false;
+        }
+        $loan = LoansModel::where('id', $id)->update([
+            'closed' => true,
+            'close_remarks' => $request->remarks,
+            'closed_by' => auth()->user()->name,
+            'stop_interest' => true,
+            'normal_close' => $normal
+        ]);
+
+        return redirect()->to('/loan_card/' . $id);
     }
 }

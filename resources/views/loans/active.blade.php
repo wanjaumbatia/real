@@ -20,7 +20,6 @@
                                     <th>Interest</th>
                                     <th>Duration</th>
                                     <th>Balance</th>
-                                    <th>Balance</th>
                                     <th>Status</th>
                                     <th>Countdown</th>
                                     <th>Action</th>

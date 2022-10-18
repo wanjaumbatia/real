@@ -9,7 +9,7 @@
                 <div class="card-header">
                     <div class="row">
                         <div class="col-12">
-                            {{$customer->name}}
+                            Loan Closure
                         </div>
                     </div>
                 </div>
@@ -141,41 +141,60 @@
                         </div>
                     </div>
                 </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseTwo">
+                            Loan Statement
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            <div class="card mt-3">
+                                <div class="card-body">
+                                    <table id="table" class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Remarks</th>
+                                                <th>Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($payments as $item)
+                                            <tr>
+                                                <td>{{date('d-m-Y', strtotime($item->created_at))}}</td>
+                                                <td>{{$item->description}}</td>
+                                                <td>{{$item->amount}}</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="card mt-3 mb-4">
-                <div class="card-header">Action</div>
+            <div class="card mt-3">
+                <div class="card-header">Close Loan</div>
                 <div class="card-body">
-                    <form action="/post_change_status/{{$loan->id}}" method="post">
+                    <form action="/close_loan/{{$loan->id}}" method="post">
                         @csrf
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="form-group">
-                                    <label for="">Status</label>
-                                    <select name="status" id="staus" class="form-control">
-                                        <option value="EXPIRED">EXPIRED</option>
-                                        <option value="BAD">BAD</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="form-group">
-                                    <label for="">Stop Interest</label>
-                                    <select name="stop_interest" id="stop_interest" class="form-control">
-                                        <option value="nostop">Do not stop interest</option>
-                                        <option value="stop">Stop Interest</option>
-                                    </select>
-                                </div>
-                            </div>
+                        <div class="form-group">
+                            <label for="">Close Type</label>
+                            <select name="type" id="type" class="form-control">
+                                <option value="Normal">Normal</option>
+                                <option value="Forced">Forced</option>
+                            </select>
                         </div>
 
-                        <div class="row">
-                            <div class="col-12">
-                                <textarea name="remarks" id="remarks" rows="3" class="form-control"></textarea>
-                            </div>
+                        <div class="form-group">
+                            <label for="">Remarks</label>
+                            <textarea name="remarks" id="remarks" rows="3" class="form-control"></textarea>
                         </div>
-
-                        <button class="btn btn-primary w-100 mt-2" type="submit">Submit</button>
+                        <button type="submit" class="btn btn-primary w-100 mt-1">Close</button>
                     </form>
                 </div>
             </div>
