@@ -111,6 +111,37 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/loan_by_sep">{{ __('Loan Review') }}</a>
                         </li>
+
+                        @elsif(Auth::user()->operations_manager == true)
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin_recon">{{ __('Reconciliations') }}</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin_recon_by_date">{{ __('Reconciliation Report') }}</a>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Loan Category
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{{ route('loans.active_loans') }}">{{ __('Active Loans') }}</a>
+                                <a class="dropdown-item" href="{{ route('loans.expired_loans') }}">{{ __('Expired Loans') }}</a>
+                                <a class="dropdown-item" href="{{ route('loans.bad_loans') }}">{{ __('Bad Loans') }}</a>
+                            </div>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Closed Loans
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="#">All Closed Loans</a>
+                                <a class="dropdown-item" href="#">Normal Closed Loans</a>
+                                <a class="dropdown-item" href="#">Forced Closed Loans</a>
+                            </div>
+                        </li>
                         @endif
 
                         @endguest
