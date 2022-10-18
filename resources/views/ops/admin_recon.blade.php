@@ -6,22 +6,28 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <form action="/admin_recon" method="GET">
-                        <div class="row">
-                            <div class="col-8">
-                                <select name="branch" id="branch" class="form-control">
-                                    @foreach($branches as $item)
-                                    <option value="{{$item->name}}">{{$item->name}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-4">
-                                <button type="submit" class="btn btn-primary w-100">Sumbit</button>
+                    <div class="row">
+                        <div class="col-12">
+                            <form action="/admin_recon" method="GET">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <select name="branch" id="branch" class="form-control">
+                                            @foreach($branches as $item)
+                                            <option value="{{$item->name}}">{{$item->name}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-4">
+                                        <button type="submit" class="btn btn-primary w-100">Sumbit</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <div class="row font-weight-bold">
+                                Total Expected: ₦ {{number_format($total_expected, 2)}}
                             </div>
                         </div>
-                    </form>
-                    <div class="row font-weight-bold" mt-3>
-                        Total Expected: ₦ {{number_format($total_expected, 2)}}
                     </div>
                 </div>
                 <div class="card-body">
