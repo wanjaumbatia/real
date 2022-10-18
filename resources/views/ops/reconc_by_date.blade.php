@@ -6,22 +6,30 @@
         <div class="col-md-10">
             <div class="card">
                 <div class="card-header">
-                    <form action="/admin_recon" method="GET">
-                        <div class="row">
-                            <div class="col-8">
-                                <select name="branch" id="branch" class="form-control">
-                                    <option value="all">All</option>
-                                    @foreach($branches as $item)
-                                    <option value="{{$item->name}}">{{$item->name}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-4">
-                                <button type="submit" class="btn btn-primary w-100">Sumbit</button>
-                            </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <form action="/admin_recon" method="GET">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <select name="branch" id="branch" class="form-control">
+                                            <option value="all">All</option>
+                                            @foreach($branches as $item)
+                                            <option value="{{$item->name}}">{{$item->name}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-4">
+                                        <button type="submit" class="btn btn-primary w-100">Sumbit</button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                    </form>
-                    Reconciled Records
+                        <div class="col-12 mt-2 m-2">
+                            Reconciled Records
+                        </div>
+                    </div>
+
+
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
