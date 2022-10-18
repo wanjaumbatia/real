@@ -46,6 +46,22 @@
                             <td><button class="btn btn-primary btn-sm" onclick="openModal('{{$item['date']}}', '{{$item['opening_balance']}}', '{{$item['remmittance']}}', '{{$item['inflow']}}', '{{$item['expenses']}}','{{$item['outflow']}}','{{$item['withdrawals']}}','{{$item['loans']}}')" ,>Close</button></td>
                         </tr>
                         @endforeach
+                        @foreach ($data1 as $item)
+                        <tr>
+                            <td>{{$item->report_date}}</td>
+                            <td>{{number_format($item->opening_balance)}}</td>
+                            <td align="right"><a href="/remmittance?date={{$item->report_date}}" style="text-decoration: none;">{{number_format($item->Remmitance)}}</a></td>
+                            <td align="right"><a href="#" style="text-decoration: none;">{{number_format($item->CashInflow)}}</a></td>
+                            <td align="right"><a href="#" style="text-decoration: none;">{{number_format($item->Expense)}}</a></td>
+                            <td align="right"><a href="#" style="text-decoration: none;">{{number_format($item->CashOutflow)}}</a></td>
+                            <td align="right"><a href="/cash_summary_withdrawals?date={{$item['date']}}" style="text-decoration: none;">{{number_format($item->Withdrawals)}}</a></td>
+                            <td align="right">{{number_format($item->LoanIssued)}}</td>
+                            <td align="right">{{number_format(($item->opening_balance + $item->Remmitance + $item->CashInflow) - ($item['expenses'] + $item['outflow'] + $item->Withdrawals + $item->LoanIssued))}}</td>
+                            <td>{{number_format($item->CashAtHand)}}</td>
+                            <td>{{number_format($item->CashAtHand - (($item->opening_balance + $item->Remmitance + $item->CashInflow) - ($item->Expense + $item->CashOutflow + $item->Withdrawals + $item->LoanIssued)))}}</td>
+                            <td><button class="btn btn-primary btn-sm" onclick="openModal('{{$item->report_date}}', '{{$item->opening_balance}}', '{{$item->Remmitance}}', '{{$item->CashInflow}}', '{{$item->Expense}}','{{$item->CashOutflow}}','{{$item->Withdrawals}}','{{$item->LoanIssued}}')" ,>Close</button></td>
+                        </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>

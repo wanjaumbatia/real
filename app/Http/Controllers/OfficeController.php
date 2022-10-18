@@ -1612,8 +1612,34 @@ class OfficeController extends Controller
         $data[] = $tt1;
 
         //get on daily basis
+        $cs = CashSummary::where('branch', auth()->user()->branch)->get();
 
-        return view('office.branch_cash_summary')->with(['data' => $data]);
+        foreach ($cs as $item) {
+            $item->Remmitance = Payments::where('transaction_type', 'savings')->where('branch', auth()->user()->branch)
+                ->where('remarks', '!=', 'Opening Balance')->where('status', 'confirmed')
+                ->whereDate('created_at', $item->report_date)->sum('amount');
+
+            $item->Withdrawals =  Payments::where('transaction_type', 'withdrawal')->where('branch', auth()->user()->branch)
+                ->where('remarks', '!=', 'Opening Balance')->where('status', 'confirmed')
+                ->whereDate('created_at', $item->report_date)->sum('credit');
+
+            $item->CashInflow = CashFlow::where('branch', auth()->user()->branch)
+                ->where('status', 'confirmed')->whereDate('created_at', $item->report_date)
+                ->sum('debit');
+
+            $item->CashOutflow = CashFlow::where('branch', auth()->user()->branch)
+                ->where('status', 'confirmed')->whereDate('created_at', $item->report_date)
+                ->sum('credit');
+
+            $item->Expense = Expense::where('branch', auth()->user()->branch)
+                ->where('status', 'comfirmed')->whereDate('created_at', $item->report_date)->sum('amount');
+
+            $item->LoanIssued = LoansModel::where('branch', auth()->user()->branch)
+                ->whereDate('start_date', $item->report_date)->sum('loan_amount');
+        }
+
+
+        return view('office.branch_cash_summary')->with(['data' => $data, "data1"=> $cs]);
     }
 
     public function import_real_invest(Request $request)
