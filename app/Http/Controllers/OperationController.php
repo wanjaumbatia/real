@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\DB;
 
 class OperationController extends Controller
 {
+    public function __construct()
+    {
+        ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', '12000');
+        ini_set('request_terminate_time', '12000');
+    }
+    
     public function admin_recon(Request $request)
     {
 
