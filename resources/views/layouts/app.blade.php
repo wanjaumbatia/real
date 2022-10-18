@@ -142,6 +142,16 @@
 
                         @endif
 
+                        @if(Auth::user()->operations_manager == true)
+
+                        @endif
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin_recon">{{ __('Reconciliations') }}</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin_recon_by_date">{{ __('Reconciliation Report') }}</a>
+                        </li>
                         @endguest
                     </ul>
 
