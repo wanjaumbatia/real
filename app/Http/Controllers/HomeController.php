@@ -75,6 +75,8 @@ class HomeController extends Controller
             return view('loans.legal_loans')->with(['loans' => $data]);;
         } else if ($user->managing_director == true) {
             return view('md.index');
+        }else if($user->operation_manager == true){
+            return redirect()->to('/admin_recon');
         } else {
             return abort(401);
         }
