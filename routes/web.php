@@ -8,6 +8,7 @@ use App\Http\Controllers\LoanController;
 use App\Http\Controllers\MdsController;
 use App\Http\Controllers\MembersController;
 use App\Http\Controllers\OfficeController;
+use App\Http\Controllers\OperationController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\TargetsController;
 use App\Http\Controllers\TransactionsController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\UserDetails;
 use App\Http\Controllers\Withdrawal;
 use App\Http\Controllers\WithdrawalsController;
 use App\Models\Branch;
+use Faker\Guesser\Name;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -274,5 +276,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/post_change_status/{id}', [LoanController::class, 'post_change_status'])->name('post_change_status');
     Route::get('/loan_closure/{id}', [LoanController::class, 'loan_closure'])->name('loan_closure');
     Route::post('/close_loan/{id}', [LoanController::class, 'close_loan'])->name('close_loan');
+    Route::get('/branch_perfomance', [BranchController::class, 'branch_perfomance'])->name('branch_perfomance');
 
-});
+    Route::post('/fix_accounts', [OfficeController::class, 'fix_accounts'])->name('fix_accounts');
+    
+
+
+
+    // Operations Manager
+    Route::get("/admin_recon", [OperationController::class, 'admin_recon'])->name('ops.admin_recon');
+    Route::get('/admin_recon_by_date', [OperationController::class, 'recon_by_date'])->name('ops.recon_by_date');
+}); 

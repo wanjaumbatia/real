@@ -108,6 +108,11 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/branch_loan_by_sep">{{ __('Loan Review') }}</a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/branch_perfomance">{{ __('Perfomance Outlook') }}</a>
+                        </li>
+
                         @endguest
                     </ul>
 

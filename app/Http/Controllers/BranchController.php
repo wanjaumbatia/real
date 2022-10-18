@@ -923,4 +923,8 @@ class BranchController extends Controller
 
         return redirect()->to('/branch_loan_by_sep?name=' . $customer->handler);
     }
+
+    public function branch_perfomance(Request $request){
+        return view('branch.performance_outlook');
+    }
 }
