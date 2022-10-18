@@ -51,8 +51,8 @@ class OperationController extends Controller
         $branches = Branch::all();
         $branch = auth()->user()->branch;
 
-        if ($request->branch == 'all' || $request->branch == null) {
-            $recons = Payments::where('status', 'confirmed')->where('remarks', '!=', 'Opening Balance')->latest()->get()->groupBy(function ($item) {
+        if ($request->branch == null) {
+            $recons = Payments::where('branch', 'Asaba')->where('status', 'confirmed')->where('remarks', '!=', 'Opening Balance')->latest()->get()->groupBy(function ($item) {
                 return $item->created_at->format('d-M-y');
             });
             $result = array();
