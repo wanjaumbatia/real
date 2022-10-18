@@ -1,4 +1,8 @@
+@if(Auth::user()->operations_manager==true)
+@extends('layouts.operations')
+@else
 @extends('layouts.app')
+@endif
 
 @section('content')
 <div class="container">
