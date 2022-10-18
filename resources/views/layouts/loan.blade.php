@@ -112,7 +112,7 @@
                             <a class="nav-link" href="/loan_by_sep">{{ __('Loan Review') }}</a>
                         </li>
 
-                        @elsif(Auth::user()->operations_manager == true)
+                        @elseif(Auth::user()->operations_manager == true)
                         <li class="nav-item">
                             <a class="nav-link active" href="/admin_recon">{{ __('Reconciliations') }}</a>
                         </li>
