@@ -16,11 +16,11 @@ class OperationController extends Controller
         ini_set('max_execution_time', '12000');
         ini_set('request_terminate_time', '12000');
     }
-    
+
     public function admin_recon(Request $request)
     {
 
-        if ($request->branch == 'all' || $request->branch == null) {
+        if ($request->branch == null) {
             $data = DB::select("select 
             name,
             IFNULL((select sum(debit) from payments where status = 'pending' and transaction_type='savings' and created_by=u.name),0) as savings,
@@ -28,7 +28,7 @@ class OperationController extends Controller
             IFNULL((select sum(credit) from payments where status = 'pending' and transaction_type='withdrawal' and remarks='POF' and created_by=u.name),0) as unconfirmed_pof,
             IFNULL((select sum(credit) from payments where status = 'confirmed' and reconciled='0' and transaction_type='withdrawal' and remarks='POF' and created_by=u.name),0) as pof,
             IFNULL((select sum(amount) from loan_repayments where status = 'pending' and handler=u.name), 0) as loan_collection
-            from users u where sales_executive='1' order by savings desc;");
+            from users u where sales_executive='1' and branch='Asaba' order by savings desc;");
 
             $total_expected = 0;
             foreach ($data as $item) {
