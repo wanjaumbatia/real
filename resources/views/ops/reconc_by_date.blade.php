@@ -8,7 +8,7 @@
                 <div class="card-header">
                     <div class="row">
                         <div class="col-12">
-                            <form action="/admin_recon" method="GET">
+                            <form action="/admin_recon_by_date" method="GET">
                                 <div class="row">
                                     <div class="col-8">
                                         <select name="branch" id="branch" class="form-control">
