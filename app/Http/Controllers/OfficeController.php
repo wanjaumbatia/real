@@ -682,9 +682,9 @@ class OfficeController extends Controller
 
     public function withdrawal_list($id)
     {
-        if (auth()->user()->office_admin == false || auth()->user()->operations_manager == false) {
-            return abort(401);
-        }
+        // if (auth()->user()->office_admin == false || auth()->user()->operations_manager == false) {
+        //     return abort(401);
+        // }
 
         $transactions = Payments::where('status', 'pending')->where('transaction_type', 'withdrawal')->where('created_by', $id)->get();
         $total = Payments::where('status', 'pending')->where('transaction_type', 'withdrawal')->where('created_by', $id)->get('credit');;
