@@ -71,6 +71,11 @@
                             <a class="nav-link active" href="/admin_recon_by_date">{{ __('Reconciliation Report') }}</a>
                         </li>
 
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin_cash_summary">{{ __('Cash Summary') }}</a>
+                        </li>
+
+
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Loan Category
@@ -96,7 +101,7 @@
                         @endif
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                               Loan Processing
+                                Loan Processing
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="/admin_loan_request">Loan Requests</a>

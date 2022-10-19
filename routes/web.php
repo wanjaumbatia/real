@@ -285,4 +285,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin_recon_by_date', [OperationController::class, 'recon_by_date'])->name('ops.recon_by_date');
     Route::get('/admin_loan_request', [OperationController::class, 'loan_request'])->name('ops.loan_request');
     Route::get('/admin_loan_request/{id}', [OperationController::class, 'loan_card'])->name('admin_loan_card');
+
+    Route::get('/admin_cash_summary', [OperationController::class, 'cash_summary'])->name('ops.cash_summary');
 }); 

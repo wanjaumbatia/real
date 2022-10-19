@@ -733,7 +733,8 @@ class LoanController extends Controller
             'close_remarks' => $request->remarks,
             'closed_by' => auth()->user()->name,
             'stop_interest' => true,
-            'normal_close' => $normal
+            'normal_close' => $normal,
+            'status'=>'CLOSED'
         ]);
 
         return redirect()->to('/loan_card/' . $id);

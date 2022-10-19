@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Models\CashFlow;
+use App\Models\CashSummary;
 use App\Models\Customer;
+use App\Models\Expense;
 use App\Models\LoanDeduction;
 use App\Models\LoanForm;
 use App\Models\LoanRepayment;
@@ -225,5 +228,62 @@ class OperationController extends Controller
                 'form' => $form,
                 'customer_savings' => $data[0]->balance
             ]);
+    }
+
+    public function cash_summary(Request $request)
+    {
+        if ($request->branch == null) {
+            $cs = CashSummary::where('branch', 'Asaba')->get();
+            foreach ($cs as $item) {
+                $item->Remmitance = Payments::where('transaction_type', 'savings')->where('branch', auth()->user()->branch)
+                    ->where('remarks', '!=', 'Opening Balance')->where('status', 'confirmed')
+                    ->whereDate('created_at', $item->report_date)->sum('amount');
+
+                $item->Withdrawals =  Payments::where('transaction_type', 'withdrawal')->where('branch', auth()->user()->branch)
+                    ->where('remarks', '!=', 'Opening Balance')->where('status', 'confirmed')
+                    ->whereDate('created_at', $item->report_date)->sum('credit');
+
+                $item->CashInflow = CashFlow::where('branch', auth()->user()->branch)
+                    ->where('status', 'confirmed')->whereDate('created_at', $item->report_date)
+                    ->sum('debit');
+
+                $item->CashOutflow = CashFlow::where('branch', auth()->user()->branch)
+                    ->where('status', 'confirmed')->whereDate('created_at', $item->report_date)
+                    ->sum('credit');
+
+                $item->Expense = Expense::where('branch', auth()->user()->branch)
+                    ->where('status', 'comfirmed')->whereDate('created_at', $item->report_date)->sum('amount');
+
+                $item->LoanIssued = LoansModel::where('branch', auth()->user()->branch)
+                    ->whereDate('start_date', $item->report_date)->sum('loan_amount');
+            }
+            return view('ops.cash_summary')->with(["data1" => $cs]);
+        } else {
+            $cs = CashSummary::where('branch', 'Asaba')->get();
+            foreach ($cs as $item) {
+                $item->Remmitance = Payments::where('transaction_type', 'savings')->where('branch', $request->branch)
+                    ->where('remarks', '!=', 'Opening Balance')->where('status', 'confirmed')
+                    ->whereDate('created_at', $item->report_date)->sum('amount');
+
+                $item->Withdrawals =  Payments::where('transaction_type', 'withdrawal')->where('branch', $request->branch)
+                    ->where('remarks', '!=', 'Opening Balance')->where('status', 'confirmed')
+                    ->whereDate('created_at', $item->report_date)->sum('credit');
+
+                $item->CashInflow = CashFlow::where('branch', $request->branch)
+                    ->where('status', 'confirmed')->whereDate('created_at', $item->report_date)
+                    ->sum('debit');
+
+                $item->CashOutflow = CashFlow::where('branch', $request->branch)
+                    ->where('status', 'confirmed')->whereDate('created_at', $item->report_date)
+                    ->sum('credit');
+
+                $item->Expense = Expense::where('branch', $request->branch)
+                    ->where('status', 'comfirmed')->whereDate('created_at', $item->report_date)->sum('amount');
+
+                $item->LoanIssued = LoansModel::where('branch', $request->branch)
+                    ->whereDate('start_date', $item->report_date)->sum('loan_amount');
+            }
+            return view('ops.cash_summary')->with(["data1" => $cs]);
+        }
     }
 }

@@ -11,12 +11,6 @@
             </div>
         </div>
         <div class="card-body">
-            <form>
-                <div class="form-group">
-                    <label for="">Branch</label>
-                    <input type="text" class="form-control" name="branch" />
-                </div>
-            </form>
             <div class="table-responsive">
                 <table class="table table-stripped table-bordered">
                     <thead>
@@ -36,22 +30,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($data as $item)
-                        <tr>
-                            <td>{{$item['report_date']}}</td>
-                            <td>{{number_format($item['opening_balance'])}}</td>
-                            <td align="right"><a href="/remmittance?date={{$item['date']}}" style="text-decoration: none;">{{number_format($item['remmittance'])}}</a></td>
-                            <td align="right"><a href="#" style="text-decoration: none;">{{number_format($item['inflow'])}}</a></td>
-                            <td align="right"><a href="#" style="text-decoration: none;">{{number_format($item['expenses'])}}</a></td>
-                            <td align="right"><a href="#" style="text-decoration: none;">{{number_format($item['outflow'])}}</a></td>
-                            <td align="right"><a href="/cash_summary_withdrawals?date={{$item['date']}}" style="text-decoration: none;">{{number_format($item['withdrawals'])}}</a></td>
-                            <td align="right">{{number_format($item['loans'])}}</td>
-                            <td align="right">{{number_format(($item['opening_balance'] + $item['remmittance'] + $item['inflow']) - ($item['expenses'] + $item['outflow'] + $item['withdrawals'] + $item['loans']))}}</td>
-                            <td>{{number_format($item['at_hand'])}}</td>
-                            <td>{{number_format($item['at_hand'] - (($item['opening_balance'] + $item['remmittance'] + $item['inflow']) - ($item['expenses'] + $item['outflow'] + $item['withdrawals'] + $item['loans'])))}}</td>
-                            <td><button class="btn btn-primary btn-sm" onclick="openModal('{{$item['date']}}', '{{$item['opening_balance']}}', '{{$item['remmittance']}}', '{{$item['inflow']}}', '{{$item['expenses']}}','{{$item['outflow']}}','{{$item['withdrawals']}}','{{$item['loans']}}')" ,>Close</button></td>
-                        </tr>
-                        @endforeach
+                      
                         @foreach ($data1 as $item)
                         <tr>
                             <td>{{$item->report_date}}</td>
