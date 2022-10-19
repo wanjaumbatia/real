@@ -16,6 +16,7 @@ use App\Models\LoanReview;
 use App\Models\LoanSecurityType;
 use App\Models\LoansModel;
 use App\Models\Payments;
+use App\Models\SavingsAccount;
 use App\Models\User;
 use Carbon\Carbon;
 use Error;
@@ -53,7 +54,7 @@ class LoanController extends Controller
             $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
 
             $ln->savings = Payments::where('customer_name', $ln->customer)->sum('amount');
-            
+
             if ($ln->exit_date < $now) {
                 $ln->countdown =  $diff * -1;
             } else {
@@ -342,15 +343,15 @@ class LoanController extends Controller
                     }
 
                     // //update_monthly interest
-                    // $dt = LoansModel::where('id', $item->id)->update([
-                    //     'total_balance' => $item->total_balance - $item->amount,
-                    //     'total_interest_paid' =>  $int,
-                    //     'monthly_principle_paid' => $item->monthly_principle_paid + $cap,
-                    //     'monthly_interest_paid' => $item->monthly_interest_paid + $int,
-                    //     'total_amount_paid' => $item->total_amount_paid + $item->amount,
-                    //     'total_monthly_paid' => ($item->monthly_principle_paid - $cap) + ($item->monthly_interest_paid - $int),
-                    //     'next_charge_date' => Carbon::now()->addMonth()
-                    // ]);
+                    $dt = LoansModel::where('id', $item->id)->update([
+                        'total_balance' => $item->total_balance - $item->amount,
+                        'total_interest_paid' =>  $int,
+                        'monthly_principle_paid' => $item->monthly_principle_paid + $cap,
+                        'monthly_interest_paid' => $item->monthly_interest_paid + $int,
+                        'total_amount_paid' => $item->total_amount_paid + $item->amount,
+                        'total_monthly_paid' => ($item->monthly_principle_paid - $cap) + ($item->monthly_interest_paid - $int),
+                        'next_charge_date' => Carbon::now()->addMonth()
+                    ]);
                 }
             }
         } catch (Error $e) {
@@ -741,7 +742,34 @@ class LoanController extends Controller
             'loan_status' => 'CLOSED'
         ]);
 
+        if ($request->amount > 0) {
+            $loan = LoansModel::where('customer_id')->first();
+            $acc = SavingsAccount::where('customer_id', $loan->id)->first();
+            //remove from interest
+            $loan->interest_paid = $loan->interest_paid - $request->amount;
+
+            $reference = rand(100000000, 999999999);
+            //add to savings
+            $payment = Payments::create([
+                'savings_account_id' => $acc->id,
+                'plan' => $acc->plan,
+                'customer_id' => $acc->customer_id,
+                'customer_name' => $acc->customer,
+                'transaction_type' => 'savings',
+                'status' => 'pending',
+                'remarks' => 'Excess Loan Repayment moved to savings',
+                'debit' => $request->amount,
+                'credit' => 0,
+                'amount' => $request->amount,
+                'requires_approval' => false,
+                'approved' => false,
+                'posted' => false,
+                'created_by' => $request->user()->name,
+                'branch' => $request->user()->branch,
+                'batch_number' => $reference,
+                'reference' => $reference
+            ]);
+        }
         return redirect()->to('/loan_card/' . $id);
     }
-
 }

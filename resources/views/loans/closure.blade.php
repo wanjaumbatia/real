@@ -189,7 +189,10 @@
                                 <option value="Forced">Forced</option>
                             </select>
                         </div>
-
+                        <div class="form-group">
+                            <label for="">Amount</label>
+                            <input type="number" name="amount" id="amount" class="form-control">
+                        </div>
                         <div class="form-group">
                             <label for="">Remarks</label>
                             <textarea name="remarks" id="remarks" rows="3" class="form-control"></textarea>
