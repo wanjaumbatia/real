@@ -609,7 +609,7 @@ Route::middleware('auth:sanctum')->get("/account/{id}", function ($id) {
     if ($diff_in_months > $plan->duration) {
         $saving_accounts['mature'] = true;
     } else {
-        $saving_accounts['mature'] = false;
+        $saving_accounts['mature'] = true;
     }
     $saving_accounts['details'] = $acc;
     $saving_accounts['plan'] = $plan;
