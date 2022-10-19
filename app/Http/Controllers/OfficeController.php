@@ -481,10 +481,10 @@ class OfficeController extends Controller
 
     public function receive(Request $request)
     {
-        if(auth()->user()->office_admin == false){
+        if (auth()->user()->office_admin == false) {
             return abort(401);
         }
-        
+
         // if(auth()->user()->operations_manager == false){
         //     return abort(401);
         // }
@@ -507,72 +507,75 @@ class OfficeController extends Controller
             return back()->withErrors(['You can not reconcile more than the required amount of ₦.' . number_format(($total_transactions + $total_regfee - $pof))]);
         } else if (($total_transactions + $total_regfee - $pof + $total_loans) > $amount) {
             // handle shortages
-            // $rec = ReconciliationRecord::create([
-            //     'handler' => $handler,
-            //     'reconciled_by' => auth()->user()->name,
-            //     'expected' => $total_transactions + $total_regfee - $pof + $total_loans,
-            //     'submited' => $amount,
-            //     'shortage' => true,
-            //     'branch' => auth()->user()->branch,
-            //     'reconciliation_reference' => $reference,
-            // ]);
 
-            $short = ($total_transactions + $total_regfee - $pof) - $amount;
-            // foreach ($transactions as $item) {
-            //     $tt = Payments::where('id', $item->id)->update([
-            //         'status' => 'confirmed',
-            //         'reconciliation_reference' => $reference,
-            //         'reconciled_by' => auth()->user()->name,
-            //         'admin_reconciled' => true
-            //     ]);
+            $rec = ReconciliationRecord::create([
+                'handler' => $handler,
+                'reconciled_by' => auth()->user()->name,
+                'expected' => $total_transactions + $total_regfee - $pof + $total_loans,
+                'submited' => $amount,
+                'shortage' => true,
+                'branch' => auth()->user()->branch,
+                'reconciliation_reference' => $reference,
+            ]);
 
-            //     //create commission line
-            //     // $commission = 0.0025 * $item->debit;
-            //     // $comm_line = CommissionLines::create([
-            //     //     'handler' => $request->handler,
-            //     //     'amount' => $commission,
-            //     //     'description' => 'Commission for sales worth ₦' . number_format($item->debit, 2) . ' for payment reference ' . $reference,
-            //     //     'batch_number' => $reference,
-            //     //     'payment_id' => $item->id,
-            //     //     'disbursed' => false,
-            //     //     'branch' => auth()->user()->branch,
-            //     //     'approved' => true,
-            //     //     // 'transaction_type'=>'commission'
-            //     // ]);
-            // }
+            $short = ($total_transactions + $total_regfee - $pof + $total_loans) - $amount;
 
-            // foreach ($loans as $item) {
-            //     $tt = LoanRepayment::where('id', $item->id)->update([
-            //         'status' => 'confirmed',
-            //         'reconciliation_reference' => $reference,
-            //         'reconciled_by' => auth()->user()->name,
-            //         'admin_reconciled' => true
-            //     ]);
-            // }
+            dd($short);
+            foreach ($transactions as $item) {
+                $tt = Payments::where('id', $item->id)->update([
+                    'status' => 'confirmed',
+                    'reconciliation_reference' => $reference,
+                    'reconciled_by' => auth()->user()->name,
+                    'admin_reconciled' => true
+                ]);
 
-            // foreach ($loans2 as $item) {
-            //     $tt = LoanRepaymentModel::where('id', $item->id)->update([
-            //         'status' => 'confirmed',
-            //         'reconciliation_reference' => $reference,
-            //         'reconciled_by' => auth()->user()->name,
-            //         'admin_reconciled' => true
-            //     ]);
-            // }
+                //create commission line
+                // $commission = 0.0025 * $item->debit;
+                // $comm_line = CommissionLines::create([
+                //     'handler' => $request->handler,
+                //     'amount' => $commission,
+                //     'description' => 'Commission for sales worth ₦' . number_format($item->debit, 2) . ' for payment reference ' . $reference,
+                //     'batch_number' => $reference,
+                //     'payment_id' => $item->id,
+                //     'disbursed' => false,
+                //     'branch' => auth()->user()->branch,
+                //     'approved' => true,
+                //     // 'transaction_type'=>'commission'
+                // ]);
+            }
 
-            // $shortage_line = ShortageLine::create([
-            //     'sales_executive' => $handler,
-            //     'expected_amount' => ($total_transactions + $total_regfee - $pof + $total_loans),
-            //     'give_amount' => $amount,
-            //     'short' => ($total_transactions + $total_regfee - $pof + $total_loans) - $amount,
-            //     'reference' => $reference,
-            //     'cleared' => false,
-            //     'office_admin' => auth()->user()->name,
-            //     'description' => 'Shortage of ₦' . number_format((($total_transactions + $total_regfee - $pof + $total_loans) - $amount), 2) . ' from ' . $handler . ' ',
-            //     'reported' => false,
-            //     'resolved' => false,
-            //     'branch' => auth()->user()->branch,
-            //     'remarks' => ""
-            // ]);
+            foreach ($loans as $item) {
+                $tt = LoanRepayment::where('id', $item->id)->update([
+                    'status' => 'confirmed',
+                    'reconciliation_reference' => $reference,
+                    'reconciled_by' => auth()->user()->name,
+                    'admin_reconciled' => true
+                ]);
+            }
+
+            foreach ($loans2 as $item) {
+                $tt = LoanRepaymentModel::where('id', $item->id)->update([
+                    'status' => 'confirmed',
+                    'reconciliation_reference' => $reference,
+                    'reconciled_by' => auth()->user()->name,
+                    'admin_reconciled' => true
+                ]);
+            }
+
+            $shortage_line = ShortageLine::create([
+                'sales_executive' => $handler,
+                'expected_amount' => ($total_transactions + $total_regfee - $pof + $total_loans),
+                'give_amount' => $amount,
+                'short' => ($total_transactions + $total_regfee - $pof + $total_loans) - $amount,
+                'reference' => $reference,
+                'cleared' => false,
+                'office_admin' => auth()->user()->name,
+                'description' => 'Shortage of ₦' . number_format((($total_transactions + $total_regfee - $pof + $total_loans) - $amount), 2) . ' from ' . $handler . ' ',
+                'reported' => false,
+                'resolved' => false,
+                'branch' => auth()->user()->branch,
+                'remarks' => ""
+            ]);
             // send notifications
 
             $myEmail = [
@@ -589,7 +592,7 @@ class OfficeController extends Controller
             ];
             Mail::to($myEmail)->send(new Shortage($handler, $short, ($total_transactions + $total_regfee - $pof + $total_loans), 0, auth()->user()->branch, auth()->user()->name));
             return back()->withErrors(['You can not reconcile less than the required amount of ₦.' . number_format(($total_transactions + $total_regfee - $pof))]);
-            
+
             // var_dump(Mail::failures());
             //return redirect()->route('office.list');
         } else {
@@ -1645,7 +1648,7 @@ class OfficeController extends Controller
         }
 
 
-        return view('office.branch_cash_summary')->with(['data' => $data, "data1"=> $cs]);
+        return view('office.branch_cash_summary')->with(['data' => $data, "data1" => $cs]);
     }
 
     public function import_real_invest(Request $request)
@@ -1920,7 +1923,7 @@ class OfficeController extends Controller
     public function fix_accounts(Request $request)
     {
         return response([
-            'success'=>true
+            'success' => true
         ]);
     }
 }
