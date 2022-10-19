@@ -485,9 +485,9 @@ class OfficeController extends Controller
             return abort(401);
         }
         
-        if(auth()->user()->operations_manager == false){
-            return abort(401);
-        }
+        // if(auth()->user()->operations_manager == false){
+        //     return abort(401);
+        // }
         $reference = rand(100000000, 999999999);
         $handler = $request->handler;
         $amount = $request->amount;
