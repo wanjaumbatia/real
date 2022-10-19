@@ -141,8 +141,7 @@ class OperationController extends Controller
             $loans = LoanRepayment::where('branch', auth()->user()->branch)->where('status', 'confirmed')->latest()->get()->groupBy(function ($item) {
                 return $item->created_at->format('d-M-y');
             });
-
-            dd($recons);
+            
             return view('ops.reconc_by_date')->with(['data' => $result, 'branches' => $branches]);
         }
     }
