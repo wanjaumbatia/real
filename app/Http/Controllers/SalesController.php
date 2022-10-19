@@ -786,9 +786,9 @@ class SalesController extends Controller
 
     public function customer($id)
     {
-        if (auth()->user()->sales_executive == false) {
-            return abort(401);
-        } else {
+        // if (auth()->user()->sales_executive == false) {
+        //     return abort(401);
+        // } else {
             //get customer details
             $customer = Customer::where('handler', auth()->user()->name)->where('id', $id)->first();
 
@@ -847,7 +847,7 @@ class SalesController extends Controller
             $plans = Plans::all();
 
             return view('sales.customer')->with(['customer' => $customer, 'result' => $result, 'plans' => $plans]);
-        }
+        //}
     }
 
     public function loan($id)
