@@ -743,13 +743,13 @@ class LoanController extends Controller
         ]);
 
         if ($request->amount > 0) {
-            $loan = LoansModel::where('customer_id')->first();
-            $acc = SavingsAccount::where('customer_id', $loan->id)->first();
+            $loan = LoansModel::where('id', $id)->first();
+            $acc = SavingsAccount::where('customer_id', $loan->customer_id)->first();
 
             //remove from interest            
             $loan->total_interest_paid = $loan->total_amount_paid - $request->amount;
             $loan->update();
-            
+
             $reference = rand(100000000, 999999999);
             //add to savings
             $payment = Payments::create([
