@@ -43,6 +43,7 @@
                                     <th>Paid Amount</th>
                                     <th>Status</th>
                                     <th>Branch</th>
+                                    <th>Savings</th>
                                     <th>Count Down</th>
                                     <th>Action</th>
                                 </tr>
@@ -71,6 +72,7 @@
                                     </td>
                                     @endif
                                     <td>{{$item->branch}}</td>
+                                    <td>{{$number_format}}</td>
                                     <td>
                                         @if($item->countdown <0)
                                             <p class="text-danger">{{$item->countdown}}</p>

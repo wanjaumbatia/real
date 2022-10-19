@@ -51,12 +51,16 @@ class LoanController extends Controller
         foreach ($data as $ln) {
             $now = Carbon::now();
             $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+
+            $ln->savings = Payments::where('customer_name', $ln->customer)->sum('amount');
+            
             if ($ln->exit_date < $now) {
                 $ln->countdown =  $diff * -1;
             } else {
                 $ln->countdown = $diff;
             }
         }
+
         return view('loans.index')->with(['loans' => $data, 'status' => $request->status]);
     }
 
@@ -734,7 +738,7 @@ class LoanController extends Controller
             'closed_by' => auth()->user()->name,
             'stop_interest' => true,
             'normal_close' => $normal,
-            'status'=>'CLOSED'
+            'loan_status' => 'CLOSED'
         ]);
 
         return redirect()->to('/loan_card/' . $id);
