@@ -747,7 +747,7 @@ class LoanController extends Controller
             $acc = SavingsAccount::where('customer_id', $loan->customer_id)->first();
 
             //remove from interest            
-            $loan->total_interest_paid = $loan->total_amount_paid - $request->amount;
+            $loan->total_interest_paid = $loan->total_interest_paid - $request->amount;
             $loan->update();
 
             $reference = rand(100000000, 999999999);
