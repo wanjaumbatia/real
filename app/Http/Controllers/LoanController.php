@@ -758,7 +758,7 @@ class LoanController extends Controller
                 'customer_id' => $acc->customer_id,
                 'customer_name' => $acc->customer,
                 'transaction_type' => 'savings',
-                'status' => 'pending',
+                'status' => 'confirmed',
                 'remarks' => 'Excess Loan Repayment moved to savings',
                 'debit' => $request->amount,
                 'credit' => 0,
@@ -766,7 +766,7 @@ class LoanController extends Controller
                 'requires_approval' => false,
                 'approved' => false,
                 'posted' => false,
-                'created_by' => $request->user()->name,
+                'created_by' => 'loan recover',
                 'branch' => $request->user()->branch,
                 'batch_number' => $reference,
                 'reference' => $reference
