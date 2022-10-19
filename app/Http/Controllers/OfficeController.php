@@ -517,7 +517,7 @@ class OfficeController extends Controller
             //     'reconciliation_reference' => $reference,
             // ]);
 
-            // $short = ($total_transactions + $total_regfee - $pof) - $amount;
+            $short = ($total_transactions + $total_regfee - $pof) - $amount;
             // foreach ($transactions as $item) {
             //     $tt = Payments::where('id', $item->id)->update([
             //         'status' => 'confirmed',
