@@ -71,9 +71,9 @@
                             <a class="nav-link active" href="/admin_recon_by_date">{{ __('Reconciliation Report') }}</a>
                         </li>
 
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a class="nav-link active" href="/admin_cash_summary">{{ __('Cash Summary') }}</a>
-                        </li>
+                        </li> -->
 
 
                         <li class="nav-item dropdown">

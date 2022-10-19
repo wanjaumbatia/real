@@ -743,4 +743,5 @@ class LoanController extends Controller
 
         return redirect()->to('/loan_card/' . $id);
     }
+
 }
