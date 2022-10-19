@@ -82,6 +82,7 @@
                             </div>
                         </li>
 
+                        @if(Auth::user()->managing_director == true || Auth::user()->general_manager)
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Closed Loans
@@ -90,6 +91,15 @@
                                 <a class="dropdown-item" href="#">All Closed Loans</a>
                                 <a class="dropdown-item" href="#">Normal Closed Loans</a>
                                 <a class="dropdown-item" href="#">Forced Closed Loans</a>
+                            </div>
+                        </li>
+                        @endif
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                               Loan Processing
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/admin_loan_request">Loan Requests</a>
                             </div>
                         </li>
 

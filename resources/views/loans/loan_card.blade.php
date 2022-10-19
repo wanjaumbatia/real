@@ -12,9 +12,13 @@
                             {{$customer->name}}
                         </div>
                         <div class="col-6 text-end">
+                            @if(Auth::user()->loan_officer == true)
                             <a href='/change_status/{{$loan->id}}' class="btn btn-primary btn-sm mx-1">Change Status</a>
+                            @endif
                             <!-- <a href='/customer/{{$customer->id}}' class="btn btn-primary btn-sm mx-1">Customer Details</a> -->
+                            @if(Auth::user()->operations_manager == true)
                             <a href='/loan_closure/{{$loan->id}}' class="btn btn-primary btn-sm mx-1">Close</a>
+                            @endif
                         </div>
                     </div>
                 </div>

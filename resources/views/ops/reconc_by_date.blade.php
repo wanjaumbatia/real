@@ -12,7 +12,6 @@
                                 <div class="row">
                                     <div class="col-8">
                                         <select name="branch" id="branch" class="form-control">
-                                            <option value="all">All</option>
                                             @foreach($branches as $item)
                                             <option value="{{$item->name}}">{{$item->name}}</option>
                                             @endforeach

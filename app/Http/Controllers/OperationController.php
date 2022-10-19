@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Models\Customer;
+use App\Models\LoanDeduction;
+use App\Models\LoanForm;
 use App\Models\LoanRepayment;
+use App\Models\LoanSecurityType;
+use App\Models\LoansModel;
 use App\Models\Payments;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -137,5 +142,88 @@ class OperationController extends Controller
             dd($recons);
             return view('ops.reconc_by_date')->with(['data' => $result, 'branches' => $branches]);
         }
+    }
+
+    public function loan_request(Request $request)
+    {
+        //check user
+        if (auth()->user()->general_manager == true) {
+            $loans = LoansModel::where('loan_status', 'processing')
+                ->where('loan_officer_approval', true)->get();
+
+            return view('ops.loan_requests')->with(['loans' => $loans]);
+        } else if (auth()->user()->managing_director == true) {
+            $loans = LoansModel::where('loan_status', 'processing')
+                ->where('general_manager_approval', true)
+                ->where('loan_amount', '>', 999999)->get();
+            return view('ops.loan_requests')->with(['loans' => $loans]);
+        }
+    }
+
+    public function loan_card(Request $request, $id)
+    {
+        //get loan details
+        $loan = LoansModel::where('id', $id)->first();
+        //get customer details
+        $customer = Customer::where('id', $loan->customer_id)->first();
+        $identity = false;
+        $photo = false;
+        $form = false;
+        $guarantor = false;
+        $agreement = false;
+        $loan_forms = LoanForm::where('loan_id', $id)->get();
+        foreach ($loan_forms as $item) {
+            if ($item->title == 'ID Number') {
+                $identity = true;
+            }
+
+            if ($item->title == 'Photo') {
+                $photo = true;
+            }
+
+            if ($item->title == 'Loan Form') {
+                $form = true;
+            }
+
+            if ($item->title == 'Guarantor') {
+                $guarantor = true;
+            }
+
+            if ($item->title == 'Agreement') {
+                $agreement = true;
+            }
+        }
+        //create charges
+        $security = LoanSecurityType::where('active', true)->get();
+        //calculate payments
+        $deduction = LoanDeduction::where('active', true)->get();
+        $deductions = array();
+        foreach ($deduction as $item) {
+            $rec = array();
+            $rec['name'] = $item->name;
+            if ($item->percentange == true) {
+                $rec['amount'] = $loan->loan_amount * ($item->percentange_amount / 100);
+            } else {
+                $rec['amount'] = $item->amount;
+            }
+            $deductions[] = $rec;
+        }
+
+        $data = DB::select("select sum(amount) as balance from payments where customer_id = '" . $customer->id . "' LIMIT 1;");
+
+        return view('ops.loan_card')
+            ->with([
+                'loan' => $loan,
+                'deductions' => $deductions,
+                'securities' => $security,
+                'customer' => $customer,
+                'loan_forms' => $loan_forms,
+                'identity' => $identity,
+                'photo' => $photo,
+                'guarantor' => $guarantor,
+                'agreement' => $agreement,
+                'form' => $form,
+                'customer_savings' => $data[0]->balance
+            ]);
     }
 }

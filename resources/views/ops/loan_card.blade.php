@@ -311,6 +311,19 @@
                     </div>
                     @endif
                     @endif
+
+
+                    <div class="card mt-3">
+                        <div class="card-header">Approval</div>
+                        <div class="card-body">
+                            <form action="">
+                                <div class="form-group">
+                                    <label for="">Remarks</label>
+                                    <textarea class="form_control" name="comment" id="comment" rows="3"></textarea>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
