@@ -291,5 +291,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/add_cashflow', [OperationController::class, 'new_casflow'])->name('ops.new_casflow');
     Route::post('/post_cashflow', [OperationController::class, 'post_cashflow'])->name('ops.post_cashflow');
 
+    Route::get('/closed_loans', [LoanController::class, 'closed_loans'])->name('ops.closed_loans'); 
 
 });

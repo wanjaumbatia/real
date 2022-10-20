@@ -350,6 +350,317 @@ class SalesController extends Controller
         $plan = Plans::where('id', $account->plans_id)->first();
 
         $total_credit = $request->amount + $request->commission;
+        $otp = auth()->user()->email;
+        if ($plan->name == 'Real Invest') {
+
+            $invest = RealInvest::where('savings_account_id', $request->id)->first();
+
+            //cal int
+            $int = $invest->amount * $invest->percentage / 100;
+
+            $interest = Payments::create([
+                'savings_account_id' => $account->id,
+                'plan' => $account->plan,
+                'customer_id' => $account->customer_id,
+                'customer_name' => $account->customer,
+                'transaction_type' => 'interest',
+                'status' => 'pending',
+                'remarks' => 'Investment Interest for ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
+                'credit' => 0,
+                'debit' => $int,
+                'amount' => $int,
+                'requires_approval' => false,
+                'approved' => false,
+                'posted' => false,
+                'created_by' => $customer->handler,
+                'branch' => $customer->branch,
+                'batch_number' => $otp
+            ]);
+
+            $withdrawal = Payments::create([
+                'savings_account_id' => $account->id,
+                'plan' => $account->plan,
+                'customer_id' => $account->customer_id,
+                'customer_name' => $account->customer,
+                'transaction_type' => 'withdrawal',
+                'status' => 'pending',
+                'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
+                'debit' => 0,
+                'credit' => $request->amount,
+                'amount' => $request->amount * -1,
+                'requires_approval' => false,
+                'approved' => false,
+                'posted' => false,
+                'created_by' => $customer->handler,
+                'branch' => $customer->branch,
+                'batch_number' => $otp
+            ]);
+
+            $invest->status = 'Withdrawn';
+            $invest->withdrawn = true;
+            $invest->withdrawn_by = auth()->user()->name;
+            $invest->withdrawal_date = Carbon::now();
+            $invest->update();
+        } else {
+            if ($plan->outward == false) {
+                if ($balance < $total_credit) {
+                    return response([
+                        "success" => false,
+                        "message" => "You do not have enough balance in this account to withdraw ₦" . number_format($request->amount) . "."
+                    ]);
+                }
+                //check pending withdrawal
+                $pending_withdrawal = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('credit');
+                $pending_charge = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'charge')->sum('credit');
+
+                if ($balance < ($total_credit + $pending_withdrawal + $pending_charge)) {
+                    return response([
+                        "success" => false,
+                        "message" => "Unable to process this withdrawal since customer has a pending withdrawal, this amount exceed the remaining balance."
+                    ]);
+                }
+
+                $plan = Plans::where('name', $account->plan)->first();
+
+                $expected_commision = $request->amount * $plan->charge;
+
+                $approval = false;
+                if ($expected_commision > $request->commission) {
+                    $approval = true;
+                } else {
+                    $approval = false;
+                }
+
+                if ($plan->outward == false) {
+                    $commision = $request->amount *  $plan->charge;
+                }
+
+                $batch_number = rand(100000000, 999999999);
+                //create withdrawal line
+                $withdrawal = Payments::create([
+                    'savings_account_id' => $account->id,
+                    'plan' => $account->plan,
+                    'customer_id' => $account->customer_id,
+                    'customer_name' => $account->customer,
+                    'transaction_type' => 'withdrawal',
+                    'status' => 'pending',
+                    'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
+                    'debit' => 0,
+                    'credit' => $request->amount,
+                    'amount' => $request->amount * -1,
+                    'requires_approval' => $approval,
+                    'approved' => false,
+                    'posted' => false,
+                    'created_by' => $customer->handler,
+                    'branch' => $customer->branch,
+                    'batch_number' => $otp
+                ]);
+
+                //create charge line
+                $charge = Payments::create([
+                    'savings_account_id' => $account->id,
+                    'plan' => $account->plan,
+                    'customer_id' => $account->customer_id,
+                    'customer_name' => $account->customer,
+                    'transaction_type' => 'charge',
+                    'status' => 'pending',
+                    'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->commission, 2) . " On " . $account->plan . " account.",
+                    'debit' => 0,
+                    'credit' => $request->commission,
+                    'amount' => $request->commission * -1,
+                    'requires_approval' => $approval,
+                    'approved' => false,
+                    'posted' => false,
+                    'created_by' => $customer->handler,
+                    'branch' => $customer->branch,
+                    'batch_number' => $otp
+                ]);
+
+
+                $sep_commision = $request->commission * $plan->sep_commission;
+                //create sales agent line
+                $comm_line = CommissionLines::create([
+                    'handler' => $account->handler,
+                    'amount' => $sep_commision,
+                    'description' => 'Commission for withdrawal of ₦' . number_format($request->amount, 2) . ' charged at ₦' . number_format($request->commission, 2) . ' for ' . $account->customer,
+                    'batch_number' => $batch_number,
+                    'transaction_type' => 'withdrawal',
+                    'payment_id' => $charge->id,
+                    'disbursed' => false,
+                    'branch' => $customer->branch,
+                    'approved' => false,
+                    // 'transaction_type'=>'commission'
+                    //test
+                ]);
+            } else {
+                //check maturity
+                $to = \Carbon\Carbon::now();
+                $from = $account->created_at;
+
+                $diff_in_months = $to->diffInMonths($from);
+
+                if ($diff_in_months <= $plan->duration) {
+                    //interest
+                    $pending_withdrawal = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('credit');
+
+                    if ($balance < $total_credit + $pending_withdrawal) {
+                        return response([
+                            "success" => false,
+                            "message" => "Unable to process this withdrawal since customer has a pending withdrawal, this amount exceed the remaining balance."
+                        ]);
+                    }
+
+                    $plan = Plans::where('name', $account->plan)->first();
+
+                    $expected_commision = $request->amount * $plan->charge;
+
+                    $approval = false;
+
+                    $interest = $request->amount *  $plan->charge * $plan->reimbursement/100;
+                    if ($interest == 0) {
+                        $withdrawal = Payments::create([
+                            'savings_account_id' => $account->id,
+                            'plan' => $account->plan,
+                            'customer_id' => $account->customer_id,
+                            'customer_name' => $account->customer,
+                            'transaction_type' => 'withdrawal',
+                            'status' => 'open',
+                            'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
+                            'debit' => 0,
+                            'credit' => $request->amount,
+                            'amount' => $request->amount * -1,
+                            'requires_approval' => $approval,
+                            'approved' => false,
+                            'posted' => false,
+                            'created_by' => $request->user()->name,
+                            'branch' => $request->user()->branch,
+                            'batch_number' => $otp
+                        ]);
+                    } else {
+                        $payment = Payments::create([
+                            'savings_account_id' => $account->id,
+                            'plan' => $account->plan,
+                            'customer_id' => $account->customer_id,
+                            'customer_name' => $account->customer,
+                            'transaction_type' => 'savings',
+                            'status' => 'confirmed',
+                            'remarks' => 'Interest of ₦' . number_format($interest, 2),
+                            'debit' => $interest,
+                            'credit' => 0,
+                            'amount' => $interest,
+                            'requires_approval' => false,
+                            'approved' => false,
+                            'posted' => false,
+                            'created_by' => $request->user()->name,
+                            'branch' => $request->user()->branch,
+                            'batch_number' => rand(100000000, 999999999),
+                            'reference' => rand(100000000, 999999999)
+                        ]);
+
+
+                        $withdrawal = Payments::create([
+                            'savings_account_id' => $account->id,
+                            'plan' => $account->plan,
+                            'customer_id' => $account->customer_id,
+                            'customer_name' => $account->customer,
+                            'transaction_type' => 'withdrawal',
+                            'status' => 'open',
+                            'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
+                            'debit' => 0,
+                            'credit' => $request->amount + $interest,
+                            'amount' => ($request->amount + $interest) * -1,
+                            'requires_approval' => $approval,
+                            'approved' => false,
+                            'posted' => false,
+                            'created_by' => $request->user()->name,
+                            'branch' => $request->user()->branch,
+                            'batch_number' => $otp
+                        ]);
+                    }
+                } else {
+                    $pending_withdrawal = Payments::where('savings_account_id', $account->id)->where('status', 'pending')->where('transaction_type', 'withdrawal')->sum('credit');
+
+                    if ($balance < $total_credit + $pending_withdrawal) {
+                        return response([
+                            "success" => false,
+                            "message" => "Unable to process this withdrawal since customer has a pending withdrawal, this amount exceed the remaining balance."
+                        ]);
+                    }
+
+                    $plan = Plans::where('name', $account->plan)->first();
+
+                    $expected_commision = $request->amount * $plan->charge;
+
+                    $approval = false;
+                    $interest = $request->amount *  $plan->penalty;
+                    $batch_number = rand(100000000, 999999999);
+
+                    //get total
+                    $totals = $request->amount + $interest;
+                    $acceptable = $balance - $interest;
+                    if ($balance < $totals) {
+                        return response([
+                            "success" => false,
+                            "message" => "You do not have enough balance in this account ttto withdraw ₦" . number_format($request->amount) . ". You can withdraw up to ₦" . number_format($acceptable, 2) . "."
+                        ]);
+                    }
+                    //create withdrawal line
+                    $withdrawal = Payments::create([
+                        'savings_account_id' => $account->id,
+                        'plan' => $account->plan,
+                        'customer_id' => $account->customer_id,
+                        'customer_name' => $account->customer,
+                        'transaction_type' => 'withdrawal',
+                        'status' => 'open',
+                        'remarks' => 'Withdrawal from ' . $account->customer . ' of ₦' . number_format($request->amount, 2) . " On " . $account->plan . " account.",
+                        'debit' => 0,
+                        'credit' => $request->amount,
+                        'amount' => $request->amount * -1,
+                        'requires_approval' => $approval,
+                        'approved' => false,
+                        'posted' => false,
+                        'created_by' => $request->user()->name,
+                        'branch' => $request->user()->branch,
+                        'batch_number' => $otp
+                    ]);
+
+                    //create charge line
+                    $interest = Payments::create([
+                        'savings_account_id' => $account->id,
+                        'plan' => $account->plan,
+                        'customer_id' => $account->customer_id,
+                        'customer_name' => $account->customer,
+                        'transaction_type' => 'penalty',
+                        'status' => 'open',
+                        'remarks' => 'Penalty for ' . $account->customer . ' of ₦' . number_format($interest, 2) . " On " . $account->plan . " account.",
+                        'debit' => 0,
+                        'credit' => $interest,
+                        'amount' => $interest * -1,
+                        'requires_approval' => $approval,
+                        'approved' => false,
+                        'posted' => false,
+                        'created_by' => $request->user()->name,
+                        'branch' => $request->user()->branch,
+                        'batch_number' => $otp
+                    ]);
+                }
+            }
+        }
+        return response([
+            "success" => true,
+            "code" => 'otp'
+        ]);
+    }
+    public function post_withdrawal1(Request $request)
+    {
+        $account = SavingsAccount::where('id', $request->id)->first();
+        $balance = Payments::where('savings_account_id', $account->id)->where('status', 'confirmed')->sum('amount');
+
+        $customer = Customer::where('id', $account->customer_id)->first();
+
+        $plan = Plans::where('id', $account->plans_id)->first();
+
+        $total_credit = $request->amount + $request->commission;
         $otp = rand(000000, 999999);
 
         if ($plan->name == 'Real Invest') {
@@ -789,64 +1100,64 @@ class SalesController extends Controller
         // if (auth()->user()->sales_executive == false) {
         //     return abort(401);
         // } else {
-            //get customer details
-            $customer = Customer::where('handler', auth()->user()->name)->where('id', $id)->first();
+        //get customer details
+        $customer = Customer::where('handler', auth()->user()->name)->where('id', $id)->first();
 
-            //get customer accounts
-            $customer = Customer::where('id', $id)->first();
-            $plans = Plans::where('active', true)->get();
-            //get accounts
-            $accounts = SavingsAccount::where('customer_id', $customer->id)->orderBy('id', 'ASC')->where('active', true)->get();
+        //get customer accounts
+        $customer = Customer::where('id', $id)->first();
+        $plans = Plans::where('active', true)->get();
+        //get accounts
+        $accounts = SavingsAccount::where('customer_id', $customer->id)->orderBy('id', 'ASC')->where('active', true)->get();
 
-            $data = array();
-            $total_balance = 0;
-            foreach ($accounts as $acc) {
-                $confirmed_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'confirmed')->sum('amount') - Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'registration')->where('status', 'confirmed')->sum('amount');
-                $pending_transaction = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'savings')->where('status', 'pending')->sum('amount');
-                $pending_withdrawal = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'withdrawal')->where('status', 'pending')->sum('amount');
-                $pending_penalty = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'penalty')->where('status', 'pending')->sum('amount');
-                $plan = Plans::where('id', $acc->plans_id)->first();
-                $saving_accounts = array();
-                if ($acc->plan == 'Real Invest') {
-                    $invest = RealInvest::where('savings_account_id', $acc->id)->first();
-                    if ($invest->exit_date > Carbon::now()) {
-                        $acc['mature'] = false;
-                    } else {
-                        $acc['mature'] = true;
-                    }
-                    $acc['interest_added'] = ($invest->percentage / 100 * $invest->amount) * $invest->duration;
-                    $acc['total_due'] = ($invest->percentage / 100 * $invest->amount) + $invest->amount;
+        $data = array();
+        $total_balance = 0;
+        foreach ($accounts as $acc) {
+            $confirmed_transaction = Payments::where('savings_account_id', $acc->id)->where('status', 'confirmed')->sum('amount') - Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'registration')->where('status', 'confirmed')->sum('amount');
+            $pending_transaction = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'savings')->where('status', 'pending')->sum('amount');
+            $pending_withdrawal = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'withdrawal')->where('status', 'pending')->sum('amount');
+            $pending_penalty = Payments::where('savings_account_id', $acc->id)->where('transaction_type', 'penalty')->where('status', 'pending')->sum('amount');
+            $plan = Plans::where('id', $acc->plans_id)->first();
+            $saving_accounts = array();
+            if ($acc->plan == 'Real Invest') {
+                $invest = RealInvest::where('savings_account_id', $acc->id)->first();
+                if ($invest->exit_date > Carbon::now()) {
+                    $acc['mature'] = false;
+                } else {
+                    $acc['mature'] = true;
                 }
-
-                $saving_accounts['details'] = $acc;
-                $saving_accounts['plan'] = $plan;
-                $saving_accounts['confirmed'] = number_format($confirmed_transaction, 2);
-                $saving_accounts['pending_withdrawal'] = number_format(($pending_withdrawal + $pending_penalty) * -1, 2);
-                if ($acc->plan == "Regular") {
-                    $loan = LoansModel::where('customer_id', $customer->id)->first();
-                    if ($loan != null) {
-                        $pend_loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'pending')->sum('amount');
-                        $pending_transaction = $pending_transaction + $pend_loan_repayment;
-                    }
-                }
-
-                $saving_accounts['pending'] = number_format($pending_transaction, 2);
-                $data[] = $saving_accounts;
-                $total_balance = $total_balance + $confirmed_transaction;
+                $acc['interest_added'] = ($invest->percentage / 100 * $invest->amount) * $invest->duration;
+                $acc['total_due'] = ($invest->percentage / 100 * $invest->amount) + $invest->amount;
             }
 
-            $loan = LoansModel::where('customer_id', $customer->id)->first();
+            $saving_accounts['details'] = $acc;
+            $saving_accounts['plan'] = $plan;
+            $saving_accounts['confirmed'] = number_format($confirmed_transaction, 2);
+            $saving_accounts['pending_withdrawal'] = number_format(($pending_withdrawal + $pending_penalty) * -1, 2);
+            if ($acc->plan == "Regular") {
+                $loan = LoansModel::where('customer_id', $customer->id)->first();
+                if ($loan != null) {
+                    $pend_loan_repayment = LoanRepayment::where('loan_number', $loan->id)->where('status', 'pending')->sum('amount');
+                    $pending_transaction = $pending_transaction + $pend_loan_repayment;
+                }
+            }
 
-            $result = array();
-            $result['customer'] = $customer;
-            $result['accounts'] = $data;
-            $result['plans'] = $plans;
-            $result['loan'] = $loan;
-            $result['total_balance'] = $total_balance;
+            $saving_accounts['pending'] = number_format($pending_transaction, 2);
+            $data[] = $saving_accounts;
+            $total_balance = $total_balance + $confirmed_transaction;
+        }
 
-            $plans = Plans::all();
+        $loan = LoansModel::where('customer_id', $customer->id)->first();
 
-            return view('sales.customer')->with(['customer' => $customer, 'result' => $result, 'plans' => $plans]);
+        $result = array();
+        $result['customer'] = $customer;
+        $result['accounts'] = $data;
+        $result['plans'] = $plans;
+        $result['loan'] = $loan;
+        $result['total_balance'] = $total_balance;
+
+        $plans = Plans::all();
+
+        return view('sales.customer')->with(['customer' => $customer, 'result' => $result, 'plans' => $plans]);
         //}
     }
 
@@ -1265,7 +1576,8 @@ class SalesController extends Controller
         return redirect()->to('/real_invest_list');
     }
 
-    public function performance_outlook(){
+    public function performance_outlook()
+    {
         return view('sales.performance_outlook');
     }
 }

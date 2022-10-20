@@ -563,8 +563,7 @@ class LoanController extends Controller
 
     public function closed_loans(Request $request)
     {
-        $payment = LoanRepayment::where('id', '323')->first();
-        $loan = LoansModel::where('customer', $payment->name)->first();
+        $loan = LoansModel::where('closed', true)->first();
         return view('');
     }
 
