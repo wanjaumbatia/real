@@ -491,48 +491,91 @@ class LoanController extends Controller
 
     public function active_loans(Request $request)
     {
-        $loans = LoansModel::where('loan_status', 'Active')->get();
-        foreach ($loans as $ln) {
-            $now = Carbon::now();
-            $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
-            if ($ln->exit_date < $now) {
-                $ln->countdown =  $diff * -1;
-            } else {
-                $ln->countdown = $diff;
+        $branches = Branch::all();
+        if ($request->branch == null) {
+            $loans = LoansModel::where('loan_status', 'Active')->get();
+            foreach ($loans as $ln) {
+                $now = Carbon::now();
+                $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+                if ($ln->exit_date < $now) {
+                    $ln->countdown =  $diff * -1;
+                } else {
+                    $ln->countdown = $diff;
+                }
+            }
+        } else {
+            $loans = LoansModel::where('loan_status', 'Active')->where('branch', $request->branch)->get();
+            foreach ($loans as $ln) {
+                $now = Carbon::now();
+                $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+                if ($ln->exit_date < $now) {
+                    $ln->countdown =  $diff * -1;
+                } else {
+                    $ln->countdown = $diff;
+                }
             }
         }
-        return view('loans.active')->with(['loans' => $loans]);
+
+        return view('loans.active')->with(['loans' => $loans, 'branches' => $branches]);
     }
 
     public function expired_loans(Request $request)
     {
-        $loans = LoansModel::where('loan_status', 'Expired')->get();
-        foreach ($loans as $ln) {
-            $now = Carbon::now();
-            $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
-            if ($ln->exit_date < $now) {
-                $ln->countdown =  $diff * -1;
-            } else {
-                $ln->countdown = $diff;
+        $branches = Branch::all();
+        if ($request->branch == null) {
+            $loans = LoansModel::where('loan_status', 'Expired')->get();
+            foreach ($loans as $ln) {
+                $now = Carbon::now();
+                $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+                if ($ln->exit_date < $now) {
+                    $ln->countdown =  $diff * -1;
+                } else {
+                    $ln->countdown = $diff;
+                }
+            }
+        } else {
+            $loans = LoansModel::where('loan_status', 'Expired')->where('branch', $request->branch)->get();
+            foreach ($loans as $ln) {
+                $now = Carbon::now();
+                $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+                if ($ln->exit_date < $now) {
+                    $ln->countdown =  $diff * -1;
+                } else {
+                    $ln->countdown = $diff;
+                }
             }
         }
 
-        return view('loans.expired')->with(['loans' => $loans]);
+        return view('loans.expired')->with(['loans' => $loans, 'branches' => $branches]);
     }
 
     public function bad_loans(Request $request)
     {
-        $loans = LoansModel::where('loan_status', 'Bad')->get();
-        foreach ($loans as $ln) {
-            $now = Carbon::now();
-            $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
-            if ($ln->exit_date < $now) {
-                $ln->countdown =  $diff * -1;
-            } else {
-                $ln->countdown = $diff;
+        $branches = Branch::all();
+        if ($request->branch == null) {
+            $loans = LoansModel::where('loan_status', 'Bad')->get();
+            foreach ($loans as $ln) {
+                $now = Carbon::now();
+                $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+                if ($ln->exit_date < $now) {
+                    $ln->countdown =  $diff * -1;
+                } else {
+                    $ln->countdown = $diff;
+                }
+            }
+        } else {
+            $loans = LoansModel::where('loan_status', 'Bad')->where('branch', $request->branch)->get();
+            foreach ($loans as $ln) {
+                $now = Carbon::now();
+                $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
+                if ($ln->exit_date < $now) {
+                    $ln->countdown =  $diff * -1;
+                } else {
+                    $ln->countdown = $diff;
+                }
             }
         }
-        return view('loans.bad')->with(['loans' => $loans]);
+        return view('loans.bad')->with(['loans' => $loans, 'branches' => $branches]);
     }
 
     public function loan_card(Request $request, $id)

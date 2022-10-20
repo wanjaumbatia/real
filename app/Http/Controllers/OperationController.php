@@ -104,7 +104,7 @@ class OperationController extends Controller
             });
             return view('ops.reconc_by_date')->with(['data' => $result, 'branches' => $branches]);
         } else {
-            $recons = Payments::where('branch', auth()->user()->branch)->where('status', 'confirmed')->where('remarks', '!=', 'Opening Balance')->latest()->get()->groupBy(function ($item) {
+            $recons = Payments::where('branch', $request->branch)->where('status', 'confirmed')->where('remarks', '!=', 'Opening Balance')->latest()->get()->groupBy(function ($item) {
                 return $item->created_at->format('d-M-y');
             });
             $result = array();
@@ -135,9 +135,9 @@ class OperationController extends Controller
                 $data['regfees'] = $regfees;
                 $result[] = $data;
             }
-
+            
             //get loans 
-            $loans = LoanRepayment::where('branch', auth()->user()->branch)->where('status', 'confirmed')->latest()->get()->groupBy(function ($item) {
+            $loans = LoanRepayment::where('branch', $request->branch)->where('status', 'confirmed')->latest()->get()->groupBy(function ($item) {
                 return $item->created_at->format('d-M-y');
             });
 

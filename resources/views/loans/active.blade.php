@@ -9,7 +9,15 @@
                     Loans
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
+                    <form action="/active_loans" method="get">
+                        <select name="branch" id="branch" class="form-control">
+                            @foreach($branches as $branch)
+                            <option value="{{$branch->name}}">{{$branch->name}}</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="btn btn-primary w-100 mt-2">Submit</button>
+                    </form>
+                    <div class="table-responsive mt-3">
                         <table id='table' class="table table-striped mt-2">
                             <thead>
                                 <tr>
@@ -37,11 +45,10 @@
                                     <td>{{number_format($item->total_balance,0)}}</td>
                                     <td>{{$item->loan_status}}</td>
                                     <td>
-                                        @if($item->countdown <0)
-                                            <p class="text-danger">{{$item->countdown}}</p>
-                                        @else
-                                        <p class="text-success">{{$item->countdown}}</p>
-                                        @endif
+                                        @if($item->countdown <0) <p class="text-danger">{{$item->countdown}}</p>
+                                            @else
+                                            <p class="text-success">{{$item->countdown}}</p>
+                                            @endif
                                     </td>
                                     <td><a href="/loan_card/{{$item->id}}" class="btn btn-primary btn-block">Open</a></td>
                                 </tr>

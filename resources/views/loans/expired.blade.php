@@ -9,7 +9,15 @@
                     Loans
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
+                    <form action="/expired_loans" method="get">
+                        <select name="branch" id="branch" class="form-control">
+                            @foreach($branches as $branch)
+                            <option value="{{$branch->name}}">{{$branch->name}}</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="btn btn-primary w-100 mt-2">Submit</button>
+                    </form>
+                    <div class="table-responsive mt-3">
                         <table id='table' class="table table-striped mt-2">
                             <thead>
                                 <tr>
