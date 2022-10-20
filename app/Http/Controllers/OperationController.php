@@ -331,4 +331,18 @@ class OperationController extends Controller
 
         return redirect()->to('/cashflows');
     }
+
+    public function loans_status()
+    {
+
+        $data = array();
+        $data['active'] = LoansModel::where('loan_status', 'ACTIVE')->count();
+        $data['expired'] = LoansModel::where('loan_status', 'EXPIRED')->count();
+        $data['bad'] = LoansModel::where('loan_status', 'BAD')->count();
+        $data['active_amount'] = LoansModel::where('loan_status', 'ACTIVE')->sum('total_balance');
+        $data['expired_amount'] = LoansModel::where('loan_status', 'EXPIRED')->sum('total_balance');
+        $data['bad_amount'] = LoansModel::where('loan_status', 'BAD')->sum('total_balance');
+
+        return view('ops.loan_status_summary')->with(['data' => $data]);
+    }
 }

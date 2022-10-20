@@ -563,8 +563,14 @@ class LoanController extends Controller
 
     public function closed_loans(Request $request)
     {
-        $loan = LoansModel::where('closed', true)->first();
-        return view('');
+        $branches = Branch::all();
+        if ($request->branch == null) {
+            $loans = LoansModel::where('closed', true)->get();
+            return view('ops.closed_loans')->with(['branches' => $branches, 'loans' => $loans]);
+        } else {
+            $loans = LoansModel::where('closed', true)->where('branch', $request->branch)->get();
+            return view('ops.closed_loans')->with(['branches' => $branches, 'loans' => $loans]);
+        }
     }
 
     public function repay_test(Request $request, $id)
