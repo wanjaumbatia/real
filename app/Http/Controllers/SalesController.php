@@ -651,6 +651,7 @@ class SalesController extends Controller
             "code" => 'otp'
         ]);
     }
+    
     public function post_withdrawal1(Request $request)
     {
         $account = SavingsAccount::where('id', $request->id)->first();
