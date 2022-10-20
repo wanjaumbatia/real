@@ -43,7 +43,6 @@
                                     <th>Paid Amount</th>
                                     <th>Status</th>
                                     <th>Branch</th>
-                                    <th>Savings</th>
                                     <th>Count Down</th>
                                     <th>Action</th>
                                 </tr>
@@ -72,13 +71,11 @@
                                     </td>
                                     @endif
                                     <td>{{$item->branch}}</td>
-                                    <td>{{$number_format}}</td>
                                     <td>
-                                        @if($item->countdown <0)
-                                            <p class="text-danger">{{$item->countdown}}</p>
-                                        @else
-                                        <p class="text-success">{{$item->countdown}}</p>
-                                        @endif
+                                        @if($item->countdown <0) <p class="text-danger">{{$item->countdown}}</p>
+                                            @else
+                                            <p class="text-success">{{$item->countdown}}</p>
+                                            @endif
                                     </td>
                                     <td><a href="/loan_card/{{$item->id}}" class="btn btn-primary btn-block">Open</a></td>
                                 </tr>

@@ -53,7 +53,7 @@ class LoanController extends Controller
             $now = Carbon::now();
             $diff =  Carbon::parse($now)->diffInDays($ln->exit_date);
 
-            $ln->savings = Payments::where('customer_name', $ln->customer)->sum('amount');
+            //$ln->savings = Payments::where('customer_name', $ln->customer)->sum('amount');
 
             if ($ln->exit_date < $now) {
                 $ln->countdown =  $diff * -1;
