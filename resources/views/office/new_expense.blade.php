@@ -19,10 +19,13 @@
 
                     <form action="/post_expense" method="post">
                         @csrf
-                        <div class="form-group">
+                        <div class="fomr-group">
                             <label for="">Branch</label>
-                            <input type="text" name="branch" value="{{Auth::user()->branch}}" hidden>
-                            <input type="text" class="form-control" value="{{Auth::user()->branch}}" disabled />
+                            <select name="branch" id="branch" class="form-control">
+                                @foreach($branches as $item)
+                                <option value="{{$item->name}}">{{$item->name}}</option>
+                                @endforeach
+                            </select>
                         </div>
 
                         <div class="form-group">
@@ -58,10 +61,7 @@
                             <label for="">Created By</label>
                             <input type="text" class="form-control" value="{{Auth::user()->name}}" disabled>
                         </div>
-                        <div class="form-group mt-1">
-                            <label for="">Branch</label>
-                            <input type="text" class="form-control" value="{{Auth::user()->branch}}" disabled>
-                        </div>
+
                         <button class="btn btn-primary w-100 mt-2">Submit</button>
                     </form>
                 </div>

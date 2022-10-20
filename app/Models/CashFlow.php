@@ -19,6 +19,7 @@ class CashFlow extends Model
         'status',
         'remarks',
         'created_by',
-        'confirmed_by'
+        'confirmed_by',
+        'created_at'
     ];
 }

@@ -279,7 +279,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/branch_perfomance', [BranchController::class, 'branch_perfomance'])->name('branch_perfomance');
 
     Route::post('/fix_accounts', [OfficeController::class, 'fix_accounts'])->name('fix_accounts');
-    
+
     // Operations Manager
     Route::get("/admin_recon", [OperationController::class, 'admin_recon'])->name('ops.admin_recon');
     Route::get('/admin_recon_by_date', [OperationController::class, 'recon_by_date'])->name('ops.recon_by_date');
@@ -287,4 +287,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin_loan_request/{id}', [OperationController::class, 'loan_card'])->name('admin_loan_card');
 
     Route::get('/admin_cash_summary', [OperationController::class, 'cash_summary'])->name('ops.cash_summary');
-}); 
+    Route::get('/cashflows', [OperationController::class, 'cash_flow'])->name('ops.cash_flow');
+    Route::get('/add_cashflow', [OperationController::class, 'new_casflow'])->name('ops.new_casflow');
+    Route::post('/post_cashflow', [OperationController::class, 'post_cashflow'])->name('ops.post_cashflow');
+
+
+});

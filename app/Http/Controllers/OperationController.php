@@ -65,7 +65,6 @@ class OperationController extends Controller
     {
         $branches = Branch::all();
         $branch = auth()->user()->branch;
-
         if ($request->branch == null) {
             $recons = Payments::where('branch', 'Asaba')->where('status', 'confirmed')->where('remarks', '!=', 'Opening Balance')->latest()->get()->groupBy(function ($item) {
                 return $item->created_at->format('d-M-y');
@@ -141,7 +140,7 @@ class OperationController extends Controller
             $loans = LoanRepayment::where('branch', auth()->user()->branch)->where('status', 'confirmed')->latest()->get()->groupBy(function ($item) {
                 return $item->created_at->format('d-M-y');
             });
-            
+
             return view('ops.reconc_by_date')->with(['data' => $result, 'branches' => $branches]);
         }
     }
@@ -284,5 +283,52 @@ class OperationController extends Controller
             }
             return view('ops.cash_summary')->with(["data1" => $cs]);
         }
+    }
+
+    public function cash_flow(Request $request)
+    {
+        $cf = CashFlow::all();
+        return view('ops.cashflow')->with(['data' => $cf]);
+    }
+
+    public function new_casflow(Request $request)
+    {
+        $branches = Branch::all();
+
+        return view('ops.add_cashflow')->with(['branches' => $branches]);
+    }
+
+    public function post_cashflow(Request $request)
+    {
+        if ($request->direction == '1') {
+            $cf = CashFlow::create([
+                'branch' => $request->branch,
+                'to' => 'HQ',
+                'from' => $request->branch,
+                'debit' => 0,
+                'credit' => $request->amount,
+                'amount' => $request->amount * -1,
+                'description' => $request->description,
+                'status' => 'pending',
+                'created_by' => auth()->user()->name,
+                'created_at' => $request->date
+            ]);
+        } else if ($request->direction == '2') {
+            $cf = CashFlow::create([
+                'branch' => $request->branch,
+                'from' => 'HQ',
+                'to' => $request->branch,
+                'credit' => 0,
+                'debit' => $request->amount,
+                'amount' => $request->amount,
+                'description' => $request->description,
+                'status' => 'pending',
+                'created_by' => auth()->user()->name,
+                'created_at' => $request->date
+            ]);
+        } else {
+        }
+
+        return redirect()->to('/cashflows');
     }
 }

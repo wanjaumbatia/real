@@ -1355,20 +1355,16 @@ class OfficeController extends Controller
     public function new_expense(Request $request)
     {
         $codes = ExpenseType::all();
-        return view('office.new_expense')->with(['codes' => $codes]);;
+        $branches = Branch::all();
+        return view('office.new_expense')->with(['codes' => $codes, 'branches'=>$branches]);;
     }
 
     public function post_expense(Request $request)
     {
-
-        if (auth()->user()->office_admin != true) {
-            return abort(401);
-        }
-
         $code = ExpenseType::where('id', $request->type)->first();
 
         $expense = Expense::create([
-            'branch' => auth()->user()->branch,
+            'branch' => $request->branch,
             'description'  => $request->description,
             'status' => 'pending',
             'approved' => false,
