@@ -135,7 +135,7 @@ class OperationController extends Controller
                 $data['regfees'] = $regfees;
                 $result[] = $data;
             }
-            
+
             //get loans 
             $loans = LoanRepayment::where('branch', $request->branch)->where('status', 'confirmed')->latest()->get()->groupBy(function ($item) {
                 return $item->created_at->format('d-M-y');

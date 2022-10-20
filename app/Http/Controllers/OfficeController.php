@@ -1562,7 +1562,7 @@ class OfficeController extends Controller
             $tt['inflow'] = 0;
         }
         $tt['opening_balance'] = $first_opening_balance;
-        $tt['report_date'] = '25-10-2022 - 30-10-2022';
+        $tt['report_date'] = '25-09-2022 - 30-09-2022';
         $tt['remmittance'] = $first_saving[0]->amount;
         $tt['withdrawals'] = $first_withdrawal[0]->amount;
         $tt['loans'] = $first_loan[0]->amount;
