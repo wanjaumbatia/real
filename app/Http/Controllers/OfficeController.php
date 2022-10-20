@@ -1910,8 +1910,21 @@ class OfficeController extends Controller
                 "CashAtHand" => $request->amount,
                 "admin_remarks" => $request->remarks
             ]);
+
+
         } else {
-            dd('edit');
+            CashSummary::create([
+                "report_date" => $request->date,
+                "opening_balance" => $request->opening_balance,
+                "Remmitance" => $request->deposits,
+                "CashInflow" => $request->inflow,
+                "Expenses" => $request->expenses,
+                "Withdrawals" => $request->withdrawals,
+                "LoanIssued" => $request->loans,
+                "CashOutflow" => $request->outflow,
+                "CashAtHand" => $request->amount,
+                "admin_remarks" => $request->remarks
+            ]);
         }
         return redirect()->to('/branch_cash_summary');
     }
