@@ -53,7 +53,7 @@ class HomeController extends Controller
         } else if ($user->branch_manager == true) {
             return view('branch.index');
         } else if ($user->loan_officer == true) {
-            return redirect()->to('/');
+            return redirect()->to('/loans/index');
         } else if ($user->legal == true) {
             $data = DB::select("
             select 
