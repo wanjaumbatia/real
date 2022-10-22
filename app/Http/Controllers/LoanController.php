@@ -491,6 +491,7 @@ class LoanController extends Controller
 
     public function active_loans(Request $request)
     {
+        $branches = Branch::all();
         $loans = LoansModel::where('loan_status', 'Active')->get();
         foreach ($loans as $ln) {
             $now = Carbon::now();
@@ -502,11 +503,12 @@ class LoanController extends Controller
             }
         }
 
-        return view('loans.active')->with(['loans' => $loans]);
+        return view('loans.active')->with(['loans' => $loans, 'branches' => $branches]);
     }
 
     public function expired_loans(Request $request)
     {
+        $branches = Branch::all();
         $loans = LoansModel::where('loan_status', 'Expired')->get();
         foreach ($loans as $ln) {
             $now = Carbon::now();
@@ -518,11 +520,12 @@ class LoanController extends Controller
             }
         }
 
-        return view('loans.expired')->with(['loans' => $loans]);
+        return view('loans.expired')->with(['loans' => $loans, 'branches' => $branches]);
     }
 
     public function bad_loans(Request $request)
     {
+        $branches = Branch::all();
         $loans = LoansModel::where('loan_status', 'Bad')->get();
         foreach ($loans as $ln) {
             $now = Carbon::now();
@@ -533,7 +536,7 @@ class LoanController extends Controller
                 $ln->countdown = $diff;
             }
         }
-        return view('loans.bad')->with(['loans' => $loans]);
+        return view('loans.bad')->with(['loans' => $loans, 'branches' => $branches]);
     }
 
     public function loan_card(Request $request, $id)
