@@ -301,7 +301,7 @@ class LoanController extends Controller
         } else {
             $loans = LoansModel::where('branch', $request->branch)->get();
         }
-        return view('loans.branch')->with(['loans' => $loans, 'branches' => $branches]);
+        return view('loans.branch')->with(['loans' => $loans, 'branches' => $branches, 'selected' => $request->branch]);
     }
 
     public function loan_repay_ledger(Request $request)
@@ -580,7 +580,7 @@ class LoanController extends Controller
     public function repay_test(Request $request, $id)
     {
         $payments = LoanRepayment::where('posted', false)->where('admin_reconciled', true)->get();
-      
+
         foreach ($payments as $payment) {
 
             $loan = LoansModel::where('customer', $payment->name)->first();
