@@ -580,7 +580,7 @@ class LoanController extends Controller
     public function repay_test(Request $request, $id)
     {
         $payments = LoanRepayment::where('posted', false)->where('admin_reconciled', true)->get();
-        dd($payments);
+      
         foreach ($payments as $payment) {
 
             $loan = LoansModel::where('customer', $payment->name)->first();

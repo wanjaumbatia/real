@@ -1230,7 +1230,7 @@ class SalesController extends Controller
                 'remarks' => 'New Loan',
                 'disbursed' => false,
                 'disbursement_mode' => '',
-
+                'status_changed_date' => Carbon::now(),
                 'total_interest' => $request->amount * 5.5 / 100 * $request->duration,
                 'total_interest_paid' => 0,
                 'monthly_interest' => $request->amount * 5.5 / 100,
