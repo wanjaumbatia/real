@@ -17,6 +17,9 @@ class BranchSeeder extends Seeder
         $branch1 = Branch::create([
             'name' => 'Asaba'
         ]);
+        $branch100 = Branch::create([
+            'name' => 'Abraka'
+        ]);
         $branch2 = Branch::create([
             'name' => 'Agbarho'
         ]);

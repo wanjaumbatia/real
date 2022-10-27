@@ -1910,8 +1910,6 @@ class OfficeController extends Controller
                 "CashAtHand" => $request->amount,
                 "admin_remarks" => $request->remarks
             ]);
-
-
         } else {
             CashSummary::create([
                 "report_date" => $request->date,
@@ -1926,6 +1924,8 @@ class OfficeController extends Controller
                 "admin_remarks" => $request->remarks
             ]);
         }
+
+        
         return redirect()->to('/branch_cash_summary');
     }
 

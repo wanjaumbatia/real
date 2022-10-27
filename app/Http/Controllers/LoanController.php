@@ -579,34 +579,37 @@ class LoanController extends Controller
 
     public function repay_test(Request $request, $id)
     {
-        $payments = LoanRepayment::where('posted', false)->get();
+        $payments = LoanRepayment::where('posted', false)->where('admin_reconciled', true)->get();
+        dd($payments);
         foreach ($payments as $payment) {
+
             $loan = LoansModel::where('customer', $payment->name)->first();
+            if ($loan != null) {
+                //get interests
+                $loan->total_balance = $loan->total_balance - $payment->amount;
+                $loan->total_amount_paid = $loan->total_amount_paid + $payment->amount;
+                $loan->total_monthly_paid = $loan->total_monthly_paid + $payment->amount;
+                $loan->total_monthly_balance = $loan->total_monthly_balance - $payment->amount;
 
-            //get interests
-            $loan->total_balance = $loan->total_balance - $payment->amount;
-            $loan->total_amount_paid = $loan->total_amount_paid + $payment->amount;
-            $loan->total_monthly_paid = $loan->total_monthly_paid + $payment->amount;
-            $loan->total_monthly_balance = $loan->total_monthly_balance - $payment->amount;
+                //calculate interest and capital repayments
+                $expected_interest = $loan->monthly_interest - $loan->monthly_interest_paid;
 
-            //calculate interest and capital repayments
-            $expected_interest = $loan->monthly_interest - $loan->monthly_interest_paid;
+                if ($expected_interest > $payment->amount) {
+                    $loan->monthly_interest_paid = $loan->monthly_interest_paid + $payment->amount;
+                    $loan->total_interest_paid = $loan->total_interest_paid + $payment->amount;
+                } else {
+                    $loan->monthly_interest_paid = $loan->monthly_interest_paid + $expected_interest;
+                    $loan->total_interest_paid = $loan->total_interest_paid + $expected_interest;
 
-            if ($expected_interest > $payment->amount) {
-                $loan->monthly_interest_paid = $loan->monthly_interest_paid + $payment->amount;
-                $loan->total_interest_paid = $loan->total_interest_paid + $payment->amount;
-            } else {
-                $loan->monthly_interest_paid = $loan->monthly_interest_paid + $expected_interest;
-                $loan->total_interest_paid = $loan->total_interest_paid + $expected_interest;
+                    $rem_capital = $payment->amount - $expected_interest;
+                    $loan->monthly_principle_paid =  $loan->monthly_principle_paid + $rem_capital;
+                    $loan->capital_balance = $loan->capital_balance + $rem_capital;
+                }
 
-                $rem_capital = $payment->amount - $expected_interest;
-                $loan->monthly_principle_paid =  $loan->monthly_principle_paid + $rem_capital;
-                $loan->capital_balance = $loan->capital_balance + $rem_capital;
+                $loan->update();
+                $payment->posted = true;
+                $payment->update();
             }
-
-            $loan->update();
-            $payment->posted = true;
-            $payment->update();
         }
 
         return response([
