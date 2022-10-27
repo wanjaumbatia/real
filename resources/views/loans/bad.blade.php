@@ -12,7 +12,7 @@
                 <form action="/bad_loans" method="get">
                         <select name="branch" id="branch" class="form-control">
                             @foreach($branches as $branch)
-                            <option value="{{$branch->name}}">{{$branch->name}}</option>
+                            <option value="{{$branch->name}}" {{$selected == $branch->name ? 'selected' : ''}}>{{$branch->name}}</option>
                             @endforeach
                         </select>
                         <button type="submit" class="btn btn-primary w-100 mt-2">Submit</button>
