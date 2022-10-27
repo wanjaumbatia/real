@@ -93,7 +93,7 @@
                         <input id="loans" hidden name="loans" />
                         <div class="form-group">
                             <label for="">Amount At Hand</label>
-                            <input type="text" class="form-control" name="amount">
+                            <input type="number" class="form-control" name="amount">
                         </div>
 
                         <div class="form-group">

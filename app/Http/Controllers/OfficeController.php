@@ -1356,7 +1356,7 @@ class OfficeController extends Controller
     {
         $codes = ExpenseType::all();
         $branches = Branch::all();
-        return view('office.new_expense')->with(['codes' => $codes, 'branches'=>$branches]);;
+        return view('office.new_expense')->with(['codes' => $codes, 'branches' => $branches]);;
     }
 
     public function post_expense(Request $request)
@@ -1897,7 +1897,9 @@ class OfficeController extends Controller
     {
         //get cash summ
         $summ = CashSummary::where('report_date', Carbon::parse($request->date))->first();
+
         if ($summ == null) {
+
             CashSummary::create([
                 "report_date" => $request->date,
                 "opening_balance" => $request->opening_balance,
@@ -1911,21 +1913,36 @@ class OfficeController extends Controller
                 "admin_remarks" => $request->remarks
             ]);
         } else {
-            CashSummary::create([
+            CashSummary::where('report_date', Carbon::parse($request->date))->update([
                 "report_date" => $request->date,
                 "opening_balance" => $request->opening_balance,
                 "Remmitance" => $request->deposits,
                 "CashInflow" => $request->inflow,
-                "Expenses" => $request->expenses,
+                "Expense" => $request->expenses,
                 "Withdrawals" => $request->withdrawals,
                 "LoanIssued" => $request->loans,
                 "CashOutflow" => $request->outflow,
                 "CashAtHand" => $request->amount,
                 "admin_remarks" => $request->remarks
             ]);
+            //next day
+            $new_date = Carbon::parse($request->date)->addDays(1);
+            CashSummary::create([
+                "report_date" => $new_date,
+                "opening_balance" => $request->amount,
+                "Remmitance" => 0,
+                "CashInflow" => 0,
+                "Expense" => 0,
+                "Withdrawals" => 0,
+                "LoanIssued" => 0,
+                "CashOutflow" => 0,
+                "CashAtHand" => 0,
+                "admin_remarks" => '',
+                "branch" => auth()->user()->branch
+            ]);
         }
 
-        
+
         return redirect()->to('/branch_cash_summary');
     }
 
