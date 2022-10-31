@@ -950,8 +950,8 @@ class SalesController extends Controller
                     'requires_approval' => false,
                     'approved' => false,
                     'posted' => false,
-                    'created_by' => $request->user()->name,
-                    'branch' => $request->user()->branch,
+                    'created_by' => $customer->handler,
+                    'branch' => $customer->branch,
                     'batch_number' => $batch_number,
                     'reference' => $reference
                 ]);
@@ -1054,8 +1054,8 @@ class SalesController extends Controller
                     'requires_approval' => false,
                     'approved' => false,
                     'posted' => false,
-                    'created_by' => $request->user()->name,
-                    'branch' => $request->user()->branch,
+                    'created_by' => $customer->handler,
+                    'branch' => $customer->branch,
                     'batch_number' => $batch_number,
                     'reference' => $reference
                 ]);

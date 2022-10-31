@@ -1299,14 +1299,12 @@ class OfficeController extends Controller
             $data = Payments::where('transaction_type', $request->type)
                 ->where('status', 'confirmed')
                 ->where('created_by', $request->sep)
-                ->whereDate('created_at', Carbon::parse($request->date))
-                ->where('branch', auth()->user()->branch)
+                ->whereDate('updated_at', Carbon::parse($request->date))
                 ->get();
         } else {
             $data = Payments::where('transaction_type', $request->type)
                 ->where('status', 'confirmed')
                 ->whereDate('created_at', Carbon::parse($request->date))
-                ->where('branch', auth()->user()->branch)
                 ->get();
         }
 

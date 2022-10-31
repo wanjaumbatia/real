@@ -145,6 +145,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/statement/{id}', [SalesController::class, 'statement'])->name('statement');
     Route::get('/loan_status/{id}', [SalesController::class, 'loan_card'])->name('sales.loan_card');
     Route::get('/recon_statement', [OfficeController::class, 'recon_statement'])->name('recon_statement');
+    Route::get('/admin_recon_statement', [OperationController::class, 'recon_statement'])->name('recon_statement');
     Route::get('/recon_per_ref/{id}', [OfficeController::class, 'recon_per_ref'])->name('recon_per_ref');
     Route::get('/recon_report_by_date', [OfficeController::class, 'recon_report_by_date'])->name('recon_report_by_date');
     Route::get('/recon_val/{date}', [OfficeController::class, 'recon_val'])->name('recon_val');
@@ -218,6 +219,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/loan_status_summary', [LoanController::class, 'loan_status_summary'])->name('\loan_status_summary');
     Route::get('/loan_review/{id}', [LoanController::class, 'loan_review'])->name('loans.loan_review');
     Route::get('/loan_by_sep', [LoanController::class, 'loan_by_sep'])->name('loans.loan_by_sep');
+    Route::get('/load_seps', [LoanController::class, 'load_seps'])->name('loans.load_seps');
     Route::post('/save_review', [LoanController::class, 'save_review'])->name('loans.save_review');
 
     Route::get('/branch_loan_review/{id}', [BranchController::class, 'loan_review'])->name('branch.loan_review');

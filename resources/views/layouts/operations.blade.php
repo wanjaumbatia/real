@@ -75,6 +75,9 @@
                             <a class="nav-link active" href="/cashflows">{{ __('Cash Flows') }}</a>
                         </li>
 
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/branch_cash_summary">{{ __('Cash Summary') }}</a>
+                        </li>
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

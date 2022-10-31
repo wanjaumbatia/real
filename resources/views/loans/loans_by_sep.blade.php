@@ -9,12 +9,30 @@
                     Loans
                 </div>
                 <div class="card-body">
+                    <form class="mb-3" method="get" action="/load_seps">
+                        <div class="row w-100">
+                            <div class="col-9">
+                                <select class="form-control w-100" name="branch" id="seps">
+                                    @foreach($branches as $item)
+                                    <option {{$bb == $item->name ? 'selected' : ''}} value="{{$item->name}}">{{$item->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-3">
+                                <button class="btn btn-primary w-100 btn-sm">
+                                    Load
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
                     <form method="get" action="/loan_by_sep">
                         <div class="row w-100">
                             <div class="col-9">
-                                <select class="form-control w-100" name="name" id="seps">
+                                <input type="text" value="{{$bb}}" hidden name="bb">
+                                <select class="form-control w-100" name="name" id="branch">
                                     @foreach($seps as $item)
-                                    <option value="{{$item->name}}">{{$item->name}}</option>
+                                    <option {{$sep == $item->name ? 'selected' : ''}} value="{{$item->name}}">{{$item->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -88,6 +106,7 @@
 <script>
     $(document).ready(function() {
         $('#seps').select2();
+        $('#branch').select2();
         $('#table').DataTable({
             dom: 'Bfrtip',
             buttons: [

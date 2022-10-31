@@ -690,7 +690,16 @@ class LoanController extends Controller
             $loans = [];
         }
         $seps = User::where('sales_executive', true)->get();
-        return view('loans.loans_by_sep')->with(['loans' => $loans, 'seps' => $seps]);
+        $branches = Branch::all();
+        return view('loans.loans_by_sep')->with(['loans' => $loans, 'seps' => $seps, 'branches' => $branches, 'bb' => $request->bb, 'sep' => $request->name]);
+    }
+
+    public function load_seps(Request $request)
+    {
+        $loans = [];
+        $branches = Branch::all();
+        $seps = User::where('sales_executive', true)->where('branch', $request->branch)->get();
+        return view('loans.loans_by_sep')->with(['loans' => $loans, 'seps' => $seps, 'branches' => $branches, 'bb' => $request->branch, 'sep'=>null]);
     }
 
     public function loan_review(Request $request, $id)

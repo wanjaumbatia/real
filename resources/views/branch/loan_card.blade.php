@@ -187,6 +187,21 @@
                     </form>
                 </div>
             </div>
+
+            <div class="card mt-3">
+                <div class="card-header">Reject</div>
+                <div class="card-body">
+                    <form action="#" method="post">
+                        @csrf
+                        <div class="form-group">
+                            <label for="">Remarks</label>
+                            <textarea name="comment" id="comment" rows="3" class="form-control"></textarea>
+                        </div>
+                        <button class="btn btn-danger w-100 mt-2">Reject</button>
+                    </form>
+                </div>
+            </div>
+
             @elseif($loan->loan_status == 'processing')
             <h1>Remarks</h1>
             @endif

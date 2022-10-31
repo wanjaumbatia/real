@@ -13,6 +13,7 @@ use App\Models\LoanRepayment;
 use App\Models\LoanSecurityType;
 use App\Models\LoansModel;
 use App\Models\Payments;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -67,7 +68,7 @@ class OperationController extends Controller
         $branch = auth()->user()->branch;
         if ($request->branch == null) {
             $recons = Payments::where('branch', 'Asaba')->where('status', 'confirmed')->where('remarks', '!=', 'Opening Balance')->latest()->get()->groupBy(function ($item) {
-                return $item->created_at->format('d-M-y');
+                return $item->updated_at->format('d-M-y');
             });
             $result = array();
             foreach ($recons as $item) {
@@ -76,7 +77,7 @@ class OperationController extends Controller
                 $charges = 0;
                 $regfees = 0;
                 $data = array();
-                $data['date'] = $item[0]->created_at->format('d-m-Y');;
+                $data['date'] = $item[0]->updated_at->format('d-m-Y');
                 foreach ($item as $it) {
                     if ($it->transaction_type == 'savings') {
                         $deposits = $deposits + $it->debit;
@@ -91,18 +92,16 @@ class OperationController extends Controller
                         $regfees = $regfees + $it->debit;
                     }
                 }
-                $data['deposits'] = $deposits;
+                $loans = LoanRepayment::whereDate('updated_at', Carbon::parse($data['date']))->where('status', 'confirmed')->latest()->sum('amount');
+
+                $data['deposits'] = $deposits + $loans;
                 $data['withdrawals'] = $withdrawals;
                 $data['charges'] = $charges;
                 $data['regfees'] = $regfees;
                 $result[] = $data;
             }
-
-            //get loans 
-            $loans = LoanRepayment::where('branch', auth()->user()->branch)->where('status', 'confirmed')->latest()->get()->groupBy(function ($item) {
-                return $item->created_at->format('d-M-y');
-            });
-            return view('ops.reconc_by_date')->with(['data' => $result, 'branches' => $branches]);
+            
+            return view('ops.reconc_by_date')->with(['data' => $result, 'branches' => $branches, 'branch' => $request->branch]);
         } else {
             $recons = Payments::where('branch', $request->branch)->where('status', 'confirmed')->where('remarks', '!=', 'Opening Balance')->latest()->get()->groupBy(function ($item) {
                 return $item->created_at->format('d-M-y');
@@ -143,6 +142,52 @@ class OperationController extends Controller
 
             return view('ops.reconc_by_date')->with(['data' => $result, 'branches' => $branches]);
         }
+    }
+
+    public function recon_statement(Request $request)
+    {
+        $branch = auth()->user()->branch;
+        //$data = DB::select("select created_by as handler, sum(debit) as amount from payments where branch = '" . $branch . "' and remarks!='Opening Balance' and status='confirmed' group by created_by;");
+        $data = [];
+        $recons = Payments::whereDate('updated_at', Carbon::parse($request->date))
+            ->where('status', 'confirmed')
+            ->where('remarks', '!=', 'Opening Balance')
+            ->latest()->get()->groupBy(function ($item) {
+                return $item->created_by;
+            });
+
+        $result = array();
+        foreach ($recons as $item) {
+            $deposits = 0;
+            $withdrawals = 0;
+            $charges = 0;
+            $regfees = 0;
+            $data = array();
+            $data['date'] = $item[0]->created_at->format('d-m-Y');
+            $data['sep'] = $item[0]->created_by;
+
+            foreach ($item as $it) {
+                if ($it->transaction_type == 'savings') {
+                    $deposits = $deposits + $it->debit;
+                }
+                if ($it->transaction_type == 'withdrawal') {
+                    $withdrawals = $withdrawals + $it->credit;
+                }
+                if ($it->transaction_type == 'charge') {
+                    $charges = $charges + $it->credit;
+                }
+                if ($it->transaction_type == 'registration') {
+                    $regfees = $regfees + $it->debit;
+                }
+            }
+            $data['deposits'] = $deposits;
+            $data['withdrawals'] = $withdrawals;
+            $data['charges'] = $charges;
+            $data['regfees'] = $regfees;
+            $result[] = $data;
+        }
+
+        return view('office.recon_statement')->with(['data' => $result]);
     }
 
     public function loan_request(Request $request)
