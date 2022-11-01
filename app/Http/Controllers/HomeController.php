@@ -22,7 +22,11 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', '48000');
+        ini_set('request_terminate_time', '48000');
     }
+
 
     /**
      * Show the application dashboard.
