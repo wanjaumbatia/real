@@ -46,8 +46,8 @@ class OfficeController extends Controller
     public function __construct()
     {
         ini_set('memory_limit', '-1');
-        ini_set('max_execution_time', '12000');
-        ini_set('request_terminate_time', '12000');
+        ini_set('max_execution_time', '48000');
+        ini_set('request_terminate_time', '48000');
     }
     /**
      * Display a listing of the resource.
