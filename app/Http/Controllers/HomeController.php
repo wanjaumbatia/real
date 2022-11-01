@@ -31,6 +31,7 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
+        dd('here');
         $user = auth()->user();
         if ($user->sales_executive == true) {
             $customers = Customer::where('handler', auth()->user()->name)->get();
