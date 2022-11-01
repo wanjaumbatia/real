@@ -446,15 +446,16 @@ class OfficeController extends Controller
     public function index()
     {
         if (auth()->user()->office_admin == true) {
-            $data = DB::select("select 
-            name,
-            IFNULL((select sum(debit) from payments where status = 'pending' and transaction_type='savings' and created_by=u.name),0) as savings,
-            IFNULL((select sum(credit) from payments where status = 'pending' and transaction_type='withdrawal' and created_by=u.name),0) as withdrawals,
-            IFNULL((select sum(credit) from payments where status = 'pending' and transaction_type='withdrawal' and remarks='POF' and created_by=u.name),0) as unconfirmed_pof,
-            IFNULL((select sum(credit) from payments where status = 'confirmed' and reconciled='0' and transaction_type='withdrawal' and remarks='POF' and created_by=u.name),0) as pof,
-            IFNULL((select sum(amount) from loan_repayments where status = 'pending' and handler=u.name), 0) as loan_collection
-            from users u where sales_executive='1' and branch='" . auth()->user()->branch . "' order by savings desc;");
+            // $data = DB::select("select 
+            // name,
+            // IFNULL((select sum(debit) from payments where status = 'pending' and transaction_type='savings' and created_by=u.name),0) as savings,
+            // IFNULL((select sum(credit) from payments where status = 'pending' and transaction_type='withdrawal' and created_by=u.name),0) as withdrawals,
+            // IFNULL((select sum(credit) from payments where status = 'pending' and transaction_type='withdrawal' and remarks='POF' and created_by=u.name),0) as unconfirmed_pof,
+            // IFNULL((select sum(credit) from payments where status = 'confirmed' and reconciled='0' and transaction_type='withdrawal' and remarks='POF' and created_by=u.name),0) as pof,
+            // IFNULL((select sum(amount) from loan_repayments where status = 'pending' and handler=u.name), 0) as loan_collection
+            // from users u where sales_executive='1' and branch='" . auth()->user()->branch . "' order by savings desc;");
 
+            $data = [];
             $total_expected = 0;
             foreach ($data as $item) {
                 $total_expected = $total_expected + $item->savings + $item->loan_collection - $item->pof;
