@@ -1346,8 +1346,13 @@ class OfficeController extends Controller
 
     public function expenses_list(Request $request)
     {
-        $expenses = Expense::where('branch', auth()->user()->branch)->get();
-        return view('office.expenses')->with(['expenses' => $expenses]);
+        if (auth()->user()->office_admin == true) {
+            $expenses = Expense::where('branch', auth()->user()->branch)->get();
+            return view('office.expenses')->with(['expenses' => $expenses]);
+        } else {
+            $expenses = Expense::get();
+            return view('office.expenses')->with(['expenses' => $expenses]);
+        }
     }
 
     public function new_expense(Request $request)
